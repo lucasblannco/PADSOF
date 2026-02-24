@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="15.1">
+  <zoom_level>10</zoom_level>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>850</x>
+      <y>0</y>
+      <w>210</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Abstract&gt;&gt;
+Usuario
+--</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>440</x>
+      <y>170</y>
+      <w>420</w>
+      <h>190</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Abstract&gt;&gt;
+UsuarioRegistrado
+--
+--nickname: String
+-email: String
+-pasword: String
+
+--
++iniciarSesion(email:String, pasword:String):boolean
++cerrarSesion():void</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1050</x>
+      <y>170</y>
+      <w>210</w>
+      <h>190</h>
+    </coordinates>
+    <panel_attributes>UsuarioNoRegistrado
+--
+
+--
++verCartelera(): void
++buscarproducto():void
+
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>240</x>
+      <y>440</y>
+      <w>360</w>
+      <h>150</h>
+    </coordinates>
+    <panel_attributes>Empleado
+--
+
+
+--
++iniciarSesion(): void ***
++tasarProducto(producto: Productoventa): void
++gestionarPedidos(Pedido pedido): void
++gestionarIntercambios(Intercambio intercambio): void
++recuperarContraseña(): String
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>440</x>
+      <y>580</y>
+      <w>30</w>
+      <h>210</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1=*</panel_attributes>
+    <additional_attributes>10.0;190.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>350</x>
+      <y>770</y>
+      <w>240</w>
+      <h>130</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Enum&gt;&gt;
+Permiso
+--
++VALORACION_DE_PRODUCTOS
++GESTION_DE_PRODUCTOS
++GESTION_DE_PACKS
++GESTION_DE_PEDIDOS
++CONFIRMAR_INTERCAMBIOS</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>670</x>
+      <y>440</y>
+      <w>420</w>
+      <h>150</h>
+    </coordinates>
+    <panel_attributes>Gestor
+--
+
+
+--
++iniciarSesion(): void ***
+gestionarPacks(pack :Pack): void
+aplicarDescuento(producto: ProductoVenta): void
+consultarEstadisticas(tienda: Tienda): void
+gestionarEmpleados(empleado : Empleado): void
+
+recuperarContraseña(): void
+estaAutenticado(): boolean
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+</diagram>
