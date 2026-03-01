@@ -43,7 +43,7 @@ public class Pedido {
     
     public boolean pagar(String tarjeta, int cvv, Date caducidad) {
         
-        Pago nuevoPago = new Pago(tarjeta, this.total);
+    	Pago nuevoPago = new Pago(tarjeta, this.total, caducidad, cvv);
         this.pago = nuevoPago;
 
         if (nuevoPago.isExito()) {

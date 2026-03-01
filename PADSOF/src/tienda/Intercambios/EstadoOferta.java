@@ -1,4 +1,4 @@
-package tienda.Ventas;
+package tienda.Intercambios;
 
 public enum EstadoOferta {
     ACEPTADA,

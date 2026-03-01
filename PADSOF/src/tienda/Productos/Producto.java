@@ -15,6 +15,34 @@ public abstract class Producto {
 
     public Producto() {
         this.categorias = new ArrayList<>();
-        this.reseñas = new ArrayList<>();
+       
     }
+// --- GETTERS ---
+    
+    public String getId() {
+        return id;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    // --- SETTERS ---
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+    
 }

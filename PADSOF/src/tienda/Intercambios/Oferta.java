@@ -1,0 +1,87 @@
+package tienda.Intercambios;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.ArrayList;
+import tienda.Usuarios.Cliente;
+import tienda.Tienda;
+import tienda.Productos.ProductoSegundaMano;
+
+
+public class Oferta {
+    private String id;
+    private LocalDateTime fechaOferta;
+    private EstadoOferta estado; 
+    
+    private Cliente origen; 
+    private Cliente destino; 
+    
+    private List<ProductoSegundaMano> productosOfertados;
+    private List<ProductoSegundaMano> productosSolicitados;
+
+    public Oferta(Cliente origen, Cliente destino,List<ProductoSegundaMano> productosOfertados, List<ProductoSegundaMano> productosSolicitados ) {
+        this.id = "OFER-" + java.util.UUID.randomUUID().toString().substring(0,8);
+        this.fechaOferta = LocalDateTime.now();
+        this.estado = EstadoOferta.PENDIENTE;
+        this.origen = origen;
+        this.destino = destino;
+        this.productosOfertados = productosOfertados;
+        this.productosSolicitados = productosSolicitados;
+    }
+
+    public void rechazar() {
+        this.estado = EstadoOferta.RECHAZADA;
+        // Importante: desbloqueamos los productos para que vuelvan a estar disponibles
+        for (ProductoSegundaMano p : productosOfertados) p.setBloqueado(false);
+        this.origen.getOfertasPendientes().remove(this);
+        this.destino.getOfertasPendientes().remove(this);
+        this.origen.recibirNotificacion("Tu oferta con ID " + this.getId() + " ha sido RECHAZADA.");
+        Tienda.getInstancia().finalizarIntercambio(this)
+    }
+       
+    
+    
+    public void aceptarYEjecutar() {
+        this.estado = EstadoOferta.ACEPTADA;
+        
+        origen.getHistorialIntercambios().add(this);
+        destino.getHistorialIntercambios().add(this);
+       
+        
+        origen.getOfertasPendientes().remove(this);
+        destino.getOfertasPendientes().remove(this);
+        
+
+        for (ProductoSegundaMano p : this.productosOfertados) {
+        	origen.getCarteraIntercambio().remove(p);
+        	p.setBloqueado(false);
+        	//AHORA SE ENVIARIAN
+        }
+        for (ProductoSegundaMano p : productosSolicitados) {
+        	destino.getCarteraIntercambio().remove(p);
+        	//AHORA SE ENVIARIAN
+        }
+        Tienda.getInstancia().registrarIntercambioFinalizado(this);
+        this.origen.recibirNotificacion("¡Intercambio ID " + this.id + " aceptado! Preparando envío.");
+        this.destino.recibirNotificacion("Has aceptado el intercambio. Los productos han salido de tu inventario.");
+    }
+    
+    // Getters y Setters
+    public String getId() { return id; }
+    public LocalDateTime getFechaOferta() { return fechaOferta; }
+    public EstadoOferta getEstado() { return estado; }
+    public void setEstado(EstadoOferta estado) { this.estado = estado; }
+    
+    public List<ProductoSegundaMano> getProductosOfertados() { return productosOfertados; }
+    public List<ProductoSegundaMano> getProductosSolicitados() { return productosSolicitados; }
+
+	public Cliente getOrigen() {
+		// TODO Auto-generated method stub
+		return this.origen;
+	}
+
+	public Object getDestino() {
+		// TODO Auto-generated method stub
+		return this.destino;
+	}
+}

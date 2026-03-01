@@ -1,4 +1,5 @@
 package tienda.Usuarios;
+import tienda.*;
 
 import java.util.List;
 
@@ -23,16 +24,29 @@ public class Empleado extends UsuarioRegistrado {
     @Override
     public void mostrarPanelPrincipal() {
     }
+    
     //si un producto no es aceptado, como borramos ese producto? habria que hacer una funcion en tienda.
-    public boolean tasarProducto(ProductoSegundaMano p, double precio, EstadoProducto estado) {
-    	if(this.tienePermiso(TipoPermisos.VALORACION_PRODUCTOS)) {
-        Valoracion nuevaVal = new Valoracion(precio, estado, this);
-        this.valoraciones.add(nuevaVal);
-        p.setValoracion(nuevaVal);
-        return true;
+    public void tasarProducto(ProductoSegundaMano p, double precio, EstadoProducto estado) {
+        
+        if(estado == EstadoProducto.NO_ACEPTADO) {
+        	Tienda.getInstancia().getPendientesTasacion().remove(p);
+        	 p.getPropietario().recibirNotificacion("El producto " + p.getNombre() + " ha sido revhazado.");
         }
-        return false;
-    	}
+    	if (this.tienePermiso(TipoPermisos.VALORACION_PRODUCTOS)) {
+            
+            Valoracion nuevaVal = new Valoracion(precio, estado, this);
+            
+            p.setValoracion(nuevaVal);        
+           p.setVisible(true);
+           
+            this.valoraciones.add(nuevaVal); 
+            Tienda.getInstancia().getPendientesTasacion().remove(p);
+            Tienda.getInstancia().publicarParaIntercambio(p);
+            p.getPropietario().recibirNotificacion("El producto " + p.getNombre() + " ha sido tasado con éxito.");
+
+        } else {
+            System.out.println("Error: El empleado no tiene permisos de VALORACION_PRODUCTOS.");
+        }
     }
     
     public void asignarPermiso(TipoPermisos p) {

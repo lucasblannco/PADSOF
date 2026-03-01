@@ -16,7 +16,5 @@ public class Comic extends ProductoVenta {
     }
 
     @Override
-    public double calcularPrecioFinal() {
-        return 0.0;
-    }
+   
 }

@@ -14,7 +14,5 @@ public class Figura extends ProductoVenta {
     }
 
     @Override
-    public double calcularPrecioFinal() {
-        return this.precio;
-    }
+   
 }

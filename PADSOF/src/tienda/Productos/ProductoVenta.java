@@ -10,14 +10,19 @@ public abstract class ProductoVenta extends Producto {
     protected int stockDisponible;
     protected boolean enOferta;
     protected List<Reseña> reseñas;
-    protected double descuento;
+    
 
     public ProductoVenta() {
         super();
         this.reseñas = new ArrayList<>();
     }
 
-    public abstract double calcularPrecioFinal();
+    public double calcularPrecioFinal() {
+    	
+        double descuento = tienda.Tienda.getInstancia().buscarDescuentoParaProducto(this.id);
+   
+        return this.precioOficial * (1- descuento);
+    }
 
     public double getPrecioOficial() {
         return precioOficial;
@@ -51,11 +56,5 @@ public abstract class ProductoVenta extends Producto {
         this.reseñas = reseñas;
     }
 
-    public double getDescuento() {
-        return descuento;
-    }
-
-    public void setDescuento(double descuento) {
-        this.descuento = descuento;
-    }
+   
 }
