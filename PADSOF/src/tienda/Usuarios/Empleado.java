@@ -26,7 +26,7 @@ public class Empleado extends UsuarioRegistrado {
     }
     
     //si un producto no es aceptado, como borramos ese producto? habria que hacer una funcion en tienda.
-    public void tasarProducto(ProductoSegundaMano p, double precio, EstadoProducto estado) {
+    public void tasarProducto(Producto2Mano p, double precio, EstadoProducto estado) {
         
         if(estado == EstadoProducto.NO_ACEPTADO) {
         	Tienda.getInstancia().getPendientesTasacion().remove(p);

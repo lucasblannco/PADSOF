@@ -82,7 +82,7 @@ public class Cliente extends UsuarioRegistrado {
         }
         return enEspera;
     }
-    public void proponerOferta(Cliente destinatario, List<ProductoSegundaMano> misProductos, List<ProductoSegundaMano> susProductos) {
+    public void proponerOferta(Cliente destinatario, List<Producto2Mano> misProductos, List<Producto2Mano> susProductos) {
        
         Oferta nuevaOferta = new Oferta(this, destinatario, misProductos, susProductos);      
      
@@ -91,8 +91,10 @@ public class Cliente extends UsuarioRegistrado {
         destinatario.getOfertasPendientes().add(nuevaOferta);       
         destinatario.recibirNotificacion("Has recibido una propuesta de intercambio de " + this.nickname);
            
-        for (ProductoSegundaMano p : misProductos) p.setBloqueado(true);
+        for (Producto2Mano p : misProductos) p.setBloqueado(true);
     }
+    
+    
     
     public void confirmarIntercambio(Oferta oferta) {
         

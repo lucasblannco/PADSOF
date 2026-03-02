@@ -11,7 +11,7 @@ public class Producto2Mano extends Producto {
     private boolean visible;
     
 
-    public ProductoSegundaMano(ProductoVenta base, Cliente propietario, String nomnre, String descp) {
+    public Producto2Mano(ProductoVenta base, Cliente propietario, String nomnre, String descp) {
     	this.id = "USED-" + base.getId() + "-" + System.currentTimeMillis();
     	this.nombre = nombre;
     	this.descripcion = descp;

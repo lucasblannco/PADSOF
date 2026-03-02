@@ -24,7 +24,7 @@ public class Valoracion {
 
 public boolean pagar(String tarjeta, int cvv, Date caducidad) {
         
-    	Pago nuevoPago = new Pago(tarjeta, this.TASA_VALORACION, caducidad, cvv);
+    	Pago nuevoPago = new Pago(tarjeta, TASA_VALORACION, caducidad, cvv);
         this.pago = nuevoPago;
 
         if (nuevoPago.isExito()) {

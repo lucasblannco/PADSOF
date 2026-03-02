@@ -56,7 +56,7 @@ public class Tienda {
         this.catalogoIntercambio.removeAll(oferta.getProductosOfertados());
         this.catalogoIntercambio.removeAll(oferta.getProductosSolicitados());
     }
-    public void solicitarTasacion(ProductoSegundaMano p) {
+    public void solicitarTasacion(Producto2Mano p) {
         this.pendientesTasacion.add(p);
     }
     // - DESCUENTOS
