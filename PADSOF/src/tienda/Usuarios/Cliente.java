@@ -11,9 +11,10 @@ import java.util.Date;
 
 public class Cliente extends UsuarioRegistrado {
     //private double saldoPuntos;
+
     private List<Pedido> historialPedidos;
     private Carrito carritoActual;
-    private List<ProductoSegundaMano> carteraIntercambio;
+    private List<Producto2Mano> carteraIntercambio;
     private List<Oferta> ofertasPendientes; 
     private List<Oferta> historialIntercambios;
     private List<Reseña> reseñas;
@@ -31,8 +32,12 @@ public class Cliente extends UsuarioRegistrado {
     public void mostrarPanelPrincipal() {
     }
     
-
-    public void subirProductoParaIntercambio(ProductoSegundaMano p, String tarjeta, int CVV, Date caducidad) {
+    public boolean subirProducto() {
+    	
+    }
+    
+    public void solicitarTasacion(Producto2Mano p, String tarjeta, int CVV, Date caducidad) {
+    	
     	p.getValoracion().setEstadoValoracion(EstadoValoracion.PENDIENTE_DE_PAGO);
     	if(p.getValoracion().pagar(tarjeta, CVV, caducidad)==false) {
     		 this.recibirNotificacion("Pago no aceptado");
@@ -40,8 +45,8 @@ public class Cliente extends UsuarioRegistrado {
     		
     	 }
     	
-    	this.carteraIntercambio.add(p);
-        p.setBloqueado(true);
+    	//this.carteraIntercambio.add(p); ya estaba añadido
+        p.setBloqueado(false);
         p.setVisible(false);
        
       
@@ -102,11 +107,26 @@ public class Cliente extends UsuarioRegistrado {
     	oferta.rechazar();
     }
     
-    public void escribirReseña(ProductoVenta p, int pts, String texto) {
-        Reseña nueva = new Reseña(this, p, pts, texto);
-        this.reseñas.add(nueva); // El cliente la guarda
-        p.getReseñas().add(nueva);  // El producto también la recibe
+    public boolean productoHasidoPedidoYentregado(ProductoVenta p) {
+    	for(Pedido ped: historialPedidos) {
+    		if(ped.productoPertenece(p)==true && ped.getEstado()== EstadoPedido.ENTREGADO) {
+    			return true;
+    		}
+    	}
+    	return false;
     }
+    
+    public void escribirReseña(ProductoVenta p, int pts, String texto) {
+    	if((this.productoHasidoPedidoYentregado(p)==true){
+    		Reseña nueva = new Reseña(this, p, pts, texto);
+            this.reseñas.add(nueva); // El cliente la guarda
+            p.getReseñas().add(nueva);  // El producto también la recibe
+    	}
+    			
+    		
+    	}
+        
+    
 
     
     

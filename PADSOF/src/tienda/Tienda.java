@@ -11,11 +11,11 @@ public class Tienda {
     private String nombre;
     private List<UsuarioRegistrado> usuarios;
     private List<ProductoVenta> stockNuevos;
-    private List<ProductoSegundaMano> catalogoIntercambio; 
+    private List<Producto2Mano> catalogoIntercambio; 
     private List<Pedido> historialVentas;
     private List<Descuento> descuentosActivos = new ArrayList<>();
     private List<Oferta> intercambiosFinalizados = new ArrayList<>();
-    private List<ProductoSegundaMano> pendientesTasacion = new ArrayList<>();
+    private List<Producto2Mano> pendientesTasacion = new ArrayList<>();
 
     //esta variable estatica, el constructor privado y el segundo metodo
     //sirven para asegurar la existencia de una tienda unica y comun.
@@ -49,7 +49,7 @@ public class Tienda {
         nuevoCliente.recibirNotificacion("¡Bienvenido a CheckPoint, " + nickname + "!");
         return nuevoCliente;
     }
-    finalizar
+    
     public void registrarIntercambioFinalizado(Oferta oferta) {
         this.intercambiosFinalizados.add(oferta);
    
@@ -86,7 +86,7 @@ public class Tienda {
 
     //buscar productos de segunda mano, pero que no esten bloqueados
     public List<ProductoSegundaMano> buscarSegundaMano(String query) {
-        List<ProductoSegundaMano> resultados = new ArrayList<>();
+        List<ProductoSegundaMano> -ultados = new ArrayList<>();
         for (ProductoSegundaMano p : catalogoIntercambio) {
             // AHORA FILTRAMOS TAMBIÉN POR VISIBLE
             if (p.isVisible() && !p.isBloqueado() && p.getNombre().toLowerCase().contains(query.toLowerCase())) {
@@ -98,6 +98,10 @@ public class Tienda {
 
 
     // --- GESTIÓN DE VENTAS NUEVAS 
+    
+    public List<Producto2Mano> getProductosSinTasar(){
+   
+    }
 
     public void registrarVenta(Pedido pedido) {
         this.historialVentas.add(pedido);

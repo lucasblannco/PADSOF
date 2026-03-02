@@ -26,4 +26,11 @@ public class LineaCarrito {
     public double obtenerSubtotal() {
         return producto.calcularPrecioFinal() * cantidad;
     }
+    
+    public boolean productoPertence(ProductoVenta p) {
+    	if (producto.getId() == p.getId()) {
+    		return true;
+    	}
+    	return false;
+    }
 }

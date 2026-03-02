@@ -16,4 +16,10 @@ public class LineaPedido {
     public double precio() {
     	return precioVenta * cantidad;
     }
+    public boolean productoPertence(ProductoVenta p) {
+    	if (producto.getId() == p.getId()) {
+    		return true;
+    	}
+    	return false;
+    }
 }

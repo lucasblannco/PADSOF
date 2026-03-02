@@ -36,7 +36,7 @@ public class Oferta {
         this.origen.getOfertasPendientes().remove(this);
         this.destino.getOfertasPendientes().remove(this);
         this.origen.recibirNotificacion("Tu oferta con ID " + this.getId() + " ha sido RECHAZADA.");
-        Tienda.getInstancia().finalizarIntercambio(this)
+        //Tienda.getInstancia().finalizarIntercambio(this);
     }
        
     
@@ -52,12 +52,12 @@ public class Oferta {
         destino.getOfertasPendientes().remove(this);
         
 
-        for (ProductoSegundaMano p : this.productosOfertados) {
+        for (Producto2Mano p : this.productosOfertados) {
         	origen.getCarteraIntercambio().remove(p);
         	p.setBloqueado(false);
         	//AHORA SE ENVIARIAN
         }
-        for (ProductoSegundaMano p : productosSolicitados) {
+        for (Producto2Mano p : productosSolicitados) {
         	destino.getCarteraIntercambio().remove(p);
         	//AHORA SE ENVIARIAN
         }

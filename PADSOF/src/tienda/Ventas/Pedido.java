@@ -4,6 +4,7 @@ import java.util.*;
 
 import java.time.*;
 import tienda.Usuarios.Cliente;
+import tienda.Productos.*; 
 
 public class Pedido {
     private String idPedido;
@@ -60,5 +61,15 @@ public class Pedido {
         	t+=l.precio();
         }
         return t;
+    }
+    
+    public boolean productoPertenece(ProductoVenta p) {
+    	
+    	for(LineaPedido l : lineas) {
+    		if(l.productoPertence(p)==true) {
+    			return true;
+    		}
+    	}
+    	return false;
     }
 }

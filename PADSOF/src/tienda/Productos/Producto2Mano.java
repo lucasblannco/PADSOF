@@ -4,7 +4,7 @@ package tienda.Productos;
 import tienda.Usuarios.Cliente;
 import tienda.Usuarios.Empleado;
 
-public class ProductoSegundaMano extends Producto {
+public class Producto2Mano extends Producto {
     private Valoracion valoracion = null;     
     private Cliente propietario;       
     private boolean bloqueado;
