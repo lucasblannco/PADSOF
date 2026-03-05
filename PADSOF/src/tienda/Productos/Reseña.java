@@ -18,4 +18,8 @@ public class Reseña {
         this.comentario = comentario;
         this.fecha = LocalDate.now();
     }
+    
+    public double getPuntuacion() {
+    	return this.puntuacion;
+    }
 }

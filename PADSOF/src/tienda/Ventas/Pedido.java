@@ -17,6 +17,7 @@ public class Pedido {
     private double total;
     private EstadoPedido estado; 
     private String codigoRecogida;
+    private Descuento descuentoAplicado;
 
     public Pedido(Cliente cliente, Carrito carrito) {
 
@@ -71,5 +72,46 @@ public class Pedido {
     		}
     	}
     	return false;
+    }
+    
+    public List<LineaPedido> getLineas(){
+    	return this.lineas;
+    }
+    
+    public int contarUnidadesDe(String idProductoBuscado) {
+        int totalUnidades = 0;
+        
+        for (LineaPedido linea : this.lineas) {
+            // Comparamos el ID del producto de la línea con el que buscamos
+            if (linea.getProducto().getId().equals(idProductoBuscado)) {
+                totalUnidades += linea.getCantidad();
+            }
+        }
+        
+        return totalUnidades;
+    }
+    
+    public double getPrecioDeProducto(String idProductoBuscado) {
+        // Recorremos todas las líneas que el usuario ha añadido al carrito
+        for (LineaPedido linea : this.lineas) {
+            
+            // Obtenemos el producto de esa línea y comparamos su ID
+            if (linea.getProducto().getId().equals(idProductoBuscado)) {
+                
+                // Si lo encontramos, devolvemos el precio que tiene el producto
+                return linea.getProducto().getPrecioOficial();
+            }
+        }
+        
+        // Si terminamos el bucle y no hemos encontrado nada, devolvemos 0
+        return 0.0;
+    }
+    
+    public double getTotalBruto() {
+        double total = 0;
+        for (LineaPedido linea : this.lineas) {
+            total += (linea.getCantidad()*(linea.getProducto().getPrecioOficial())); // Subtotal suele ser precio * cantidad
+        }
+        return total;
     }
 }

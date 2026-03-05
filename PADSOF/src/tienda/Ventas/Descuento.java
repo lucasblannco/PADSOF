@@ -1,34 +1,36 @@
-package tienda.Ventas;
+import java.time.LocalDateTime;
 
-import java.time.LocalDate;
+public abstract class Descuento {
+    protected String id;
+    protected String nombre;
+    protected LocalDateTime fechaInicio;
+    protected LocalDateTime fechaFin;
+    protected int ordenPrioridad; // El gestor decide el orden ??
 
-public class Descuento {
-    private String idProducto; 
-    private double porcentaje;  //0.20 = 20%
-    private LocalDate fechaInicio;
-    private LocalDate fechaFin;
-
-    public Descuento(String idProducto, double porcentaje, LocalDate inicio, LocalDate fin) {
-        this.idProducto = idProducto;
-        this.porcentaje = porcentaje;
+    public Descuento(String id, String nombre, LocalDateTime inicio, LocalDateTime fin, int prioridad) {
+        this.id = id;
+        this.nombre = nombre;
         this.fechaInicio = inicio;
         this.fechaFin = fin;
+        this.ordenPrioridad = prioridad;
     }
 
-    // Método para saber si el descuento es válido hoy
+    // Método clave: ¿Está el descuento vigente hoy?
     public boolean estaActivo() {
-        LocalDate hoy = LocalDate.now();
-        return (hoy.isEqual(fechaInicio) || hoy.isAfter(fechaInicio)) && 
-               (hoy.isEqual(fechaFin) || hoy.isBefore(fechaFin));
+        LocalDateTime ahora = LocalDateTime.now();
+        return ahora.isAfter(fechaInicio) && ahora.isBefore(fechaFin);
     }
+
+    // Método abstracto que cada hijo implementará a su manera
+    public abstract double calcularDescuento(Carrito carrito);
+}
 
  // --- GETTERS Y SETTERS ---
-    public String getIdProducto() { return idProducto; }
+
     public void setIdProducto(String idProducto) { this.idProducto = idProducto; }
-    public double getPorcentaje() { return porcentaje; }
-    public void setPorcentaje(double porcentaje) { this.porcentaje = porcentaje; }
-    public LocalDate getFechaInicio() { return fechaInicio; }
-    public void setFechaInicio(LocalDate fechaInicio) { this.fechaInicio = fechaInicio; }
-    public LocalDate getFechaFin() { return fechaFin; }
-    public void setFechaFin(LocalDate fechaFin) { this.fechaFin = fechaFin; }
+
+    public LocalDateTime getFechaInicio() { return fechaInicio; }
+    public void setFechaInicio(LocalDateTime fechaInicio) { this.fechaInicio = fechaInicio; }
+    public LocalDateTime getFechaFin() { return fechaFin; }
+    public void setFechaFin(LocalDateTime fechaFin) { this.fechaFin = fechaFin; }
 }

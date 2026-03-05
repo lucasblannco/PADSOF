@@ -1,6 +1,7 @@
 package tienda.Usuarios;
 
 import java.util.List;
+import java.util.Map;
 
 import tienda.*;
 import tienda.Intercambios.Oferta;
@@ -8,6 +9,7 @@ import tienda.Productos.*;
 import tienda.Ventas.*;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 
 public class Cliente extends UsuarioRegistrado {
     //private double saldoPuntos;
@@ -137,13 +139,34 @@ public class Cliente extends UsuarioRegistrado {
     		this.carteraIntercambio.add(p);
     	}
     	
-    
+    	public Categoria determinarCategoriaFavorita() {
+    		int maxApariciones =0;
+    		Categoria favorita = null;
+    		
+    		Map<Categoria, Integer> contador = new HashMap<>();
+
+            for (Pedido p : this.getHistorialPedidos()) {
+                for (LineaPedido linea : p.getLineas()) {
+                   
+                    for (Categoria cat : linea.getProducto().getCategorias()) {
+                        int n = contador.getOrDefault(cat, 0) + 1; // getOrdefault, devuelve el numero de la categoria cat si existe, y cero sino
+                        contador.put(cat, n); //a la clave cat le metemos el nuevo numero de apariciones
+                        
+                        if (n > maxApariciones) {
+                            maxApariciones = n;
+                            favorita = cat; //guardamos la fav
+                        }
+                    }
+                }
+            }
+            return favorita;
+    	}
         
      // --- GETTERS ---
        
 
         public List<Pedido> getHistorialPedidos() {
-            return historialPedidos;0
+            return historialPedidos
         }
 
         public Carrito getCarritoActual() {

@@ -15,7 +15,9 @@ public class Tienda {
     private List<Pedido> historialVentas;
     private List<Descuento> descuentosActivos = new ArrayList<>();
     private List<Oferta> intercambiosFinalizados = new ArrayList<>();
-    private List<Producto2Mano> pendientesTasacion = new ArrayList<>();
+    private List<Categoria> categorias = new ArrayList<>();
+    private Recomendador recomendador;
+    //private List<Producto2Mano> pendientesTasacion = new ArrayList<>();
 
     //esta variable estatica, el constructor privado y el segundo metodo
     //sirven para asegurar la existencia de una tienda unica y comun.
@@ -65,14 +67,14 @@ public class Tienda {
         this.descuentosActivos.add(d);
     }
 
-    public double buscarDescuentoParaProducto(String idProducto) {
+    /*public double buscarDescuentoParaProducto(String idProducto) {
         for (Descuento d : descuentosActivos) {
             if (d.getIdProducto().equals(idProducto) && d.estaActivo()) {
                 return d.getPorcentaje();
             }
         }
         return 0.0; // Sin descuento
-    }
+    }*/
     
     // --- LÓGICA DE INTERCAMBIO 
 
@@ -95,11 +97,39 @@ public class Tienda {
         }
         return resultados;
     }
-
-
+    
+    METODO INCOMPLETO
+    //suponemos que el orden de prioridad es segun se meten a la array
+    public void aplicarDescuentoPrioritario(Carrito carrito) {
+        
+        List<Descuento> listaD = Tienda.getInstancia().getDescuentos()
+;        
+        for (Descuento d : listaD) {
+           
+            if (d.estaActivo()) {
+                
+               
+                double ahorro = d.calcularDescuento(carrito);
+                
+                if (ahorro > 0) {
+                   
+                    carrito.setDescuento(d); 
+                    carrito.setTotal(ahorro);
+                    
+                    System.out.println("Aplicado descuento: " + d.getNombre());
+                    return; // Este 'return' es el que cumple la regla de "No acumulable"
+                }
+            }
+        }
+    }
     // --- GESTIÓN DE VENTAS NUEVAS 
     
-    public List<Producto2Mano> getProductosSinTasar(){
+    private List<Descuento> getDescuentos() {
+		// TODO Auto-generated method stub
+		return this.descuentosActivos;
+	}
+
+	public List<Producto2Mano> getProductosSinTasar(){
    
     }
 
@@ -112,5 +142,8 @@ public class Tienda {
     public List<UsuarioRegistrado> getUsuarios() { return usuarios; }
     public List<ProductoSegundaMano> getPendientesTasacion() {
         return pendientesTasacion;
+    }
+    public Recomendador getRecomendador() {
+    	return this.recomendador;
     }
 }

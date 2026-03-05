@@ -10,6 +10,7 @@ public abstract class ProductoVenta extends Producto {
     protected int stockDisponible;
     protected boolean enOferta;
     protected List<Reseña> reseñas;
+    protected boolean promocionable;
     
 
     public ProductoVenta() {
@@ -17,12 +18,29 @@ public abstract class ProductoVenta extends Producto {
         this.reseñas = new ArrayList<>();
     }
 
-    public double calcularPrecioFinal() {
+    public double getMediaPuntuacion() {
+        
+        if (this.reseñas == null || this.reseñas.isEmpty()) {
+            return 0.0;
+        }
+
+       
+        double suma = 0;
+        for (Reseña r : this.reseñas) {
+            suma += r.getPuntuacion() ;
+        }
+
+       
+        return suma / this.reseñas.size();
+    }
+    
+    /*el descuento se calcula en el pedido o carrito
+     * public double calcularPrecioFinal() {
     	
         double descuento = tienda.Tienda.getInstancia().buscarDescuentoParaProducto(this.id);
    
         return this.precioOficial * (1- descuento);
-    }
+    }*/
 
     public double getPrecioOficial() {
         return precioOficial;
@@ -55,6 +73,12 @@ public abstract class ProductoVenta extends Producto {
     public void setReseñas(List<Reseña> reseñas) {
         this.reseñas = reseñas;
     }
-
+    
+    public boolean getPromocionable() {
+    	return this.promocionable;
+    }
    
+    public void setPromocionable(boolean p) {
+    	this.promocionable = p;
+    }
 }

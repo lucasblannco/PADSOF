@@ -10,6 +10,8 @@ public class Carrito {
     private String idCarrito;
     private List<LineaCarrito> lineas;
     private LocalDateTime fechaCreacion;
+    private Descuento descuentoAplicado;
+    private double total;
 
     public Carrito(String idCliente) {
         this.idCarrito = "CART-" + System.currentTimeMillis();
@@ -52,6 +54,43 @@ public class Carrito {
     public boolean haExpirado(int minutosLimite) {
         return LocalDateTime.now().isAfter(fechaCreacion.plusMinutes(minutosLimite));
     }
+    
+    public int contarUnidadesDe(String idProductoBuscado) {
+        int totalUnidades = 0;
+        
+        for (LineaCarrito linea : this.lineas) {
+            // Comparamos el ID del producto de la línea con el que buscamos
+            if (linea.getProducto().getId().equals(idProductoBuscado)) {
+                totalUnidades += linea.getCantidad();
+            }
+        }
+        
+        return totalUnidades;
+    }
+    
+    public double getPrecioDeProducto(String idProductoBuscado) {
+        // Recorremos todas las líneas que el usuario ha añadido al carrito
+        for (LineaCarrito linea : this.lineas) {
+            
+            // Obtenemos el producto de esa línea y comparamos su ID
+            if (linea.getProducto().getId().equals(idProductoBuscado)) {
+                
+                // Si lo encontramos, devolvemos el precio que tiene el producto
+                return linea.getProducto().getPrecioOficial();
+            }
+        }
+        
+        // Si terminamos el bucle y no hemos encontrado nada, devolvemos 0
+        return 0.0;
+    }
+    
+    public double getTotalBruto() {
+        double total = 0;
+        for (LineaCarrito linea : this.lineas) {
+            total += (linea.getCantidad()*(linea.getProducto().getPrecioOficial())); // Subtotal suele ser precio * cantidad
+        }
+        return total;
+    }
 
     // --- GETTERS Y SETTERS ---
 
@@ -78,4 +117,19 @@ public class Carrito {
     public void setFechaCreacion(LocalDateTime fechaCreacion) {
         this.fechaCreacion = fechaCreacion;
     }
-}
+    
+    public Descuento getDescuento(){
+    	return this.descuentoAplicado;
+    }
+    
+    public void setDescuento(Descuento d){
+    	this.descuentoAplicado = d;
+    }
+    
+    public double getTotal(){
+    	return this.total;
+    }
+    public void setTotal(double t) {
+    	this.total = t;
+    }
+  }

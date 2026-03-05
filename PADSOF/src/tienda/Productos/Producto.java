@@ -44,5 +44,8 @@ public abstract class Producto {
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
     }
+    public List<Categoria> getCategorias(){
+    	return this.categorias;
+    }
     
 }

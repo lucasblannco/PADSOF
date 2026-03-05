@@ -13,13 +13,22 @@ public class LineaPedido {
         this.precioVenta = precioVenta;
     }
     
-    public double precio() {
-    	return precioVenta * cantidad;
+    public double getSubtotal() {
+        return producto.getPrecioOficial() * cantidad;
     }
+    
     public boolean productoPertence(ProductoVenta p) {
     	if (producto.getId() == p.getId()) {
     		return true;
     	}
     	return false;
+    }
+    
+    public ProductoVenta getProducto() {
+    	return this.producto;
+    }
+    
+    public int getCantidad() {
+        return cantidad;
     }
 }
