@@ -1,0 +1,10 @@
+package ventas;
+
+public enum EstadoPedido {
+    PENDIENTE_PAGO,
+    PAGADO,
+    EN_PREPARACION,
+    LISTO_PARA_RECOGER,
+    ENTREGADO,
+    CANCELADO
+}
