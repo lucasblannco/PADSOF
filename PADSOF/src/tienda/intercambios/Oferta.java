@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import tienda.Usuarios.Cliente;
 import tienda.Tienda;
 import tienda.Productos.Producto2Mano;
-
+import usuarios.*;
 
 public class Oferta {
     private String id;

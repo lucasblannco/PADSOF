@@ -1,6 +1,7 @@
 package productos;
 
 import tienda.Usuarios.*;
+import usuarios.Cliente;
 
 import java.time.LocalDate;
 
