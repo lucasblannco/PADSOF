@@ -1,8 +1,6 @@
 package productos;
 
-
-import tienda.Usuarios.Cliente;
-import tienda.Usuarios.Empleado;
+import usuarios.*;
 
 public class Producto2Mano extends Producto {
     private Valoracion valoracion = null;     
@@ -11,11 +9,14 @@ public class Producto2Mano extends Producto {
     private boolean visible;
     
 
-    public Producto2Mano(ProductoVenta base, Cliente propietario, String nomnre, String descp) {
+    public Producto2Mano( Cliente propietario, String nombre, String descp) {
     	this.id = "USED-" + base.getId() + "-" + System.currentTimeMillis();
     	this.nombre = nombre;
     	this.descripcion = descp;
         this.propietario = propietario;
+      //Ver bien esto porque igual es es mejor pasarle los atributos 
+    	public void subirProducto(Producto2Mano p) {
+    		Producto2Mano product= new Producto2Mano(null, 
         this.bloqueado = false;
         this.visible = false;
     }

@@ -1,8 +1,8 @@
 package tienda;
 
-
-
 import java.util.*;
+
+import productos.Producto2Mano;
 import tienda.Usuarios.*;
 import tienda.Productos.*;
 import tienda.Intercambios.*;
@@ -18,8 +18,9 @@ public class Tienda {
     private List<Oferta> intercambiosFinalizados = new ArrayList<>();
     private List<Categoria> categorias = new ArrayList<>();
     private Recomendador recomendador;
+    
+    
     //private List<Producto2Mano> pendientesTasacion = new ArrayList<>();
-
     //esta variable estatica, el constructor privado y el segundo metodo
     //sirven para asegurar la existencia de una tienda unica y comun.
     

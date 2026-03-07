@@ -3,6 +3,9 @@ import tienda.*;
 
 import java.util.List;
 
+import productos.EstadoProducto;
+import productos.Producto2Mano;
+import productos.Valoracion;
 import tienda.Productos.*;
 
 
