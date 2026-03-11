@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import intercambios.*;
+import 
 
 import ventas.*;
 
@@ -36,10 +37,11 @@ public class Cliente extends UsuarioRegistrado {
 	public void mostrarPanelPrincipal() {
 	}
 
-	public void subirProducto(String nombre, String descripString) {
+	public void subirProducto(String nombre, String descripString, String imagen) {
 
-		Producto2Mano product = new Producto2Mano(this, nombre, descripString);// Creamos el producto mediante el //
-																				// contructor
+		Producto2Mano product = new Producto2Mano(this, nombre, descripString, imagen);// Creamos el producto mediante
+																						// el //
+		// contructor
 		carteraIntercambio.add(product);
 	}
 
@@ -51,7 +53,7 @@ public class Cliente extends UsuarioRegistrado {
 	}
 
 	public void solicitarTasacion(Producto2Mano p, String tarjeta, int CVV, Date caducidad) {
-		if (tieneProductoenSuCartera(p) && (p.getValoracion() == null)) {// Comprobamos que ese producto este en la
+		if (tieneProductoenSuCartera(p) && (p.getVisible == false)) {// Comprobamos que ese producto este en la
 																			// cartera del usuario y
 																			// que ese producto no tenga una hecha una
 																			// valoracion. Si un producto ya esta
@@ -103,13 +105,20 @@ public class Cliente extends UsuarioRegistrado {
 	public boolean proponerOferta(Cliente destinatario, List<Producto2Mano> misProductos,
 			List<Producto2Mano> susProductos) {
 
-		
-		for (Producto2Mano p: misProductos) {
-			if (p.isBloqueado()==true) {
-				return; // Si uno de los productos de mi oferta esta bloqueado(eso es que lo hemos ofercido para otro intercambio) no lo puedo ofrecer para este intercambio. 
-			}	
+		for (Producto2Mano p : misProductos) {
+			
+			
+			if (tieneProductoenSuCartera(p)|| p.isBloqueado() == true) { //No puedes proponer productos que no esten en tu cartera ni tampoco productos 
+				return false;
+			}
+			
+			if (p.isBloqueado() == true) {
+				return false; // Si uno de los productos de mi oferta esta bloqueado(eso es que lo hemos
+						// ofercido para otro intercambio) no lo puedo ofrecer para este intercambio.
+			}
 		}
-		//Una vez que hemos comprobado que ningunoi de los productos que hemos ofrecido esta bloqueado ya si se crea la oferta.
+		// Una vez que hemos comprobado que ningunoi de los productos que hemos ofrecido
+		// esta bloqueado ya si se crea la oferta.
 		Oferta nuevaOferta = new Oferta(this, destinatario, misProductos, susProductos);
 		this.ofertasPendientes.add(nuevaOferta);
 
@@ -120,15 +129,16 @@ public class Cliente extends UsuarioRegistrado {
 		return;
 	}
 
-	//VER
+	// VER
 	public void confirmarIntercambio(Oferta oferta) {
 		oferta.aceptarYEjecutar();
 
 	}
 
+	// Se desbloquean los productos y se quita la oferta del cliente.
 	public void procesarRechazo(Oferta oferta) {
-		// 1. Liberar productos
 		oferta.rechazar();
+
 	}
 
 	public boolean productoHasidoPedidoYentregado(ProductoVenta p) {
@@ -140,15 +150,22 @@ public class Cliente extends UsuarioRegistrado {
 		return false;
 	}
 
-	public void escribirReseña(ProductoVenta p, int pts, String texto) {
-    	if((this.productoHasidoPedidoYentregado(p)==true){
-    		Reseña nueva = new Reseña(this, p, pts, texto);
-            this.reseñas.add(nueva); // El cliente la guarda
-            p.getReseñas().add(nueva);  // El producto también la recibe
-    	}
-    			
-    		
-    	}
+	public boolean añadirReseña(ProductoVenta p, int pts, String texto) {
+		if (this.productoHasidoPedidoYentregado(p)) {
+			Reseña res=new Reseña(this, p, pts, texto);
+			this.reseñas.add(res);
+			p.getReseñas.add(res);
+			System.out.println("Reseña creada y añadida con exito ");
+			return true;
+		}
+		System.out.println("No ha sido posible crear la reseña.");
+		return false;
+	}
+	
+	
+	
+	
+	
 
 	public void addProducto2Mano(ProductoSegundaMano p) {
 		this.carteraIntercambio.add(p);
