@@ -8,16 +8,17 @@ public class Figura extends ProductoVenta {
 	private double largo;
 	private String material;
 	private String marca;
-
-	public Figura(String id, String nombre, String descripcion, String imagenRuta, double precioOficial,
-			int stockDisponible, boolean enOferta, ArrayList<Reseña> reseñas, boolean promocionable, double altura,
-			double ancho, double largo, String material, String marca) {
-		super(id, nombre, descripcion, imagenRuta, precioOficial, stockDisponible, enOferta, reseñas, promocionable);
+	
+	public Figura(String nombre, String descripcion, String imagenRuta, double precioOficial, int stockDisponible,
+			boolean enOferta, boolean promocionable, double altura, double ancho, double largo, String material,
+			String marca) {
+		super(nombre, descripcion, imagenRuta, precioOficial, stockDisponible, enOferta, promocionable);
 		this.altura = altura;
 		this.ancho = ancho;
 		this.largo = largo;
 		this.material = material;
 		this.marca = marca;
 	}
+
 
 }

@@ -8,16 +8,18 @@ public class JuegoMesa extends ProductoVenta {
 	private int minEdad;
 	private int maxEdad;
 	private String tipoJuego;
-
-	public JuegoMesa(String id, String nombre, String descripcion, String imagenRuta, double precioOficial,
-			int stockDisponible, boolean enOferta, ArrayList<Reseña> reseñas, boolean promocionable, int minJugadores,
-			int maxJugadores, int minEdad, int maxEdad, String tipoJuego) {
-		super(id, nombre, descripcion, imagenRuta, precioOficial, stockDisponible, enOferta, reseñas, promocionable);
+	
+	public JuegoMesa(String nombre, String descripcion, String imagenRuta, double precioOficial, int stockDisponible,
+			boolean enOferta, boolean promocionable, int minJugadores, int maxJugadores, int minEdad, int maxEdad,
+			String tipoJuego) {
+		super(nombre, descripcion, imagenRuta, precioOficial, stockDisponible, enOferta, promocionable);
 		this.minJugadores = minJugadores;
 		this.maxJugadores = maxJugadores;
 		this.minEdad = minEdad;
 		this.maxEdad = maxEdad;
 		this.tipoJuego = tipoJuego;
 	}
+
+
 
 }

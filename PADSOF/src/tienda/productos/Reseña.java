@@ -1,9 +1,8 @@
 package productos;
 
-import tienda.Usuarios.*;
 import usuarios.Cliente;
 
-import java.time.LocalDate;
+import java.time.*;
 
 public class Reseña {
     private String idReseña;
@@ -13,7 +12,7 @@ public class Reseña {
     private String comentario;
     private LocalDate fecha;
 
-    public Reseña(Cliente autor,ProductoVenta p , int puntuacion, String comentario) {
+    public Reseña(Cliente autor, ProductoVenta p , int puntuacion, String comentario) {
         this.autor = autor;
         this.puntuacion = puntuacion;
         this.comentario = comentario;

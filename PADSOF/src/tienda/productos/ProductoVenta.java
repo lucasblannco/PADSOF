@@ -2,6 +2,8 @@ package productos;
 
 import java.util.*;
 
+import usuarios.Cliente;
+
 public abstract class ProductoVenta extends Producto {
 	protected double precioOficial;
 	protected int stockDisponible;
@@ -13,20 +15,10 @@ public abstract class ProductoVenta extends Producto {
 
 	/* CONSTRUCTORES DEL PRODUCTO CON DIFERENTES PARAMETROS */
 
-	public ProductoVenta(String id, String nombre, String descripcion, String imagenRuta, double precioOficial,
-			int stockDisponible, boolean enOferta, ArrayList<Reseña> reseñas, boolean promocionable) {
-		super(id, nombre, descripcion, imagenRuta);
-		this.precioOficial = precioOficial;
-		this.stockDisponible = stockDisponible;
-		this.enOferta = enOferta;
-		this.reseñas = reseñas;
-		this.promocionable = promocionable;
-	}
-
-	public ProductoVenta(String id, String nombre, String descripcion, String imagenRuta, double precioOficial,
+	public ProductoVenta(String nombre, String descripcion, String imagenRuta, double precioOficial,
 			int stockDisponible, boolean enOferta, boolean promocionable) {
 
-		super(id, nombre, descripcion, imagenRuta);
+		super(nombre, descripcion, imagenRuta);
 		this.precioOficial = precioOficial;
 		this.stockDisponible = stockDisponible;
 		this.enOferta = enOferta;
@@ -36,10 +28,10 @@ public abstract class ProductoVenta extends Producto {
 
 	public double getMediaPuntuacion() {
 		double suma = 0;
-		if(this.reseñas.size()==0) {
+		if (this.reseñas.size() == 0) {
 			return 0;
 		}
-		
+
 		for (Reseña r : this.reseñas) {
 			suma += r.getPuntuacion();
 		}
@@ -50,13 +42,25 @@ public abstract class ProductoVenta extends Producto {
 	}
 
 	public boolean añadirReseña(Reseña r) {
-		
+
 		if (r == null) {
 			return false;
 		}
-		
+
 		this.reseñas.add(r);
 		return true;
+	}
+
+	public double getPrecioOficial() {
+		return this.precioOficial;
+	}
+	
+	public ArrayList<Reseña> getReseñas(){
+		return this.reseñas;
+	}
+	
+	public int getStockDisponible() {
+	    return this.stockDisponible;
 	}
 
 }
