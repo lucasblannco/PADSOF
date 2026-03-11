@@ -1,12 +1,14 @@
 package intercambios;
+import intercambios.*;
+
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.ArrayList;
-import tienda.Usuarios.Cliente;
 import tienda.Tienda;
-import tienda.Productos.Producto2Mano;
+import productos.*;
 import usuarios.*;
+import 
 
 public class Oferta {
     private String id;

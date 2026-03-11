@@ -36,15 +36,13 @@ public class Cliente extends UsuarioRegistrado {
 	public void mostrarPanelPrincipal() {
 	}
 
-//Ver bien esto porque igual es es mejor pasarle los atributos 
 	public void subirProducto(String nombre, String descripString) {
 
-		Producto2Mano product = new Producto2Mano(this, nombre, descripString);// Creamos el producto mediante el
+		Producto2Mano product = new Producto2Mano(this, nombre, descripString);// Creamos el producto mediante el //
 																				// contructor
 		carteraIntercambio.add(product);
 	}
 
-	// Hacer bucle sobre todos los productos de su cartera
 	public boolean tieneProductoenSuCartera(Producto p) {
 		if (p == null) {
 			return false;
@@ -53,68 +51,77 @@ public class Cliente extends UsuarioRegistrado {
 	}
 
 	public void solicitarTasacion(Producto2Mano p, String tarjeta, int CVV, Date caducidad) {
-
-		if (tieneProductoenSuCartera(p) && (p.getValoracion() == null)) {// Comprobamos que ese producto n
+		if (tieneProductoenSuCartera(p) && (p.getValoracion() == null)) {// Comprobamos que ese producto este en la
+																			// cartera del usuario y
+																			// que ese producto no tenga una hecha una
+																			// valoracion. Si un producto ya esta
+																			// valorado ya estara en la cartera del
+																			// usuario.
 			p.getValoracion().setEstadoValoracion(EstadoValoracion.PENDIENTE_DE_PAGO);
 
 			if (p.getValoracion().pagar(tarjeta, CVV, caducidad) == false) {
 				this.recibirNotificacion("Pago no aceptado");
 				return;
 			}
-			
-			// Notificamos a la tienda que hay un nuevo producto pendiente de tasar //Esto cuidado//
-		  Tienda.getInstancia().solicitarTasacion(p);
+			// Notificamos a la tienda que hay un nuevo producto pendiente de tasar //Esto
+			// cuidado//
+			Tienda.getInstancia().solicitarTasacion(p);
 			System.out.println("Valoracion Solicitada. Esperando a que un empleado lo tase.");
 		}
-
 	}
 
-    //OFERTAS
+	// OFERTAS
 	// quiero poder disntiguir entre lsa ofertas que tengo que responder y las que
 	// me tienen que responder.
 	// para no hacer 2 arrays, hago 2 metodos y ya
-	
-	
-	
-	//Esta es la que tengo que contestar yo//
+
+	// Esta es la que tengo que contestar yo//
 	public List<Oferta> getOfertasParaDecidir() {
 		List<Oferta> paraDecidir = new ArrayList<>();
 		for (Oferta o : ofertasPendientes) {
-			// Si el destino soy yo, es que tengo que contestar
-			if (o.getDestino().equals(this)) {// 
+			// Si el destino de la oferta soy yo, es que tengo que contestar por lo que son
+			// ofertas pendientes
+			if (o.getDestino().equals(this)) {//
 				paraDecidir.add(o);
 			}
 		}
 		return paraDecidir;
 	}
 
+//Ofertas que yo he mandado
 	public List<Oferta> getOfertasEnEspera() {
 		List<Oferta> enEspera = new ArrayList<>();
 		for (Oferta o : ofertasPendientes) {
-
-			if (o.getOrigen().equals(this)) {
+			if (o.getOrigen().equals(this)) {// Si yo soy el origen de la oferta, la añado a las ofertas que he hecho
+												// que no me han contestado.
 				enEspera.add(o);
 			}
 		}
 		return enEspera;
 	}
 
-	public void proponerOferta(Cliente destinatario, List<Producto2Mano> misProductos,
+	public boolean proponerOferta(Cliente destinatario, List<Producto2Mano> misProductos,
 			List<Producto2Mano> susProductos) {
 
+		
+		for (Producto2Mano p: misProductos) {
+			if (p.isBloqueado()==true) {
+				return; // Si uno de los productos de mi oferta esta bloqueado(eso es que lo hemos ofercido para otro intercambio) no lo puedo ofrecer para este intercambio. 
+			}	
+		}
+		//Una vez que hemos comprobado que ningunoi de los productos que hemos ofrecido esta bloqueado ya si se crea la oferta.
 		Oferta nuevaOferta = new Oferta(this, destinatario, misProductos, susProductos);
-
 		this.ofertasPendientes.add(nuevaOferta);
 
-		destinatario.getOfertasPendientes().add(nuevaOferta);
+		destinatario.getOfertasPendientes().add(nuevaOferta);// Añadimos al destinatario de la oferta esta oferta.
 		destinatario.recibirNotificacion("Has recibido una propuesta de intercambio de " + this.nickname);
-
-		for (Producto2Mano p : misProductos)
+		for (Producto2Mano p : misProductos)// Todos los productos ofrecidos en mi oferta pasan a estar bloqueados.
 			p.setBloqueado(true);
+		return;
 	}
 
+	//VER
 	public void confirmarIntercambio(Oferta oferta) {
-
 		oferta.aceptarYEjecutar();
 
 	}
@@ -210,7 +217,7 @@ public class Cliente extends UsuarioRegistrado {
 	// 1. Creamos el nuevo objeto Cliente
 	// --- MÉTODOS DE APOYO (Necesarios para que el código compile) ---
 
-	// REVISAR
+	// REVISAR.METER A TIENDA.
 	public void recibirNotificacion(String mensaje) {
 		if (this.notificaciones == null) {
 			this.notificaciones = new ArrayList<>();
