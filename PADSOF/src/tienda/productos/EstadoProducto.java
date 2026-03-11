@@ -7,5 +7,5 @@ public enum EstadoProducto {
     USO_EVIDENTE,
     MUY_USADO,
     DAÑADO,
-    NO_ACEPTADO //FALTA MAQUETAR
+    NO_ACEPTADO 
 }

@@ -10,22 +10,36 @@ public class Pago {
     private int CVV;
     private double importe;
     private boolean exito;
-    private String transaccionId;
 
     public Pago(String numeroTarjeta, double importe, Date fechaTarjeta,int CVV) {
         this.fechaTransaccion = LocalDateTime.now();
         this.fechaTarjeta = fechaTarjeta;
         this.CVV = CVV;
         this.importe = importe;
-        this.transaccionId = "TXN-" + System.currentTimeMillis();
         this.numeroTarjeta = numeroTarjeta;
         this.exito = procesarConBanco();
     }
 
     private boolean procesarConBanco() {
-        // Simulación de pasarela de pago
+    	String cvvString;
+		Date hoy = new Date();
+
+		if (this.numeroTarjeta.length() != 16) {
+			return false;
+		}
+
+		cvvString = String.valueOf(this.CVV);
+		if (cvvString.length() != 3) {
+			return false;
+		}
+
+		if (this.fechaTarjeta.before(hoy)) {
+			return false;
+		}
         return true; 
     }
-
-    public boolean isExito() { return exito; }
+    
+    public boolean getExito() {
+    	return this.exito;
+    }
 }

@@ -1,84 +1,62 @@
 package productos;
 
-
-
-import java.util.List;
-import java.util.ArrayList;
+import java.util.*;
 
 public abstract class ProductoVenta extends Producto {
-    protected double precioOficial;
-    protected int stockDisponible;
-    protected boolean enOferta;
-    protected List<Reseña> reseñas;
-    protected boolean promocionable;
-    
+	protected double precioOficial;
+	protected int stockDisponible;
+	protected boolean enOferta;
+	protected ArrayList<Reseña> reseñas;
 
-    public ProductoVenta() {
-        super();
-        this.reseñas = new ArrayList<>();
-    }
+	/* Preguntar por este atributo */
+	protected boolean promocionable;
 
-    public double getMediaPuntuacion() {
-        
-        if (this.reseñas == null || this.reseñas.isEmpty()) {
-            return 0.0;
-        }
+	/* CONSTRUCTORES DEL PRODUCTO CON DIFERENTES PARAMETROS */
 
-       
-        double suma = 0;
-        for (Reseña r : this.reseñas) {
-            suma += r.getPuntuacion() ;
-        }
+	public ProductoVenta(String id, String nombre, String descripcion, String imagenRuta, double precioOficial,
+			int stockDisponible, boolean enOferta, ArrayList<Reseña> reseñas, boolean promocionable) {
+		super(id, nombre, descripcion, imagenRuta);
+		this.precioOficial = precioOficial;
+		this.stockDisponible = stockDisponible;
+		this.enOferta = enOferta;
+		this.reseñas = reseñas;
+		this.promocionable = promocionable;
+	}
 
-       
-        return suma / this.reseñas.size();
-    }
-    
-    /*el descuento se calcula en el pedido o carrito
-     * public double calcularPrecioFinal() {
-    	
-        double descuento = tienda.Tienda.getInstancia().buscarDescuentoParaProducto(this.id);
-   
-        return this.precioOficial * (1- descuento);
-    }*/
+	public ProductoVenta(String id, String nombre, String descripcion, String imagenRuta, double precioOficial,
+			int stockDisponible, boolean enOferta, boolean promocionable) {
 
-    public double getPrecioOficial() {
-        return precioOficial;
-    }
+		super(id, nombre, descripcion, imagenRuta);
+		this.precioOficial = precioOficial;
+		this.stockDisponible = stockDisponible;
+		this.enOferta = enOferta;
+		this.promocionable = promocionable;
+		this.reseñas = new ArrayList<Reseña>();
+	}
 
-    public void setPrecioOficial(double precioOficial) {
-        this.precioOficial = precioOficial;
-    }
+	public double getMediaPuntuacion() {
+		double suma = 0;
+		if(this.reseñas.size()==0) {
+			return 0;
+		}
+		
+		for (Reseña r : this.reseñas) {
+			suma += r.getPuntuacion();
+		}
 
-    public int getStockDisponible() {
-        return stockDisponible;
-    }
+		suma = suma / this.reseñas.size();
 
-    public void setStockDisponible(int stockDisponible) {
-        this.stockDisponible = stockDisponible;
-    }
+		return suma;
+	}
 
-    public boolean isEnOferta() {
-        return enOferta;
-    }
+	public boolean añadirReseña(Reseña r) {
+		
+		if (r == null) {
+			return false;
+		}
+		
+		this.reseñas.add(r);
+		return true;
+	}
 
-    public void setEnOferta(boolean enOferta) {
-        this.enOferta = enOferta;
-    }
-
-    public List<Reseña> getReseñas() {
-        return reseñas;
-    }
-
-    public void setReseñas(List<Reseña> reseñas) {
-        this.reseñas = reseñas;
-    }
-    
-    public boolean getPromocionable() {
-    	return this.promocionable;
-    }
-   
-    public void setPromocionable(boolean p) {
-    	this.promocionable = p;
-    }
 }
