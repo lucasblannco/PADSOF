@@ -9,6 +9,7 @@ public abstract class ProductoVenta extends Producto {
 	protected int stockDisponible;
 	protected boolean enOferta;
 	protected ArrayList<Reseña> reseñas;
+	protected ArrayList<Categoria> categorias;
 
 	/* Preguntar por este atributo */
 	protected boolean promocionable;
@@ -62,5 +63,9 @@ public abstract class ProductoVenta extends Producto {
 	public int getStockDisponible() {
 	    return this.stockDisponible;
 	}
+	public ArrayList<Categoria> getCategorias(){
+		return this.categorias;
+	}
+	
 
 }

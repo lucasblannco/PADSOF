@@ -1,6 +1,7 @@
 package ventas;
 
 import tienda.Productos.ProductoVenta;
+import productos.ProductoVenta;
 
 public class LineaPedido {
     private ProductoVenta producto;

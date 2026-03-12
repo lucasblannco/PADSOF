@@ -3,13 +3,16 @@ package usuarios;
 import tienda.*;
 import productos.*;
 
+import java.security.PublicKey;
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import intercambios.*;
-import 
+import productos.Producto2Mano;
 
 import ventas.*;
 
@@ -40,7 +43,7 @@ public class Cliente extends UsuarioRegistrado {
 	public void subirProducto(String nombre, String descripString, String imagen) {
 
 		Producto2Mano product = new Producto2Mano(this, nombre, descripString, imagen);// Creamos el producto mediante
-																						// el //
+																						// // el //
 		// contructor
 		carteraIntercambio.add(product);
 	}
@@ -53,12 +56,12 @@ public class Cliente extends UsuarioRegistrado {
 	}
 
 	public void solicitarTasacion(Producto2Mano p, String tarjeta, int CVV, Date caducidad) {
-		if (tieneProductoenSuCartera(p) && (p.getVisible == false)) {// Comprobamos que ese producto este en la
-																			// cartera del usuario y
-																			// que ese producto no tenga una hecha una
-																			// valoracion. Si un producto ya esta
-																			// valorado ya estara en la cartera del
-																			// usuario.
+		if (tieneProductoenSuCartera(p) && (p.getVisible() == false)) {// Comprobamos que ese producto este en la
+																		// cartera del usuario y
+																		// que ese producto no tenga una hecha una
+																		// valoracion. Si un producto ya esta
+																		// valorado ya estara en la cartera del
+																		// usuario.
 			p.getValoracion().setEstadoValoracion(EstadoValoracion.PENDIENTE_DE_PAGO);
 
 			if (p.getValoracion().pagar(tarjeta, CVV, caducidad) == false) {
@@ -106,15 +109,15 @@ public class Cliente extends UsuarioRegistrado {
 			List<Producto2Mano> susProductos) {
 
 		for (Producto2Mano p : misProductos) {
-			
-			
-			if (tieneProductoenSuCartera(p)|| p.isBloqueado() == true) { //No puedes proponer productos que no esten en tu cartera ni tampoco productos 
+
+			if (tieneProductoenSuCartera(p) || p.isBloqueado() == true) { // No puedes proponer productos que no esten
+																			// en tu cartera ni tampoco productos
 				return false;
 			}
-			
+
 			if (p.isBloqueado() == true) {
 				return false; // Si uno de los productos de mi oferta esta bloqueado(eso es que lo hemos
-						// ofercido para otro intercambio) no lo puedo ofrecer para este intercambio.
+				// ofercido para otro intercambio) no lo puedo ofrecer para este intercambio.
 			}
 		}
 		// Una vez que hemos comprobado que ningunoi de los productos que hemos ofrecido
@@ -126,7 +129,7 @@ public class Cliente extends UsuarioRegistrado {
 		destinatario.recibirNotificacion("Has recibido una propuesta de intercambio de " + this.nickname);
 		for (Producto2Mano p : misProductos)// Todos los productos ofrecidos en mi oferta pasan a estar bloqueados.
 			p.setBloqueado(true);
-		return;
+		return true;
 	}
 
 	// VER
@@ -135,11 +138,8 @@ public class Cliente extends UsuarioRegistrado {
 
 	}
 
-	// Se desbloquean los productos y se quita la oferta del cliente.
-	public void procesarRechazo(Oferta oferta) {
-		oferta.rechazar();
+	
 
-	}
 
 	public boolean productoHasidoPedidoYentregado(ProductoVenta p) {
 		for (Pedido ped : historialPedidos) {
@@ -152,23 +152,14 @@ public class Cliente extends UsuarioRegistrado {
 
 	public boolean añadirReseña(ProductoVenta p, int pts, String texto) {
 		if (this.productoHasidoPedidoYentregado(p)) {
-			Reseña res=new Reseña(this, p, pts, texto);
+			Reseña res = new Reseña(this, p, pts, texto);
 			this.reseñas.add(res);
-			p.getReseñas.add(res);
+			p.getReseñas().add(res);
 			System.out.println("Reseña creada y añadida con exito ");
 			return true;
 		}
 		System.out.println("No ha sido posible crear la reseña.");
 		return false;
-	}
-	
-	
-	
-	
-	
-
-	public void addProducto2Mano(ProductoSegundaMano p) {
-		this.carteraIntercambio.add(p);
 	}
 
 	public Categoria determinarCategoriaFavorita() {
@@ -179,15 +170,17 @@ public class Cliente extends UsuarioRegistrado {
 
 		for (Pedido p : this.getHistorialPedidos()) {
 			for (LineaPedido linea : p.getLineas()) {
-
 				for (Categoria cat : linea.getProducto().getCategorias()) {
 					int n = contador.getOrDefault(cat, 0) + 1; // getOrdefault, devuelve el numero de la categoria cat
-																// si existe, y cero sino
+																// si existe, y cero sino. Si la categoría ya estaba en
+																// el mapa, le suma 1; si es la primera vez que la ve,
+																// empieza en 1.
 					contador.put(cat, n); // a la clave cat le metemos el nuevo numero de apariciones
 
 					if (n > maxApariciones) {
 						maxApariciones = n;
-						favorita = cat; // guardamos la fav
+						favorita = cat; // guardamos la categoria. Se ira actualizando cada vez que se supere el numero
+										// de apariciones
 					}
 				}
 			}
@@ -195,6 +188,27 @@ public class Cliente extends UsuarioRegistrado {
 		return favorita;
 	}
 
+	// REVISAR.METER A TIENDA.
+		public void recibirNotificacion(String mensaje) {
+			if (this.notificaciones == null) {
+				this.notificaciones = new ArrayList<>();
+			}
+			// Si aún no has creado la clase Notificacion, puedes pasarle un String
+			// o crear el objeto aquí mismo si ya la tienes.
+			this.notificaciones.add(new Notificacion(mensaje));
+			System.out.println("[Notificación Cliente]: " + mensaje);
+		}
+		
+		
+		
+		// Se desbloquean los productos y se quita la oferta del cliente.
+		public boolean eliminarOfertadeOfertasPendientes(Oferta o) {
+			if (o==null|| !this.getOfertasPendientes().contains(o)) {
+				return false;
+			}
+			o.rechazar();
+			return true;
+		}
 	// --- GETTERS ---
 
 	public List<Pedido> getHistorialPedidos() {
@@ -205,7 +219,7 @@ public class Cliente extends UsuarioRegistrado {
 		return carritoActual;
 	}
 
-	public List<ProductoSegundaMano> getCarteraIntercambio() {
+	public List<Producto2Mano> getCarteraIntercambio() {
 		return carteraIntercambio;
 	}
 
@@ -234,14 +248,5 @@ public class Cliente extends UsuarioRegistrado {
 	// 1. Creamos el nuevo objeto Cliente
 	// --- MÉTODOS DE APOYO (Necesarios para que el código compile) ---
 
-	// REVISAR.METER A TIENDA.
-	public void recibirNotificacion(String mensaje) {
-		if (this.notificaciones == null) {
-			this.notificaciones = new ArrayList<>();
-		}
-		// Si aún no has creado la clase Notificacion, puedes pasarle un String
-		// o crear el objeto aquí mismo si ya la tienes.
-		this.notificaciones.add(new Notificacion(mensaje));
-		System.out.println("[Notificación Cliente]: " + mensaje);
-	}
+	
 }
