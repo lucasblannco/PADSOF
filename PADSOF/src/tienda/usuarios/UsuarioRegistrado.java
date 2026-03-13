@@ -48,6 +48,9 @@ public abstract class UsuarioRegistrado {
     public String getNickname() {
     	return this.nickname;
     }
+    public String getId() {
+    	return this.id;
+    }
     
     public abstract void mostrarPanelPrincipal();
 }

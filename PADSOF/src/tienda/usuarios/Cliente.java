@@ -11,6 +11,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.sun.org.apache.xpath.internal.functions.FuncFalse;
+
 import intercambios.*;
 import productos.Producto2Mano;
 
@@ -132,16 +134,27 @@ public class Cliente extends UsuarioRegistrado {
 		return true;
 	}
 
-	// VER
 	public void confirmarIntercambio(Oferta oferta) {
 		oferta.aceptarYEjecutar();
-
 	}
 
-	
-
+	public List<Oferta> verIntercambioscon(Cliente c) {
+		List<Oferta> intercambios = new ArrayList<>();
+		if (c == null) {
+			return null;
+		}
+		for (Oferta o : historialIntercambios) {// comprobamos que el cliente c sea el origen o el destino de la oferta
+			if ((o.getDestino() == c && o.getOrigen() == this) || (o.getOrigen() == c && o.getDestino() == this)) {
+				intercambios.add(o);
+			}
+		}
+		return intercambios;
+	}
 
 	public boolean productoHasidoPedidoYentregado(ProductoVenta p) {
+		if (p == null) {
+			return false;
+		}
 		for (Pedido ped : historialPedidos) {
 			if (ped.productoPertenece(p) == true && ped.getEstado() == EstadoPedido.ENTREGADO) {
 				return true;
@@ -150,7 +163,7 @@ public class Cliente extends UsuarioRegistrado {
 		return false;
 	}
 
-	public boolean añadirReseña(ProductoVenta p, int pts, String texto) {
+	public boolean escribirReseña(ProductoVenta p, int pts, String texto) {
 		if (this.productoHasidoPedidoYentregado(p)) {
 			Reseña res = new Reseña(this, p, pts, texto);
 			this.reseñas.add(res);
@@ -189,26 +202,77 @@ public class Cliente extends UsuarioRegistrado {
 	}
 
 	// REVISAR.METER A TIENDA.
-		public void recibirNotificacion(String mensaje) {
-			if (this.notificaciones == null) {
-				this.notificaciones = new ArrayList<>();
-			}
-			// Si aún no has creado la clase Notificacion, puedes pasarle un String
-			// o crear el objeto aquí mismo si ya la tienes.
-			this.notificaciones.add(new Notificacion(mensaje));
-			System.out.println("[Notificación Cliente]: " + mensaje);
+	public void recibirNotificacion(String mensaje) {
+		if (this.notificaciones == null) {
+			this.notificaciones = new ArrayList<>();
 		}
-		
-		
-		
-		// Se desbloquean los productos y se quita la oferta del cliente.
-		public boolean eliminarOfertadeOfertasPendientes(Oferta o) {
-			if (o==null|| !this.getOfertasPendientes().contains(o)) {
+		// Si aún no has creado la clase Notificacion, puedes pasarle un String
+		// o crear el objeto aquí mismo si ya la tienes.
+		this.notificaciones.add(new Notificacion(mensaje));
+		System.out.println("[Notificación Cliente]: " + mensaje);
+	}
+
+	// Se desbloquean los productos y se quita la oferta del cliente.
+	public boolean eliminarOfertadeOfertasPendientes(Oferta o) {
+		if (o == null || !this.getOfertasPendientes().contains(o)) {
+			return false;
+		}
+		o.rechazar();
+		return true;
+	}
+
+	public boolean eliminarProductodeCategoria(Producto2Mano p) {
+		if (!this.getCarteraIntercambio().contains(p)) {
+			return false;
+		}
+		this.getCarteraIntercambio().remove(p);
+		return true;
+	}
+
+	public boolean añadirProductoCarrito(ProductoVenta p, int cantidad) {
+		if (p == null) {
+			return false;
+		}
+		if (p.getStockDisponible() < cantidad) {
+			System.out.println("No hay suficientes unidades en la tienda de este producto");
+			return false;
+		}
+		if (this.carritoActual == null) {
+			this.carritoActual = new Carrito(this.getId());
+		}
+		this.getCarritoActual().añadirProducto(p, cantidad);
+		return true;
+	}
+
+	public boolean comprarCarrito() {
+		{
+			if (carritoActual==null) {
+				System.out.println("No tienes productos en el carrito. Añade productos para poder comprarlo");
 				return false;
 			}
-			o.rechazar();
+			Pedido pedido=new Pedido(this, this.carritoActual);
+			this.getHistorialPedidos().add(pedido);
+			this.carritoActual=null;
+			
+			////VER COMO SE BORRA el carrito 
 			return true;
 		}
+	}
+	
+	public boolean  pagar(Pedido p,String numeroTarjeta, Date fechaTarjeta,int CVV) {
+		if (!this.getHistorialPedidos().contains(p)) {
+			return false;
+		}
+		if (p.getEstado()!=EstadoPedido.PENDIENTE_PAGO) {
+			return false;
+		}
+		Pago pago= new Pago(numeroTarjeta,p.calcularTotal(),fechaTarjeta,CVV);
+		if (pago.getExito()==false) {
+			return false;
+		}
+		return true;
+	}
+
 	// --- GETTERS ---
 
 	public List<Pedido> getHistorialPedidos() {
@@ -248,5 +312,4 @@ public class Cliente extends UsuarioRegistrado {
 	// 1. Creamos el nuevo objeto Cliente
 	// --- MÉTODOS DE APOYO (Necesarios para que el código compile) ---
 
-	
 }
