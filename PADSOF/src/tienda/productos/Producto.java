@@ -14,5 +14,9 @@ public abstract class Producto {
 		this.descripcion = descripcion;
 		this.imagenRuta = imagenRuta;
 	}
+	
+	public String getId() {
+		return this.id;
+	}
 
 }

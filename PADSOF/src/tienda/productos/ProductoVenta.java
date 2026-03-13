@@ -63,6 +63,11 @@ public abstract class ProductoVenta extends Producto {
 	public int getStockDisponible() {
 	    return this.stockDisponible;
 	}
+	
+	public void setStockDisponible(int cantidad) {
+		this.stockDisponible = cantidad;
+	}
+	
 	public ArrayList<Categoria> getCategorias(){
 		return this.categorias;
 	}

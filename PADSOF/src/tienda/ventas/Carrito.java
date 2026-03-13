@@ -1,135 +1,59 @@
 package ventas;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.time.LocalDateTime;
-import tienda.Productos.ProductoVenta;
+import productos.ProductoVenta;
 
 public class Carrito {
-    private String idCarrito;
-    private List<LineaCarrito> lineas;
-    private LocalDateTime fechaCreacion;
-    private Descuento descuentoAplicado;
-    private double total;
+	private String idCarrito;
+	private List<LineaCarrito> lineas;
+	private LocalDateTime fechaCreacion;
+	private Descuento descuentoAplicado;
+	private double total;
 
-    public Carrito(String idCliente) {
-        this.idCarrito = "CART-" + System.currentTimeMillis();
-        this.lineas = new ArrayList<>();
-        this.fechaCreacion = LocalDateTime.now();
-    }
+	public Carrito(List<LineaCarrito> lineas, LocalDateTime fechaCreacion, Descuento descuentoAplicado, double total) {
 
-   
-    public void añadirProducto(ProductoVenta p, int cant) {
-        for (LineaCarrito linea : lineas) {
-            if (linea.getProducto().getId().equals(p.getId())) {
-                linea.setCantidad(linea.getCantidad() + cant);
-                return;
-            }
-        }
-        // Si no existe, creamos una nueva línea
-        this.lineas.add(new LineaCarrito(p, cant));
-    }
+		this.idCarrito = UUID.randomUUID().toString().substring(0, 8);
+		this.lineas = lineas;
+		this.fechaCreacion = fechaCreacion;
+		this.descuentoAplicado = descuentoAplicado;
+		this.total = total;
+	}
 
-    
-    public void eliminarProducto(String idProducto) {
-        Iterator<LineaCarrito> it = lineas.iterator();
-        while (it.hasNext()) {
-            if (it.next().getProducto().getId().equals(idProducto)) {
-                it.remove();
-                break;
-            }
-        }
-    }
+	public boolean añadirProducto (ProductoVenta p, int cantidad) {
+		if(p==null || cantidad<1 || p.getStockDisponible() < cantidad) {
+			return false;
+		}
+		
+		for(LineaCarrito l: this.lineas) {
+			if(l.productoPertence(p) == true) {
+				l.setCantidad( cantidad + l.getCantidad());
+				p.setStockDisponible(p.getStockDisponible() - cantidad);
+				return true;
+			}
+		}
+		
+		LineaCarrito lc = new LineaCarrito(p, cantidad);
+		if(this.lineas.add(lc)== false) {
+		return false;
+		}
+		p.setStockDisponible(p.getStockDisponible() - cantidad);
+		
+		return true;
+	}
 
-   
-    public double calcularTotal() {
-        double total = 0.0;
-        for (LineaCarrito linea : lineas) {
-            total += linea.obtenerSubtotal();
-        }
-        return total;
-    }
+	public boolean eliminarProducto (ProductoVenta p) {
+		if(p==null) {
+			return false;
+		}
+		
+	}
+}}
 
-    public boolean haExpirado(int minutosLimite) {
-        return LocalDateTime.now().isAfter(fechaCreacion.plusMinutes(minutosLimite));
-    }
-    
-    public int contarUnidadesDe(String idProductoBuscado) {
-        int totalUnidades = 0;
-        
-        for (LineaCarrito linea : this.lineas) {
-            // Comparamos el ID del producto de la línea con el que buscamos
-            if (linea.getProducto().getId().equals(idProductoBuscado)) {
-                totalUnidades += linea.getCantidad();
-            }
-        }
-        
-        return totalUnidades;
-    }
-    
-    public double getPrecioDeProducto(String idProductoBuscado) {
-        // Recorremos todas las líneas que el usuario ha añadido al carrito
-        for (LineaCarrito linea : this.lineas) {
-            
-            // Obtenemos el producto de esa línea y comparamos su ID
-            if (linea.getProducto().getId().equals(idProductoBuscado)) {
-                
-                // Si lo encontramos, devolvemos el precio que tiene el producto
-                return linea.getProducto().getPrecioOficial();
-            }
-        }
-        
-        // Si terminamos el bucle y no hemos encontrado nada, devolvemos 0
-        return 0.0;
-    }
-    
-    public double getTotalBruto() {
-        double total = 0;
-        for (LineaCarrito linea : this.lineas) {
-            total += (linea.getCantidad()*(linea.getProducto().getPrecioOficial())); // Subtotal suele ser precio * cantidad
-        }
-        return total;
-    }
+si el carrito tiene un elementos e crea, si llamas a eliminar producto estando solo uno 
 
-    // --- GETTERS Y SETTERS ---
 
-    public String getIdCarrito() {
-        return idCarrito;
-    }
-
-    public void setIdCarrito(String idCarrito) {
-        this.idCarrito = idCarrito;
-    }
-
-    public List<LineaCarrito> getLineas() {
-        return lineas;
-    }
-
-    public void setLineas(List<LineaCarrito> lineas) {
-        this.lineas = lineas;
-    }
-
-    public LocalDateTime getFechaCreacion() {
-        return fechaCreacion;
-    }
-
-    public void setFechaCreacion(LocalDateTime fechaCreacion) {
-        this.fechaCreacion = fechaCreacion;
-    }
-    
-    public Descuento getDescuento(){
-    	return this.descuentoAplicado;
-    }
-    
-    public void setDescuento(Descuento d){
-    	this.descuentoAplicado = d;
-    }
-    
-    public double getTotal(){
-    	return this.total;
-    }
-    public void setTotal(double t) {
-    	this.total = t;
-    }
-  }
+}
