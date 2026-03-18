@@ -1,6 +1,7 @@
 package ventas;
 
-import java.time.LocalDateTime;
+import java.time.*;
+import java.time.temporal.*;
 import java.util.*;
 
 import productos.ProductoVenta;
@@ -10,6 +11,7 @@ public class Carrito {
 	private final List<LineaCarrito> lineas;
 	private final LocalDateTime fechaCreacion;
 	private Descuento descuentoAplicado;
+	private static Duration tiempoMaximo;
 
 	public Carrito() {
 		this.idCarrito = UUID.randomUUID().toString().substring(0, 8);
@@ -25,8 +27,12 @@ public class Carrito {
 		this.descuentoAplicado = descuentoAplicado;
 	}
 
-	/* esto esta bien */
 	public boolean añadirProducto(ProductoVenta p, int cantidad) {
+		if (this.estaCaducado() == true) {
+			this.vaciarCarrito();
+			return false;
+		}
+
 		if (p == null || cantidad < 1 || p.getStockDisponible() < cantidad) {
 			return false;
 		}
@@ -46,6 +52,11 @@ public class Carrito {
 	}
 
 	public boolean eliminarProducto(ProductoVenta p) {
+		if (this.estaCaducado() == true) {
+			this.vaciarCarrito();
+			return false;
+		}
+
 		if (p == null) {
 			return false;
 		}
@@ -69,26 +80,35 @@ public class Carrito {
 	}
 
 	public boolean cambiarCantidadProducto(ProductoVenta p, int nuevaCantidad) {
-	    if (p == null || nuevaCantidad < 0) {
-	        return false;
-	    }
+		if (this.estaCaducado() == true) {
+			this.vaciarCarrito();
+			return false;
+		}
 
-	    for (LineaCarrito l : this.lineas) {
-	        if (l.productoPertence(p)) {
-	            int cantidadActual = l.getCantidad();
-	            int diferencia = nuevaCantidad - cantidadActual;
+		if (p == null || nuevaCantidad < 0) {
+			return false;
+		}
 
-	            if (diferencia > 0 && p.getStockDisponible() < diferencia) {
-	                return false;
-	            }
+		if (nuevaCantidad == 0) {
+			return this.eliminarProducto(p);
+		}
 
-	            p.setStockDisponible(p.getStockDisponible() - diferencia);
-	            l.setCantidad(nuevaCantidad);
-	            return true;
-	        }
-	    }
+		for (LineaCarrito l : this.lineas) {
+			if (l.productoPertence(p)) {
+				int cantidadActual = l.getCantidad();
+				int diferencia = nuevaCantidad - cantidadActual;
 
-	    return false;
+				if (diferencia > 0 && p.getStockDisponible() < diferencia) {
+					return false;
+				}
+
+				p.setStockDisponible(p.getStockDisponible() - diferencia);
+				l.setCantidad(nuevaCantidad);
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	public void vaciarCarrito() {
@@ -109,14 +129,24 @@ public class Carrito {
 		return suma;
 	}
 
+	/* FUNCION QUE AUN NO VA PORQUE NO SE COMO VAMOS A HACER DESCUENTOS */
 	public double getTotal() {
 		double total = calcularSubtotal();
 
+		/* LA PARTE DE DESCUENTOS ESRA SIN HACER ENTONCES NO SÉ */
 		if (this.descuentoAplicado != null) {
 			total = this.descuentoAplicado.aplicarDescuento(total);
 		}
 
 		return total;
+	}
+
+	public boolean estaCaducado() {
+		if (this.tiempoMaximo == null) {
+			return false;
+		}
+
+		return LocalDateTime.now().isAfter(this.fechaCreacion.plus(this.tiempoMaximo));
 	}
 
 	public String getIdCarrito() {
@@ -141,5 +171,12 @@ public class Carrito {
 
 	public boolean estaVacio() {
 		return this.lineas.isEmpty();
+	}
+
+	public static void setTiempoMaximo(Duration tiempo) {
+		if (tiempo == null || tiempo.isZero() || tiempo.isNegative()) {
+			throw new IllegalArgumentException("El tiempo máximo debe ser positivo");
+		}
+		Carrito.tiempoMaximo = tiempo;
 	}
 }

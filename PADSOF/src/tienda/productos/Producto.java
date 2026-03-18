@@ -18,6 +18,10 @@ public abstract class Producto {
 	public String getId() {
 		return this.id;
 	}
+	
+	public String getNombre() {
+		return this.nombre;
+	}
 
 	@Override
 	public String toString() {
@@ -25,7 +29,5 @@ public abstract class Producto {
 				+ imagenRuta + ", getId()=" + getId() + ", getClass()=" + getClass() + ", hashCode()=" + hashCode()
 				+ ", toString()=" + super.toString() + "]";
 	}
-	
-	
 
 }
