@@ -25,7 +25,8 @@ public class Cliente extends UsuarioRegistrado {
 	private List<Oferta> ofertasPendientes;
 	private List<Oferta> historialIntercambios;
 	private List<Reseña> reseñas;
-	protected List<Notificacion> notificaciones;
+	protected List<Notificacion> notificaciones; //Posible cambio  a un hashmap no? Es para organizarlas segun el tipo de notificacion
+	private PreferenciaNotificacion preferencias;
 
 	// Constructor//
 	public Cliente() {
@@ -34,6 +35,7 @@ public class Cliente extends UsuarioRegistrado {
 		this.carteraIntercambio = new ArrayList<>();
 		this.ofertasPendientes = new ArrayList<>();
 		this.reseñas = new ArrayList<>();
+		this.preferencias = new PreferenciaNotificacion();
 	}
 
 	@Override
@@ -199,6 +201,7 @@ public class Cliente extends UsuarioRegistrado {
 		return favorita;
 	}
 
+	
 	// REVISAR.METER A TIENDA.
 	public void recibirNotificacion(String mensaje) {
 		if (this.notificaciones == null) {
@@ -244,38 +247,47 @@ public class Cliente extends UsuarioRegistrado {
 
 	public boolean comprarCarrito() {
 		{
-			if (carritoActual==null) {
+			if (carritoActual == null) {
 				System.out.println("No tienes productos en el carrito. Añade productos para poder comprarlo");
 				return false;
 			}
-			Pedido pedido=new Pedido(this, this.carritoActual);
+			Pedido pedido = new Pedido(this, this.carritoActual);
 			this.getHistorialPedidos().add(pedido);
-			this.carritoActual=null;
-			
-			////VER COMO SE BORRA el carrito 
+			this.carritoActual = null;
+
+			//// VER COMO SE BORRA el carrito
+			///
 			return true;
 		}
 	}
-	
-	public boolean  pagar(Pedido p,String numeroTarjeta, Date fechaTarjeta,int CVV) {
+
+	public boolean pagar(Pedido p, String numeroTarjeta, Date fechaTarjeta, int CVV) {
 		if (!this.getHistorialPedidos().contains(p)) {
 			return false;
 		}
-		if (p.getEstado()!=EstadoPedido.PENDIENTE_PAGO) {
+		if (p.getEstado() != EstadoPedido.PENDIENTE_PAGO) {
 			return false;
 		}
-		Pago pago= new Pago(numeroTarjeta,p.calcularTotal(),fechaTarjeta,CVV);
-		if (pago.getExito()==false) {
+		Pago pago = new Pago(numeroTarjeta, p.calcularTotal(), fechaTarjeta, CVV);
+		if (pago.getExito() == false) {
 			return false;
 		}
 		return true;
 	}
 
+	public void establecerPreferenciasNotificaciones() {
+		
+	}
+	
+	
+	
+	
+	
 	// --- GETTERS ---
 
 	public List<Pedido> getHistorialPedidos() {
-            return historialPedidos
-        }
+		return this.historialPedidos;
+	}
 
 	public Carrito getCarritoActual() {
 		return carritoActual;
@@ -306,8 +318,4 @@ public class Cliente extends UsuarioRegistrado {
 	public void setCarritoActual(Carrito carritoActual) {
 		this.carritoActual = carritoActual;
 	}
-
-	// 1. Creamos el nuevo objeto Cliente
-	// --- MÉTODOS DE APOYO (Necesarios para que el código compile) ---
-
 }
