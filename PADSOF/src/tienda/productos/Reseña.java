@@ -15,7 +15,7 @@ public class Reseña {
 	public Reseña(Cliente autor, ProductoVenta producto, double puntuacion, String comentario) {
 		this.idReseña = UUID.randomUUID().toString().substring(0, 8);
 		this.autor = autor;
-		this.producto = producto;
+		this.producto = null;
 
 		if (puntuacion < 0) {
 			puntuacion = 0;
@@ -27,6 +27,10 @@ public class Reseña {
 
 		this.comentario = (comentario == null) ? "" : comentario;
 		this.fecha = LocalDate.now();
+
+		if (producto != null) {
+			producto.addReseña(this);
+		}
 	}
 
 	public LocalDate getFecha() {
@@ -35,6 +39,14 @@ public class Reseña {
 
 	public double getPuntuacion() {
 		return this.puntuacion;
+	}
+
+	public boolean setProducto(ProductoVenta p) {
+		if (p == null) {
+			return false;
+		}
+		this.producto = p;
+		return true;
 	}
 
 }

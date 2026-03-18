@@ -69,5 +69,5 @@ public class Valoracion {
 
 	public void setEstadoValoracion(EstadoValoracion estadoValoracion) {
 		this.estadoValoracion = estadoValoracion;
-	}a
+	}
 }

@@ -114,6 +114,7 @@ public abstract class ProductoVenta extends Producto {
 		}
 
 		this.reseñas.add(r);
+		r.setProducto(this);
 		return true;
 	}
 
