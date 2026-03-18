@@ -64,6 +64,14 @@ public class Producto2Mano extends Producto {
 		return this.propietario;
 	}
 
+	public void setValoracion(Valoracion v) {
+		this.valoracion = v;
+	}
+	
+	public void setVisible(boolean v) {
+		this.visible = v;
+	}
+
 	@Override
 	public String toString() {
 		return "Producto2Mano [valoracion=" + valoracion + ", propietario=" + propietario + ", bloqueado=" + bloqueado

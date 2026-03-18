@@ -125,9 +125,9 @@ public abstract class ProductoVenta extends Producto {
 		this.reseñas.remove(r);
 		return true;
 	}
-	
+
 	public double getPrecioVenta() {
-	    return this.precioOficial;
+		return this.precioOficial;
 	}
 
 	@Override
