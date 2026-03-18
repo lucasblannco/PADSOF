@@ -45,4 +45,19 @@ public class Pack extends ProductoVenta {
 
 		return suma * (1 - descuentoPorcentaje);
 	}
+
+	@Override
+	public String toString() {
+		return "Pack [productosIncluidos=" + productosIncluidos + ", descuentoPorcentaje=" + descuentoPorcentaje
+				+ ", precioOficial=" + precioOficial + ", stockDisponible=" + stockDisponible + ", enOferta=" + enOferta
+				+ ", reseñas=" + reseñas + ", categorias=" + categorias + ", promocionable=" + promocionable + ", id="
+				+ id + ", nombre=" + nombre + ", descripcion=" + descripcion + ", imagenRuta=" + imagenRuta
+				+ ", calcularPrecioFinal()=" + calcularPrecioFinal() + ", getMediaPuntuacion()=" + getMediaPuntuacion()
+				+ ", getPrecioOficial()=" + getPrecioOficial() + ", getReseñas()=" + getReseñas()
+				+ ", getStockDisponible()=" + getStockDisponible() + ", getCategorias()=" + getCategorias()
+				+ ", getId()=" + getId() + ", getClass()=" + getClass() + ", hashCode()=" + hashCode() + ", toString()="
+				+ super.toString() + "]";
+	}
+	
+	
 }

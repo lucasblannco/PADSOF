@@ -15,6 +15,19 @@ public class Comic extends ProductoVenta {
 		this.añoPublicacion = añoPublicacion;
 	}
 
+	@Override
+	public String toString() {
+		return "Comic [numeroPaginas=" + numeroPaginas + ", editorial=" + editorial + ", añoPublicacion="
+				+ añoPublicacion + ", precioOficial=" + precioOficial + ", stockDisponible=" + stockDisponible
+				+ ", enOferta=" + enOferta + ", reseñas=" + reseñas + ", categorias=" + categorias + ", promocionable="
+				+ promocionable + ", id=" + id + ", nombre=" + nombre + ", descripcion=" + descripcion + ", imagenRuta="
+				+ imagenRuta + ", getMediaPuntuacion()=" + getMediaPuntuacion() + ", getPrecioOficial()="
+				+ getPrecioOficial() + ", getReseñas()=" + getReseñas() + ", getStockDisponible()="
+				+ getStockDisponible() + ", getCategorias()=" + getCategorias() + ", getId()=" + getId()
+				+ ", getClass()=" + getClass() + ", hashCode()=" + hashCode() + ", toString()=" + super.toString()
+				+ "]";
+	}
+
 
 
 }

@@ -129,4 +129,17 @@ public abstract class ProductoVenta extends Producto {
 		this.reseñas.remove(r);
 		return true;
 	}
+
+	@Override
+	public String toString() {
+		return "ProductoVenta [precioOficial=" + precioOficial + ", stockDisponible=" + stockDisponible + ", enOferta="
+				+ enOferta + ", reseñas=" + reseñas + ", categorias=" + categorias + ", promocionable=" + promocionable
+				+ ", id=" + id + ", nombre=" + nombre + ", descripcion=" + descripcion + ", imagenRuta=" + imagenRuta
+				+ ", getMediaPuntuacion()=" + getMediaPuntuacion() + ", getPrecioOficial()=" + getPrecioOficial()
+				+ ", getReseñas()=" + getReseñas() + ", getStockDisponible()=" + getStockDisponible()
+				+ ", getCategorias()=" + getCategorias() + ", getId()=" + getId() + ", toString()=" + super.toString()
+				+ ", getClass()=" + getClass() + ", hashCode()=" + hashCode() + "]";
+	}
+	
+	
 }

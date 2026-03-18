@@ -18,4 +18,17 @@ public class Figura extends ProductoVenta {
 		this.marca = marca;
 	}
 
+	@Override
+	public String toString() {
+		return "Figura [altura=" + altura + ", ancho=" + ancho + ", largo=" + largo + ", material=" + material
+				+ ", marca=" + marca + ", precioOficial=" + precioOficial + ", stockDisponible=" + stockDisponible
+				+ ", enOferta=" + enOferta + ", reseñas=" + reseñas + ", categorias=" + categorias + ", promocionable="
+				+ promocionable + ", id=" + id + ", nombre=" + nombre + ", descripcion=" + descripcion + ", imagenRuta="
+				+ imagenRuta + ", getMediaPuntuacion()=" + getMediaPuntuacion() + ", getPrecioOficial()="
+				+ getPrecioOficial() + ", getReseñas()=" + getReseñas() + ", getStockDisponible()="
+				+ getStockDisponible() + ", getCategorias()=" + getCategorias() + ", getId()=" + getId()
+				+ ", getClass()=" + getClass() + ", hashCode()=" + hashCode() + ", toString()=" + super.toString()
+				+ "]";
+	}
+
 }

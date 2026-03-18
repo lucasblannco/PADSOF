@@ -18,4 +18,17 @@ public class JuegoMesa extends ProductoVenta {
 		this.tipoJuego = tipoJuego;
 	}
 
+	@Override
+	public String toString() {
+		return "JuegoMesa [minJugadores=" + minJugadores + ", maxJugadores=" + maxJugadores + ", minEdad=" + minEdad
+				+ ", maxEdad=" + maxEdad + ", tipoJuego=" + tipoJuego + ", precioOficial=" + precioOficial
+				+ ", stockDisponible=" + stockDisponible + ", enOferta=" + enOferta + ", reseñas=" + reseñas
+				+ ", categorias=" + categorias + ", promocionable=" + promocionable + ", id=" + id + ", nombre="
+				+ nombre + ", descripcion=" + descripcion + ", imagenRuta=" + imagenRuta + ", getMediaPuntuacion()="
+				+ getMediaPuntuacion() + ", getPrecioOficial()=" + getPrecioOficial() + ", getReseñas()=" + getReseñas()
+				+ ", getStockDisponible()=" + getStockDisponible() + ", getCategorias()=" + getCategorias()
+				+ ", getId()=" + getId() + ", getClass()=" + getClass() + ", hashCode()=" + hashCode() + ", toString()="
+				+ super.toString() + "]";
+	}
+
 }

@@ -19,4 +19,13 @@ public abstract class Producto {
 		return this.id;
 	}
 
+	@Override
+	public String toString() {
+		return "Producto [id=" + id + ", nombre=" + nombre + ", descripcion=" + descripcion + ", imagenRuta="
+				+ imagenRuta + ", getId()=" + getId() + ", getClass()=" + getClass() + ", hashCode()=" + hashCode()
+				+ ", toString()=" + super.toString() + "]";
+	}
+	
+	
+
 }
