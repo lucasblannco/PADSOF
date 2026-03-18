@@ -29,21 +29,26 @@ public class Pack extends ProductoVenta {
 		this.productosIncluidos.add(p);
 		return true;
 	}
-	
+
 	public boolean eliminarProducto(ProductoVenta p) {
-	    if (p == null) {
-	        return false;
-	    }
-	    return this.productosIncluidos.remove(p);
+		if (p == null) {
+			return false;
+		}
+		return this.productosIncluidos.remove(p);
 	}
 
 	public double calcularPrecioFinal() {
 		double suma = 0;
 		for (ProductoVenta p : this.productosIncluidos) {
-			suma += p.getPrecioOficial();
+			suma += p.getPrecioVenta();
 		}
 
 		return suma * (1 - descuentoPorcentaje);
+	}
+	
+	@Override
+	public double getPrecioVenta() {
+	    return calcularPrecioFinal();
 	}
 
 	@Override
@@ -53,11 +58,10 @@ public class Pack extends ProductoVenta {
 				+ ", reseñas=" + reseñas + ", categorias=" + categorias + ", promocionable=" + promocionable + ", id="
 				+ id + ", nombre=" + nombre + ", descripcion=" + descripcion + ", imagenRuta=" + imagenRuta
 				+ ", calcularPrecioFinal()=" + calcularPrecioFinal() + ", getMediaPuntuacion()=" + getMediaPuntuacion()
-				+ ", getPrecioOficial()=" + getPrecioOficial() + ", getReseñas()=" + getReseñas()
+				+ ", getPrecioOficial()=" + getPrecioVenta() + ", getReseñas()=" + getReseñas()
 				+ ", getStockDisponible()=" + getStockDisponible() + ", getCategorias()=" + getCategorias()
 				+ ", getId()=" + getId() + ", getClass()=" + getClass() + ", hashCode()=" + hashCode() + ", toString()="
 				+ super.toString() + "]";
 	}
-	
-	
+
 }

@@ -25,7 +25,7 @@ public class Figura extends ProductoVenta {
 				+ ", enOferta=" + enOferta + ", reseñas=" + reseñas + ", categorias=" + categorias + ", promocionable="
 				+ promocionable + ", id=" + id + ", nombre=" + nombre + ", descripcion=" + descripcion + ", imagenRuta="
 				+ imagenRuta + ", getMediaPuntuacion()=" + getMediaPuntuacion() + ", getPrecioOficial()="
-				+ getPrecioOficial() + ", getReseñas()=" + getReseñas() + ", getStockDisponible()="
+				+ getPrecioVenta() + ", getReseñas()=" + getReseñas() + ", getStockDisponible()="
 				+ getStockDisponible() + ", getCategorias()=" + getCategorias() + ", getId()=" + getId()
 				+ ", getClass()=" + getClass() + ", hashCode()=" + hashCode() + ", toString()=" + super.toString()
 				+ "]";

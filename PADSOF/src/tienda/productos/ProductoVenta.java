@@ -41,10 +41,6 @@ public abstract class ProductoVenta extends Producto {
 		return suma;
 	}
 
-	public double getPrecioOficial() {
-		return this.precioOficial;
-	}
-
 	public ArrayList<Reseña> getReseñas() {
 		return this.reseñas;
 	}
@@ -129,17 +125,20 @@ public abstract class ProductoVenta extends Producto {
 		this.reseñas.remove(r);
 		return true;
 	}
+	
+	public double getPrecioVenta() {
+	    return this.precioOficial;
+	}
 
 	@Override
 	public String toString() {
 		return "ProductoVenta [precioOficial=" + precioOficial + ", stockDisponible=" + stockDisponible + ", enOferta="
 				+ enOferta + ", reseñas=" + reseñas + ", categorias=" + categorias + ", promocionable=" + promocionable
 				+ ", id=" + id + ", nombre=" + nombre + ", descripcion=" + descripcion + ", imagenRuta=" + imagenRuta
-				+ ", getMediaPuntuacion()=" + getMediaPuntuacion() + ", getPrecioOficial()=" + getPrecioOficial()
+				+ ", getMediaPuntuacion()=" + getMediaPuntuacion() + ", getPrecioOficial()=" + getPrecioVenta()
 				+ ", getReseñas()=" + getReseñas() + ", getStockDisponible()=" + getStockDisponible()
 				+ ", getCategorias()=" + getCategorias() + ", getId()=" + getId() + ", toString()=" + super.toString()
 				+ ", getClass()=" + getClass() + ", hashCode()=" + hashCode() + "]";
 	}
-	
-	
+
 }

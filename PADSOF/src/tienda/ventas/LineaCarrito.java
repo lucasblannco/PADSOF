@@ -28,6 +28,14 @@ public class LineaCarrito {
     public int getCantidad() {
     	return this.cantidad;
     }
+    
+    public ProductoVenta getProducto() {
+    	return this.producto;
+    }
+    
+    public double getSubtotal() {
+    	return this.producto.getPrecioOficial() * this.cantidad;
+    }
 
 	
 }
