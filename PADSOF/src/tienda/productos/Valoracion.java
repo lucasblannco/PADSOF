@@ -7,17 +7,17 @@ import usuarios.Empleado;
 import ventas.Pago;
 
 public class Valoracion {
-	private LocalDateTime fecha = null;
+	private LocalDateTime fecha;
 	private double precioTasacion;
-	private EstadoProducto estadoProducto = null;
+	private EstadoProducto estadoProducto;
 	private EstadoValoracion estadoValoracion = EstadoValoracion.PENDIENTE_DE_PAGO;
-	private Empleado empleado = null;
-	private Pago pago = null;
+	private Empleado empleado;
+	private Pago pago;
 
-	public Valoracion(double precioTasacion, EstadoProducto estado, Empleado empleado) {
+	public Valoracion(double precioTasacion, EstadoProducto estadoProducto, Empleado empleado) {
 		this.fecha = LocalDateTime.now();
 		this.precioTasacion = precioTasacion;
-		this.estadoProducto = estado;
+		this.estadoProducto = estadoProducto;
 		this.empleado = empleado;
 	}
 
@@ -31,30 +31,43 @@ public class Valoracion {
 		this.pago = pago;
 	}
 
-	/* COMO HACEMOS PARA MIRAR QUE UNA TARJETA ES VALIDA (algoritmo de luhn) */
 	public boolean pagar(String tarjeta, int cvv, Date caducidad) {
-
 		Pago pagoTarjeta = new Pago(tarjeta, this.precioTasacion, caducidad, cvv);
-		if (pago.getExito() == false) {
+
+		if (!pagoTarjeta.getExito()) {
 			return false;
 		}
 
 		this.pago = pagoTarjeta;
-
 		this.estadoValoracion = EstadoValoracion.PAGADO;
-
-		this.fecha = LocalDateTime.now();
 		return true;
-
 	}
 
+	public LocalDateTime getFecha() {
+		return fecha;
+	}
+
+	public double getPrecioTasacion() {
+		return precioTasacion;
+	}
+
+	public EstadoProducto getEstadoProducto() {
+		return estadoProducto;
+	}
+
+	public EstadoValoracion getEstadoValoracion() {
+		return estadoValoracion;
+	}
+
+	public Empleado getEmpleado() {
+		return empleado;
+	}
+
+	public Pago getPago() {
+		return pago;
+	}
 
 	public void setEstadoValoracion(EstadoValoracion estadoValoracion) {
 		this.estadoValoracion = estadoValoracion;
-	}
-	
+	}a
 }
-
-
-
-

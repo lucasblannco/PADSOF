@@ -2,8 +2,6 @@ package productos;
 
 import java.util.*;
 
-import usuarios.Cliente;
-
 public abstract class ProductoVenta extends Producto {
 	protected double precioOficial;
 	protected int stockDisponible;
@@ -25,6 +23,7 @@ public abstract class ProductoVenta extends Producto {
 		this.enOferta = enOferta;
 		this.promocionable = promocionable;
 		this.reseñas = new ArrayList<Reseña>();
+		this.categorias = new ArrayList<Categoria>();
 	}
 
 	public double getMediaPuntuacion() {
@@ -42,9 +41,75 @@ public abstract class ProductoVenta extends Producto {
 		return suma;
 	}
 
-	public boolean añadirReseña(Reseña r) {
+	public double getPrecioOficial() {
+		return this.precioOficial;
+	}
 
+	public ArrayList<Reseña> getReseñas() {
+		return this.reseñas;
+	}
+
+	public int getStockDisponible() {
+		return this.stockDisponible;
+	}
+
+	public void setStockDisponible(int cantidad) {
+		if (cantidad >= 0) {
+			this.stockDisponible = cantidad;
+		}
+	}
+
+	public ArrayList<Categoria> getCategorias() {
+		return this.categorias;
+	}
+
+	public boolean addCategoria(Categoria c) {
+		if (c == null) {
+			return false;
+		}
+		if (this.categorias.contains(c)) {
+			return false;
+		}
+
+		this.categorias.add(c);
+		c.addProductoInterno(this);
+		return true;
+	}
+
+	public boolean deleteCategoria(Categoria c) {
+		if (c == null) {
+			return false;
+		}
+		if (!this.categorias.contains(c)) {
+			return false;
+		}
+
+		this.categorias.remove(c);
+		c.deleteProductoInterno(this);
+		return true;
+	}
+
+	protected boolean addCategoriaInterno(Categoria c) {
+		if (c == null || this.categorias.contains(c)) {
+			return false;
+		}
+		this.categorias.add(c);
+		return true;
+	}
+
+	protected boolean deleteCategoriaInterno(Categoria c) {
+		if (c == null || !this.categorias.contains(c)) {
+			return false;
+		}
+		this.categorias.remove(c);
+		return true;
+	}
+
+	public boolean addReseña(Reseña r) {
 		if (r == null) {
+			return false;
+		}
+		if (this.reseñas.contains(r)) {
 			return false;
 		}
 
@@ -52,25 +117,15 @@ public abstract class ProductoVenta extends Producto {
 		return true;
 	}
 
-	public double getPrecioOficial() {
-		return this.precioOficial;
-	}
-	
-	public ArrayList<Reseña> getReseñas(){
-		return this.reseñas;
-	}
-	
-	public int getStockDisponible() {
-	    return this.stockDisponible;
-	}
-	
-	public void setStockDisponible(int cantidad) {
-		this.stockDisponible = cantidad;
-	}
-	
-	public ArrayList<Categoria> getCategorias(){
-		return this.categorias;
-	}
-	
+	public boolean deleteReseña(Reseña r) {
+		if (r == null) {
+			return false;
+		}
+		if (!this.reseñas.contains(r)) {
+			return false;
+		}
 
+		this.reseñas.remove(r);
+		return true;
+	}
 }

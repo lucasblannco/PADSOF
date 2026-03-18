@@ -3,7 +3,7 @@ package productos;
 import java.util.*;
 
 public abstract class Producto {
-	protected String id;
+	protected final String id;
 	protected String nombre;
 	protected String descripcion;
 	protected String imagenRuta;
@@ -14,7 +14,7 @@ public abstract class Producto {
 		this.descripcion = descripcion;
 		this.imagenRuta = imagenRuta;
 	}
-	
+
 	public String getId() {
 		return this.id;
 	}

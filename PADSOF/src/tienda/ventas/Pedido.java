@@ -2,10 +2,13 @@ package ventas;
 
 import java.util.*;
 
-import java.time.*;
-
-import usuarios.Cliente;
+import usuario.Clientes;
 import productos.*;
+
+import java.time.*;
+import tienda.Usuarios.Cliente;
+import tienda.Productos.*; 
+
 public class Pedido {
     private String idPedido;
     private LocalDateTime fechaCreacion; //cuando se ha pedido

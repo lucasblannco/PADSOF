@@ -1,25 +1,40 @@
 package productos;
 
 import usuarios.Cliente;
-
+import java.util.*;
 import java.time.*;
 
 public class Reseña {
-    private String idReseña;
-    private Cliente autor;
-    private ProductoVenta producto;
-    private double puntuacion; // 0-10
-    private String comentario;
-    private LocalDate fecha;
+	private String idReseña;
+	private Cliente autor;
+	private ProductoVenta producto;
+	private double puntuacion; // 0-10
+	private String comentario;
+	private LocalDate fecha;
 
-    public Reseña(Cliente autor, ProductoVenta p , int puntuacion, String comentario) {
-        this.autor = autor;
-        this.puntuacion = puntuacion;
-        this.comentario = comentario;
-        this.fecha = LocalDate.now();
-    }
-    
-    public double getPuntuacion() {
-    	return this.puntuacion;
-    }
+	public Reseña(Cliente autor, ProductoVenta producto, double puntuacion, String comentario) {
+		this.idReseña = UUID.randomUUID().toString().substring(0, 8);
+		this.autor = autor;
+		this.producto = producto;
+
+		if (puntuacion < 0) {
+			puntuacion = 0;
+		}
+		if (puntuacion > 10) {
+			puntuacion = 10;
+		}
+		this.puntuacion = puntuacion;
+
+		this.comentario = (comentario == null) ? "" : comentario;
+		this.fecha = LocalDate.now();
+	}
+
+	public LocalDate getFecha() {
+		return this.fecha;
+	}
+
+	public double getPuntuacion() {
+		return this.puntuacion;
+	}
+
 }
