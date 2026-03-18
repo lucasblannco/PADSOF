@@ -75,9 +75,17 @@ public class Empleado extends UsuarioRegistrado {
 		o.aceptarYEjecutar();
 
 	}
-
+//Hay que ver la cantidad supongio que habra una funcion de que si continee scarlo rapido y ahi modificas la cantidad
 	public void añadirProducto_nuevo(ProductoVenta p) {
-		Tienda.getInstancia().getStockNuevos()
+		if (Tienda.getInstancia().getStockVentas().contains(p)) {
+			System.out.println("Este producto ya esta en el stock");
+		}
+		
+		ProductoVenta stockProductoVenta=new ArrayList<>();
+	
+		
+		  Tienda.getInstancia().getStockVentas().add(p);
+		
 	}
 	
 	
