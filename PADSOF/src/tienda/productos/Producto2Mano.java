@@ -73,6 +73,14 @@ public class Producto2Mano extends Producto {
 				+ ", getId()=" + getId() + ", toString()=" + super.toString() + ", getClass()=" + getClass()
 				+ ", hashCode()=" + hashCode() + "]";
 	}
+
+	public void setValoracion(Valoracion valoracion) {
+		this.valoracion = valoracion;
+	}
+
+	public void setVisible(boolean visible) {
+		this.visible = visible;
+	}
 	
 	
 }

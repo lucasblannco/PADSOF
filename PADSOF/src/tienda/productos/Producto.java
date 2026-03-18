@@ -25,7 +25,9 @@ public abstract class Producto {
 				+ imagenRuta + ", getId()=" + getId() + ", getClass()=" + getClass() + ", hashCode()=" + hashCode()
 				+ ", toString()=" + super.toString() + "]";
 	}
-	
+	public String getNombre() {
+		return this.nombre;
+	}
 	
 
 }

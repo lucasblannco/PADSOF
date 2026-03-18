@@ -41,12 +41,13 @@ public class Oferta {
 		this.origen.recibirNotificacion("Tu oferta con ID " + this.getId() + " ha sido RECHAZADA por el cliente"+ this.destino.getNickname()+".");
 	}
 
+	public void aceptarOferta() {
+		this.estado=EstadoOferta.ACEPTADA;
+	}
+	
 	public void aceptarYEjecutar() {
-		this.estado = EstadoOferta.ACEPTADA;
-
 		origen.getHistorialIntercambios().add(this);
 		destino.getHistorialIntercambios().add(this);
-
 		origen.getOfertasPendientes().remove(this);
 		destino.getOfertasPendientes().remove(this);
 
@@ -60,8 +61,8 @@ public class Oferta {
 			// AHORA SE ENVIARIAN
 		}
 		Tienda.getInstancia().registrarIntercambioFinalizado(this);
-		this.origen.recibirNotificacion("¡Intercambio ID " + this.id + " aceptado! Preparando envío.");
-		this.destino.recibirNotificacion("Has aceptado el intercambio. Los productos han salido de tu inventario.");
+		this.origen.recibirNotificacion("¡Intercambio ID " + this.id + " aceptado por el usuario"+ this.getDestino().getNickname()+ "! Preparando envío.");
+		this.destino.recibirNotificacion("Has aceptado el intercambio con el usuario" + this.origen.getNickname()+". Los productos han salido de tu inventario.");
 	}
 
 	public boolean haCaducado() {

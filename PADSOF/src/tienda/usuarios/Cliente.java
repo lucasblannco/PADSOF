@@ -73,7 +73,7 @@ public class Cliente extends UsuarioRegistrado {
 			// Notificamos a la tienda que hay un nuevo producto pendiente de tasar //Esto
 			// cuidado//
 			Tienda.getInstancia().solicitarTasacion(p);
-			System.out.println("Valoracion Solicitada. Esperando a que un empleado lo tase.");
+			this.recibirNotificacion("Valoracion Solicitada. Esperando a que un empleado lo tase.");
 		}
 	}
 
@@ -82,6 +82,9 @@ public class Cliente extends UsuarioRegistrado {
 	// me tienen que responder.
 	// para no hacer 2 arrays, hago 2 metodos y ya
 
+	
+	
+	
 	// Esta es la que tengo que contestar yo//
 	public List<Oferta> getOfertasParaDecidir() {
 		List<Oferta> paraDecidir = new ArrayList<>();
@@ -133,9 +136,18 @@ public class Cliente extends UsuarioRegistrado {
 			p.setBloqueado(true);
 		return true;
 	}
-
+	
+	
+	
+//aceptar Oferta
 	public void confirmarIntercambio(Oferta oferta) {
-		oferta.aceptarYEjecutar();
+		if (this.getOfertasParaDecidir().contains(oferta)) {
+			//oferta.aceptarYEjecutar();
+			oferta.aceptarOferta();
+			return;
+		}
+		System.out.println("Esta oferta no la tienes disponible");
+		return;
 	}
 
 	public List<Oferta> verIntercambioscon(Cliente c) {
@@ -239,7 +251,7 @@ public class Cliente extends UsuarioRegistrado {
 			return false;
 		}
 		if (this.carritoActual == null) {
-			this.carritoActual = new Carrito(this.getId());
+			this.carritoActual = new Carrito();
 		}
 		this.getCarritoActual().añadirProducto(p, cantidad);
 		return true;
