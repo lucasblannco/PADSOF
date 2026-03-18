@@ -1,7 +1,5 @@
 package productos;
 
-import java.util.*;
-
 public class Comic extends ProductoVenta {
 	private int numeroPaginas;
 	private String editorial;
