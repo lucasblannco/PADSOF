@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import intercambios.*;
-import sun.security.provider.JavaKeyStore.CaseExactJKS;
+
 import ventas.*;
 
 import java.util.*;
@@ -23,8 +23,8 @@ public class Empleado extends UsuarioRegistrado {
 	private Set<TipoPermisos> permisos;
 	private List<Valoracion> valoraciones;
 
-	public Empleado(String nombre, String password, String email) {
-		super(nombre, password, email);
+	public Empleado(String nickname, String password, String email) {
+		super(nickname, password, email);
 		this.valoraciones = new ArrayList<>();
 		this.permisos = new TreeSet<>();
 	}
@@ -99,7 +99,7 @@ public class Empleado extends UsuarioRegistrado {
 		
 		
 		for(Categoria c: categorias) {
-			if (!tienda.getCategorias().contains(categorias)) {
+			if (!tienda.getCategorias().contains(c)) {
 				flag= false; 
 				break;
 			}
@@ -109,6 +109,7 @@ public class Empleado extends UsuarioRegistrado {
 			System.out.println("Las categorias que se introduzcan deben existir en la tienda");
 			return false;
 		}
+		
 		// 2. Validar letra ANTES de comprobar existencia
 		if (letra == null || letra.length() != 1) {
 			this.recibirNotificacion(
@@ -209,10 +210,10 @@ public class Empleado extends UsuarioRegistrado {
 		System.out.println("[Notificación Empleado]: " + mensaje);
 	}
 
-	public void asignarTodosLosPermisos() {
+	/*public void asignarTodosLosPermisos() {
 		this.permisos = EnumSet.allOf(Permiso.class);
 	}
-
+*/
 	public List<Notificacion> getNotificaciones() {
 		return notificaciones;
 	}
@@ -235,5 +236,10 @@ public class Empleado extends UsuarioRegistrado {
 
 	public void setValoraciones(List<Valoracion> valoraciones) {
 		this.valoraciones = valoraciones;
+	}
+
+	@Override
+	public String toString() {
+	    return "Empleado [id=" + getId() + ", nickname=" + getNickname() + "]";
 	}
 }
