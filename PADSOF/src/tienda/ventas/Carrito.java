@@ -1,7 +1,6 @@
 package ventas;
 
 import java.time.*;
-import java.time.temporal.*;
 import java.util.*;
 
 import productos.ProductoVenta;
@@ -142,11 +141,11 @@ public class Carrito {
 	}
 
 	public boolean estaCaducado() {
-		if (this.tiempoMaximo == null) {
+		if (Carrito.tiempoMaximo == null) {
 			return false;
 		}
 
-		return LocalDateTime.now().isAfter(this.fechaCreacion.plus(this.tiempoMaximo));
+		return LocalDateTime.now().isAfter(this.fechaCreacion.plus(Carrito.tiempoMaximo));
 	}
 
 	public String getIdCarrito() {

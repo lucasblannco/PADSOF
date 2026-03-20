@@ -80,6 +80,5 @@ public class Valoracion {
 				+ ", getEmpleado()=" + getEmpleado() + ", getPago()=" + getPago() + ", getClass()=" + getClass()
 				+ ", hashCode()=" + hashCode() + ", toString()=" + super.toString() + "]";
 	}
-	
-	
+
 }
