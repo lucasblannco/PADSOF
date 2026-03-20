@@ -9,19 +9,15 @@ public abstract class ProductoVenta extends Producto {
 	protected ArrayList<Reseña> reseñas;
 	protected ArrayList<Categoria> categorias;
 
-	/* Preguntar por este atributo */
-	protected boolean promocionable;
-
 	/* CONSTRUCTORES DEL PRODUCTO CON DIFERENTES PARAMETROS */
 
 	public ProductoVenta(String nombre, String descripcion, String imagenRuta, double precioOficial,
-			int stockDisponible, boolean enOferta, boolean promocionable) {
+			int stockDisponible, boolean enOferta) {
 
 		super(nombre, descripcion, imagenRuta);
 		this.precioOficial = precioOficial;
 		this.stockDisponible = stockDisponible;
 		this.enOferta = enOferta;
-		this.promocionable = promocionable;
 		this.reseñas = new ArrayList<Reseña>();
 		this.categorias = new ArrayList<Categoria>();
 	}
