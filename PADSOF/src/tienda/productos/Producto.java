@@ -18,7 +18,7 @@ public abstract class Producto {
 	public String getId() {
 		return this.id;
 	}
-	
+
 	public String getNombre() {
 		return this.nombre;
 	}
@@ -29,9 +29,5 @@ public abstract class Producto {
 				+ imagenRuta + ", getId()=" + getId() + ", getClass()=" + getClass() + ", hashCode()=" + hashCode()
 				+ ", toString()=" + super.toString() + "]";
 	}
-	public String getNombre() {
-		return this.nombre;
-	}
-	
 
 }

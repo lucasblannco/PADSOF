@@ -8,7 +8,7 @@ public class Pack extends ProductoVenta {
 
 	public Pack(String nombre, String descripcion, String imagenRuta, double precioOficial, int stockDisponible,
 			boolean enOferta, boolean promocionable, double descuentoPorcentaje) {
-		super(nombre, descripcion, imagenRuta, precioOficial, stockDisponible, enOferta, promocionable);
+		super(nombre, descripcion, imagenRuta, precioOficial, stockDisponible);
 		this.productosIncluidos = new ArrayList<ProductoVenta>();
 
 		if (descuentoPorcentaje > 1) {
@@ -45,23 +45,10 @@ public class Pack extends ProductoVenta {
 
 		return suma * (1 - descuentoPorcentaje);
 	}
-	
-	@Override
-	public double getPrecioVenta() {
-	    return calcularPrecioFinal();
-	}
 
 	@Override
-	public String toString() {
-		return "Pack [productosIncluidos=" + productosIncluidos + ", descuentoPorcentaje=" + descuentoPorcentaje
-				+ ", precioOficial=" + precioOficial + ", stockDisponible=" + stockDisponible + ", enOferta=" + enOferta
-				+ ", reseñas=" + reseñas + ", categorias=" + categorias + ", promocionable=" + promocionable + ", id="
-				+ id + ", nombre=" + nombre + ", descripcion=" + descripcion + ", imagenRuta=" + imagenRuta
-				+ ", calcularPrecioFinal()=" + calcularPrecioFinal() + ", getMediaPuntuacion()=" + getMediaPuntuacion()
-				+ ", getPrecioOficial()=" + getPrecioVenta() + ", getReseñas()=" + getReseñas()
-				+ ", getStockDisponible()=" + getStockDisponible() + ", getCategorias()=" + getCategorias()
-				+ ", getId()=" + getId() + ", getClass()=" + getClass() + ", hashCode()=" + hashCode() + ", toString()="
-				+ super.toString() + "]";
+	public double getPrecioVenta() {
+		return calcularPrecioFinal();
 	}
 
 }

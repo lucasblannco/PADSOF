@@ -24,6 +24,8 @@ public class Tienda {
     private List<Categoria> categorias = new ArrayList<>();
     private Recomendador recomendador;
     
+   
+    
     
     
     //private List<Producto2Mano> pendientesTasacion = new ArrayList<>();

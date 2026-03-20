@@ -67,7 +67,7 @@ public class Producto2Mano extends Producto {
 	public void setValoracion(Valoracion v) {
 		this.valoracion = v;
 	}
-	
+
 	public void setVisible(boolean v) {
 		this.visible = v;
 	}
@@ -82,13 +82,4 @@ public class Producto2Mano extends Producto {
 				+ ", hashCode()=" + hashCode() + "]";
 	}
 
-	public void setValoracion(Valoracion valoracion) {
-		this.valoracion = valoracion;
-	}
-
-	public void setVisible(boolean visible) {
-		this.visible = visible;
-	}
-	
-	
 }

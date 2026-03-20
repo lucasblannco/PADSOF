@@ -5,19 +5,17 @@ import java.util.*;
 public abstract class ProductoVenta extends Producto {
 	protected double precioOficial;
 	protected int stockDisponible;
-	protected boolean enOferta;
 	protected ArrayList<Reseña> reseñas;
 	protected ArrayList<Categoria> categorias;
 
 	/* CONSTRUCTORES DEL PRODUCTO CON DIFERENTES PARAMETROS */
 
 	public ProductoVenta(String nombre, String descripcion, String imagenRuta, double precioOficial,
-			int stockDisponible, boolean enOferta) {
+			int stockDisponible) {
 
 		super(nombre, descripcion, imagenRuta);
 		this.precioOficial = precioOficial;
 		this.stockDisponible = stockDisponible;
-		this.enOferta = enOferta;
 		this.reseñas = new ArrayList<Reseña>();
 		this.categorias = new ArrayList<Categoria>();
 	}
@@ -124,17 +122,6 @@ public abstract class ProductoVenta extends Producto {
 
 	public double getPrecioVenta() {
 		return this.precioOficial;
-	}
-
-	@Override
-	public String toString() {
-		return "ProductoVenta [precioOficial=" + precioOficial + ", stockDisponible=" + stockDisponible + ", enOferta="
-				+ enOferta + ", reseñas=" + reseñas + ", categorias=" + categorias + ", promocionable=" + promocionable
-				+ ", id=" + id + ", nombre=" + nombre + ", descripcion=" + descripcion + ", imagenRuta=" + imagenRuta
-				+ ", getMediaPuntuacion()=" + getMediaPuntuacion() + ", getPrecioOficial()=" + getPrecioVenta()
-				+ ", getReseñas()=" + getReseñas() + ", getStockDisponible()=" + getStockDisponible()
-				+ ", getCategorias()=" + getCategorias() + ", getId()=" + getId() + ", toString()=" + super.toString()
-				+ ", getClass()=" + getClass() + ", hashCode()=" + hashCode() + "]";
 	}
 
 }
