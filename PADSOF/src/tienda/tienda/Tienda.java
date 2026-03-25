@@ -60,7 +60,6 @@ public class Tienda {
         
    
         this.usuarios.add(nuevoCliente);
-        
         nuevoCliente.recibirNotificacion("¡Bienvenido a CheckPoint, " + nickname + "!");
         return nuevoCliente;
     }
