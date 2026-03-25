@@ -284,6 +284,10 @@ public class Cliente extends UsuarioRegistrado {
 		return true;
 	}
 
+	
+	
+	
+	
 	public void establecerPreferenciasNotificaciones() {
 		
 	}
