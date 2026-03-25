@@ -52,9 +52,8 @@ public class Reseña {
 	@Override
 	public String toString() {
 		return "Reseña [idReseña=" + idReseña + ", autor=" + autor + ", producto=" + producto + ", puntuacion="
-				+ puntuacion + ", comentario=" + comentario + ", fecha=" + fecha + ", getFecha()=" + getFecha()
-				+ ", getPuntuacion()=" + getPuntuacion() + ", getClass()=" + getClass() + ", hashCode()=" + hashCode()
-				+ ", toString()=" + super.toString() + "]";
+				+ puntuacion + ", comentario=" + comentario + ", fecha=" + fecha + ", toString()=" + super.toString()
+				+ "]";
 	}
 
 }

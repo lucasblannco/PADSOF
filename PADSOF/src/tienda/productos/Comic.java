@@ -13,4 +13,12 @@ public class Comic extends ProductoVenta {
 		this.añoPublicacion = añoPublicacion;
 	}
 
+	@Override
+	public String toString() {
+		return "Comic [numeroPaginas=" + numeroPaginas + ", editorial=" + editorial + ", añoPublicacion="
+				+ añoPublicacion + ", toString()=" + super.toString() + "]";
+	}
+	
+
+
 }

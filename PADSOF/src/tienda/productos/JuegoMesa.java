@@ -17,4 +17,12 @@ public class JuegoMesa extends ProductoVenta {
 		this.tipoJuego = tipoJuego;
 	}
 
+	@Override
+	public String toString() {
+		return "JuegoMesa [minJugadores=" + minJugadores + ", maxJugadores=" + maxJugadores + ", minEdad=" + minEdad
+				+ ", maxEdad=" + maxEdad + ", tipoJuego=" + tipoJuego + ", toString()=" + super.toString() + "]";
+	}
+	
+	
+
 }

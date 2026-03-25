@@ -25,9 +25,7 @@ public abstract class Producto {
 
 	@Override
 	public String toString() {
-		return "Producto [id=" + id + ", nombre=" + nombre + ", descripcion=" + descripcion + ", imagenRuta="
-				+ imagenRuta + ", getId()=" + getId() + ", getClass()=" + getClass() + ", hashCode()=" + hashCode()
-				+ ", toString()=" + super.toString() + "]";
+		return "Producto [id=" + id + ", nombre=" + nombre + ", imagenRuta=" + imagenRuta + "]";
 	}
 
 }

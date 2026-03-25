@@ -51,4 +51,15 @@ public class Pack extends ProductoVenta {
 		return calcularPrecioFinal();
 	}
 
+	@Override
+	public String toString() {
+		String s = null;
+
+		for (ProductoVenta pv : this.productosIncluidos) {
+			s = s + pv.toString() + "\n";
+		}
+
+		return super.toString() + "/n" + s;
+	}
+
 }
