@@ -27,9 +27,6 @@ public class Tienda {
     private Recomendador recomendador;
     
    
-    
-    
-    
     //private List<Producto2Mano> pendientesTasacion = new ArrayList<>();
     //esta variable estatica, el constructor privado y el segundo metodo
     //sirven para asegurar la existencia de una tienda unica y comun.

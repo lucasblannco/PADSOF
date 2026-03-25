@@ -72,8 +72,9 @@ public class PruebaEmpleadoSubirProductoNuevo {
 		// Stock final
 		System.out.println("=== Stock final: " + tienda.getStockVentas().size() + " productos ===");
 		for (ProductoVenta p : tienda.getStockVentas()) {
-			System.out.println(" - " + p.getNombre() + " " + p.getStockDisponible());
+			System.out.println(" - " + p.getId() + p.getNombre() + " " + p.getStockDisponible());
 		}
+
 		// Ver el empleado que hemos creado a ver si se ha añadido bien
 		List<Empleado> empleados_tienda = tienda.obtenerEmpleadosTienda();
 		for (Empleado e : empleados_tienda) {

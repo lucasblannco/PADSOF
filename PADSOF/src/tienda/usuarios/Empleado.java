@@ -74,15 +74,16 @@ public class Empleado extends UsuarioRegistrado {
 		o.aceptarYEjecutar();
 
 	}
-//Hay que ver la cantidad supongio que habra una funcion de que si continee scarlo rapido y ahi modificas la cantidad
+//Hay que ver la cantidad supongio que habra una funcion de que si contine sacarlo rapido y ahi modificas la cantidad
 
+	/// Funcion para añadir un nuevo producto a la tienda
 	public boolean añadirProducto_nuevo(String letra, String nombre, String descripcion, String imagen,
 			double precioOficial, int Stock, ArrayList<Categoria> categorias, int numpaginas, String editorial,
 			int añoPublicacion, double altura, double ancho, double largo, String material, String marca,
 			int minNumjugadores, int maxNumjugadores, int minEdad, int maxEdad, String Estilo) {
 
 		if (!this.getPermisos().contains(TipoPermisos.GESTION_STOCK)) {
-			System.out.println("No tienes permiso para trabajar con pedidos");
+			System.out.println("No tienes permiso para trabajar con productos");
 			return false;
 		}
 		Tienda tienda = Tienda.getInstancia();
@@ -92,24 +93,23 @@ public class Empleado extends UsuarioRegistrado {
 			System.out.println("Los atributos de producto deben aparecer correctamente");
 			return false;
 		}
-		if (categorias==null) {
+		if (categorias == null) {
 			return false;
 		}
-		boolean flag=true;
-		
-		
-		for(Categoria c: categorias) {
+		boolean flag = true;
+
+		for (Categoria c : categorias) {
 			if (!tienda.getCategorias().contains(c)) {
-				flag= false; 
+				flag = false;
 				break;
 			}
 		}
-		
+
 		if (!flag) {
 			System.out.println("Las categorias que se introduzcan deben existir en la tienda");
 			return false;
 		}
-		
+
 		// 2. Validar letra ANTES de comprobar existencia
 		if (letra == null || letra.length() != 1) {
 			this.recibirNotificacion(
@@ -126,7 +126,6 @@ public class Empleado extends UsuarioRegistrado {
 		}
 
 		switch (letra.toUpperCase()) {
-
 		case "C":
 			if (numpaginas <= 0 || editorial == null || añoPublicacion <= 0) {
 				System.out.println("Estas añadiendo un comic, los atributos deben cumplir las condiciones necesarias");
@@ -187,6 +186,64 @@ public class Empleado extends UsuarioRegistrado {
 		}
 	}
 
+	public boolean añadirUnidadesProductoExistente(String id, int cantidad) {
+		if (!this.getPermisos().contains(TipoPermisos.GESTION_STOCK)) {
+			System.out.println("No tienes permiso para trabajar con productos");
+			return false;
+		}
+		if (cantidad <= 0) {
+			System.out.println("La cantidad a añadir tiene que ser mayor que 0");
+			return false;
+		}
+		
+		Tienda tienda = Tienda.getInstancia();
+		for (ProductoVenta p : tienda.getStockVentas()) {
+			if (p.getId().equals(id)) {
+				// Caso en el que hayamos encontrado un producto que ya exista
+				int unidades = p.getStockDisponible();
+				unidades = unidades + cantidad;
+				p.setStockDisponible(unidades);
+				System.out.println("Se han añadiendo las unidades correctamente. Ahora el producto " + p.getId()
+						+ " tiene" + p.getStockDisponible() + ".");
+				return true;
+			}
+		}
+		System.out.println("Este producto no existe en la lista de productos de venta de la tienda");
+		return false;
+	}
+
+	
+	public boolean entregarPedido(Pedido p) {
+		Tienda tienda=Tienda.getInstancia();
+		if (!this.getPermisos().contains(TipoPermisos.ENTREGA_PEDIDOS)) {
+			System.out.println("No tienes permiso para entregar con pedidos");
+			return false;
+		}
+		if (!p.getEstado()==EstadoPedido.LISTO_PARA_RECOGER) {
+			System.out.println("El pedido no está preparado, no se puede mejorar");
+			return false;
+		}
+		
+		for (Pedido ped: tienda.getHistorialVentas()){
+			if (ped.equals(p)) {
+				ped.actualizarEstado(EstadoPedido.ENTREGADO);
+				return true;
+			}
+
+		}
+		
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 //-Esra debe sobrar creo
 	public void asignarPermiso(TipoPermisos p) {
 		this.permisos.add(p);
@@ -210,10 +267,10 @@ public class Empleado extends UsuarioRegistrado {
 		System.out.println("[Notificación Empleado]: " + mensaje);
 	}
 
-	/*public void asignarTodosLosPermisos() {
-		this.permisos = EnumSet.allOf(Permiso.class);
-	}
-*/
+	/*
+	 * public void asignarTodosLosPermisos() { this.permisos =
+	 * EnumSet.allOf(Permiso.class); }
+	 */
 	public List<Notificacion> getNotificaciones() {
 		return notificaciones;
 	}
@@ -240,6 +297,6 @@ public class Empleado extends UsuarioRegistrado {
 
 	@Override
 	public String toString() {
-	    return "Empleado [id=" + getId() + ", nickname=" + getNickname() + "]";
+		return "Empleado [id=" + getId() + ", nickname=" + getNickname() + "]";
 	}
 }
