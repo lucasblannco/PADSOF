@@ -67,9 +67,7 @@ public class Categoria {
 
 	@Override
 	public String toString() {
-		return "Categoria [nombre=" + nombre + ", descripcion=" + descripcion + ", productos=" + productos
-				+ ", getClass()=" + getClass() + ", hashCode()=" + hashCode() + ", toString()=" + super.toString()
-				+ "]";
+		return "Categoria [nombre=" + nombre + ", descripcion=" + descripcion  + "]";
 	}
 	
 	

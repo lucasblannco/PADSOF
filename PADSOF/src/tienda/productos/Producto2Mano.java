@@ -75,11 +75,8 @@ public class Producto2Mano extends Producto {
 	@Override
 	public String toString() {
 		return "Producto2Mano [valoracion=" + valoracion + ", propietario=" + propietario + ", bloqueado=" + bloqueado
-				+ ", visible=" + visible + ", id=" + id + ", nombre=" + nombre + ", descripcion=" + descripcion
-				+ ", imagenRuta=" + imagenRuta + ", isBloqueado()=" + isBloqueado() + ", getValoracion()="
-				+ getValoracion() + ", isVisible()=" + isVisible() + ", getPropietario()=" + getPropietario()
-				+ ", getId()=" + getId() + ", toString()=" + super.toString() + ", getClass()=" + getClass()
-				+ ", hashCode()=" + hashCode() + "]";
+				+ ", visible=" + visible + ", toString()=" + super.toString() + "]";
 	}
 
+	
 }

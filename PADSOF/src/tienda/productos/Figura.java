@@ -17,6 +17,10 @@ public class Figura extends ProductoVenta {
 		this.marca = marca;
 	}
 
-
-
+	@Override
+	public String toString() {
+		return "Figura [altura=" + altura + ", ancho=" + ancho + ", largo=" + largo + ", material=" + material
+				+ ", marca=" + marca + ", toString()=" + super.toString() + "]";
+	}
+	
 }

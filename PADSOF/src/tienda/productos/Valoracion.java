@@ -75,10 +75,7 @@ public class Valoracion {
 	public String toString() {
 		return "Valoracion [fecha=" + fecha + ", precioTasacion=" + precioTasacion + ", estadoProducto="
 				+ estadoProducto + ", estadoValoracion=" + estadoValoracion + ", empleado=" + empleado + ", pago="
-				+ pago + ", getFecha()=" + getFecha() + ", getPrecioTasacion()=" + getPrecioTasacion()
-				+ ", getEstadoProducto()=" + getEstadoProducto() + ", getEstadoValoracion()=" + getEstadoValoracion()
-				+ ", getEmpleado()=" + getEmpleado() + ", getPago()=" + getPago() + ", getClass()=" + getClass()
-				+ ", hashCode()=" + hashCode() + ", toString()=" + super.toString() + "]";
+				+ pago + "]";
 	}
 
 }
