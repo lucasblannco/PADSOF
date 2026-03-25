@@ -9,6 +9,10 @@ import tienda.Ventas.*;
 public class Recomendador {
     private int limiteMaximo = 5; // Configurable por el Gestor
     private boolean activo = true; // El Gestor puede apagarlo
+    //pesos: valoracion y compras, categorias favoritas
+    //con hacer 2 recomendadores uno de valoraciony otro de compras
+    //hacen falta 2 recomendadores. 
+    //si podemos hacer un solo recomendador, de tal modo q en base de unos pesos de un recomendador salgan 1
 
     public List<ProductoVenta> generarSugerencias(Cliente cliente) {
         List<ProductoVenta> sugerencias = new ArrayList<>();

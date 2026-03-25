@@ -1,15 +1,17 @@
 package tienda;
 
+import java.security.PublicKey;
 import java.util.*;
 
 import intercambios.Oferta;
 import productos.Producto2Mano;
-import tienda.Usuarios.*;
-import tienda.Intercambios.*;
-import tienda.Ventas.*;
+import usuarios.Cliente;
 import usuarios.Empleado;
 import usuarios.TipoPermisos;
 import usuarios.UsuarioRegistrado;
+import ventas.Carrito;
+import ventas.Descuento;
+import ventas.Pedido;
 import productos.*;
 
 public class Tienda {
@@ -54,11 +56,10 @@ public class Tienda {
         
         Cliente nuevoCliente = new Cliente();
       
-        nuevoCliente.login(nickname, password, email);
+        //nuevoCliente.login(nickname, password, email);
         
    
         this.usuarios.add(nuevoCliente);
-        
         nuevoCliente.recibirNotificacion("¡Bienvenido a CheckPoint, " + nickname + "!");
         return nuevoCliente;
     }
@@ -79,7 +80,10 @@ public class Tienda {
         return listaEmpleados;
     }
     
-    
+    public void añadirProducto(ProductoVenta nuevo) {
+        if (this.getStockVentas().contains(nuevo)) return;
+        this.getStockVentas().add(nuevo);
+    }
     public void solicitarTasacion(Producto2Mano p) {
         this.pendientes_Tasacion.add(p);
         
@@ -94,7 +98,7 @@ public class Tienda {
     // - DESCUENTOS
     
     public void agregarDescuento(Descuento d) {
-        this.descuentosActivos.add();
+        this.descuentosActivos.add(d);
     }
 
     /*public double buscarDescuentoParaProducto(String idProducto) {
@@ -121,10 +125,14 @@ public class Tienda {
         }
     }
 
+    
+    
+    
+    
     //buscar productos de segunda mano, pero que no esten bloqueados
-    public List<ProductoSegundaMano> buscarSegundaMano(String query) {
-        List<ProductoSegundaMano> -ultados = new ArrayList<>();
-        for (ProductoSegundaMano p : catalogoIntercambio) {
+    /*public List<Producto2Mano> buscarSegundaMano(String query) {
+        List<Producto2Mano> -ultados = new ArrayList<>();
+        for (Producto2Mano p : catalogoIntercambio) {
             // AHORA FILTRAMOS TAMBIÉN POR VISIBLE
             if (p.isVisible() && !p.isBloqueado() && p.getNombre().toLowerCase().contains(query.toLowerCase())) {
                 resultados.add(p);
@@ -132,10 +140,10 @@ public class Tienda {
         }
         return resultados;
     }
-    
-    METODO INCOMPLETO
+    */
+  
     //suponemos que el orden de prioridad es segun se meten a la array
-    public void aplicarDescuentoPrioritario(Carrito carrito) {
+    /*public void aplicarDescuentoPrioritario(Carrito carrito) {
         
         List<Descuento> listaD = Tienda.getInstancia().getDescuentos()
 ;        
@@ -156,7 +164,7 @@ public class Tienda {
                 }
             }
         }
-    }
+    }*/
     // --- GESTIÓN DE VENTAS NUEVAS 
     
     private List<Descuento> getDescuentos() {
@@ -164,19 +172,17 @@ public class Tienda {
 		return this.descuentosActivos;
 	}
 
-	public List<Producto2Mano> getProductosSinTasar(){
-   return this.productosListPendientes_Tasacion
-    }
+
 
     public void registrarVenta(Pedido pedido) {
         this.historialVentas.add(pedido);
     }
 
     // GETTERS
-    public List<ProductoVenta> getStockNuevos() { return stockNuevos; }
+   
     public List<UsuarioRegistrado> getUsuarios() { return usuarios; }
-    public List<ProductoSegundaMano> getPendientesTasacion() {
-        return pendientesTasacion;
+    public List<Producto2Mano> getPendientesTasacion() {
+        return pendientes_Tasacion;
     }
     public Recomendador getRecomendador() {
     	return this.recomendador;
@@ -238,24 +244,12 @@ public class Tienda {
 		this.categorias = categorias;
 	}
 
-	public METODO getINCOMPLETO() {
-		return INCOMPLETO;
-	}
-
-	public void setINCOMPLETO(METODO iNCOMPLETO) {
-		INCOMPLETO = iNCOMPLETO;
-	}
 
 	public void setUsuarios(List<UsuarioRegistrado> usuarios) {
 		this.usuarios = usuarios;
 	}
 
-	public void añadirProducto( ProductoVenta nuevo) {
-		if(this.getStockVentas().contains(nuevo));
-		return;
-		
-		this.getStockVentas().add(nuevo);
-	}
+	
 
 	public void setRecomendador(Recomendador recomendador) {
 		this.recomendador = recomendador;

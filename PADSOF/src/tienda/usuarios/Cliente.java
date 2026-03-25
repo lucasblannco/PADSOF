@@ -81,9 +81,6 @@ public class Cliente extends UsuarioRegistrado {
 	// quiero poder disntiguir entre lsa ofertas que tengo que responder y las que
 	// me tienen que responder.
 	// para no hacer 2 arrays, hago 2 metodos y ya
-
-	
-	
 	
 	// Esta es la que tengo que contestar yo//
 	public List<Oferta> getOfertasParaDecidir() {
