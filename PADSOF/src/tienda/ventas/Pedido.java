@@ -7,7 +7,7 @@ import productos.ProductoVenta;
 import usuarios.Cliente;
 
 public class Pedido {
-
+	private boolean recogidaSolicitada;
 	private final String idPedido;
 	private final LocalDateTime fechaCreacion;
 	private LocalDateTime fechaPreparado;
@@ -44,7 +44,7 @@ public class Pedido {
 		this.fechaCreacion = LocalDateTime.now();
 		this.fechaPreparado = null;
 		this.fechaEntregado = null;
-
+		this.recogida_solicitada=false;
 		this.cliente = cliente;
 		this.lineas = new ArrayList<>();
 		this.pago = null;
@@ -279,5 +279,13 @@ public class Pedido {
 			throw new IllegalArgumentException("El tiempo máximo del pedido debe ser positivo");
 		}
 		Pedido.tiempoMaximo = tiempo;
+	}
+
+	public boolean isRecogida_solicitada() {
+		return recogidaSolicitada;
+	}
+
+	public void setRecogida_solicitada(boolean recogida_solicitada) {
+		this.recogidaSolicitada = recogida_solicitada;
 	}
 }

@@ -25,7 +25,8 @@ public class Cliente extends UsuarioRegistrado {
 	private List<Oferta> ofertasPendientes;
 	private List<Oferta> historialIntercambios;
 	private List<Reseña> reseñas;
-	protected List<Notificacion> notificaciones; //Posible cambio  a un hashmap no? Es para organizarlas segun el tipo de notificacion
+	protected List<Notificacion> notificaciones; // Posible cambio a un hashmap no? Es para organizarlas segun el tipo
+													// de notificacion
 	private PreferenciaNotificacion preferencias;
 
 	// Constructor//
@@ -81,7 +82,7 @@ public class Cliente extends UsuarioRegistrado {
 	// quiero poder disntiguir entre lsa ofertas que tengo que responder y las que
 	// me tienen que responder.
 	// para no hacer 2 arrays, hago 2 metodos y ya
-	
+
 	// Esta es la que tengo que contestar yo//
 	public List<Oferta> getOfertasParaDecidir() {
 		List<Oferta> paraDecidir = new ArrayList<>();
@@ -133,13 +134,11 @@ public class Cliente extends UsuarioRegistrado {
 			p.setBloqueado(true);
 		return true;
 	}
-	
-	
-	
+
 //aceptar Oferta
 	public void confirmarIntercambio(Oferta oferta) {
 		if (this.getOfertasParaDecidir().contains(oferta)) {
-			//oferta.aceptarYEjecutar();
+			// oferta.aceptarYEjecutar();
 			oferta.aceptarOferta();
 			return;
 		}
@@ -210,7 +209,6 @@ public class Cliente extends UsuarioRegistrado {
 		return favorita;
 	}
 
-	
 	// REVISAR.METER A TIENDA.
 	public void recibirNotificacion(String mensaje) {
 		if (this.notificaciones == null) {
@@ -284,9 +282,19 @@ public class Cliente extends UsuarioRegistrado {
 		return true;
 	}
 
-	
-	
-	
+	public boolean solicitarRecogidaPedido(String codigoRecogida) {
+		Tienda tienda=Tienda.getInstancia();
+		 
+	    for (Pedido ped : tienda.getHistorialVentas()) {
+	        if (ped.getCliente().equals(this) && codigoRecogida.equals(ped.getCodigoRecogida()) &&ped.getEstado() == EstadoPedido.LISTO_PARA_RECOGER) {
+	            
+	            ped.setRecogida_solicitada(true);
+	            return true;
+	        }
+	    }
+	    System.out.println("Error en la solicitud de recogida de pedido");
+	    return false;
+	}
 	
 	public void establecerPreferenciasNotificaciones() {
 		

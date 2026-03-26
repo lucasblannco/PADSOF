@@ -22,7 +22,5 @@ public class JuegoMesa extends ProductoVenta {
 		return "JuegoMesa [minJugadores=" + minJugadores + ", maxJugadores=" + maxJugadores + ", minEdad=" + minEdad
 				+ ", maxEdad=" + maxEdad + ", tipoJuego=" + tipoJuego + ", toString()=" + super.toString() + "]";
 	}
-	
-	
 
 }
