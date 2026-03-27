@@ -127,7 +127,7 @@ public class PruebaProductos {
 		check("Reseña null falla", !c2.addReseña(null));
 		check("Mismo cliente no puede reseñar dos veces", !c2.addReseña(new Reseña(cli, null, 5.0, "otro")));
 
-		/**/
+		/*Miramos si los estados de segunda mano funciona el paso de uno a otro o no*/
 		System.out.println("\n============= SEGUNDA MANO =============");
 		Empleado emp = new Empleado("ana", "pass", "ana@mail.com");
 		Producto2Mano p2m = new Producto2Mano("ProductoSegunda1", "desc", "", null, cli, true, false);
