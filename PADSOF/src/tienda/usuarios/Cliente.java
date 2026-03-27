@@ -45,9 +45,7 @@ public class Cliente extends UsuarioRegistrado {
 
 	public void subirProducto(String nombre, String descripString, String imagen) {
 
-		Producto2Mano product = new Producto2Mano(this, nombre, descripString, imagen);// Creamos el producto mediante
-																						// // el //
-		// contructor
+		Producto2Mano product = new Producto2Mano(this, nombre, descripString, imagen);/
 		carteraIntercambio.add(product);
 	}
 

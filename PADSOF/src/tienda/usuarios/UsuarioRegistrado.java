@@ -1,6 +1,9 @@
 package usuarios;
 
 import java.util.List;
+
+import productos.ProductoVenta;
+
 import java.util.ArrayList;
 
 import tienda.Tienda;
@@ -26,6 +29,14 @@ public abstract class UsuarioRegistrado {
         est.setnUsuarioRegistrado(est.getnUsuarioRegistrado() + 1);
     }
     
+    
+    public UsuarioRegistrado(String nickname,String password) {
+    	Estadistica est=Estadistica.getInstancia();
+    	this.id = "USERREG-" + String.valueOf(est.getnUsuarioRegistrado());
+        this.nickname = nickname;
+        this.password=password;
+        est.setnUsuarioRegistrado(est.getnUsuarioRegistrado()+1);
+    }
     public List<ProductoVenta> navegarCatalogoNuevos() {
         System.out.println("Visitante " + sessionId + " consultando catálogo de productos nuevos.");
         return Tienda.getInstancia().getStockNuevos();

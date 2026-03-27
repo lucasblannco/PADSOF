@@ -70,6 +70,7 @@ public class Oferta {
 				+ this.getDestino().getNickname() + "! Preparando envío.");
 		this.destino.recibirNotificacion("Has aceptado el intercambio con el usuario" + this.origen.getNickname()
 				+ ". Los productos han salido de tu inventario.");
+		 this.estado = EstadoOferta.REALIZADA; 
 	}
 
 	public boolean haCaducado() {

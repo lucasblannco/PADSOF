@@ -118,7 +118,7 @@ public class Tienda {
     public void publicarParaIntercambio(Producto2Mano p) {
         if (p.getValoracion() != null && !this.getCatalogoIntercambio().contains(p)) {
             p.setBloqueado(false);
-            this.catalogoIntercambio.add(p);
+            this.catalogoIntercambio.add(p);//Lo añadimos al catalogo de productos de segunda mano
         }
     }
 

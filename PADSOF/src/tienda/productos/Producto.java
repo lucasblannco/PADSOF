@@ -34,4 +34,12 @@ public abstract class Producto {
 		this.descripcion = descripcion;
 	}
 
+	public String getImagenRuta() {
+		return imagenRuta;
+	}
+
+	public void setImagenRuta(String imagenRuta) {
+		this.imagenRuta = imagenRuta;
+	}
+
 }

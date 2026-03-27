@@ -3,7 +3,7 @@ package usuarios;
 import tienda.*;
 import productos.*;
 
-import java.security.PublicKey;
+
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,7 +28,11 @@ public class Empleado extends UsuarioRegistrado {
 		this.valoraciones = new ArrayList<>();
 		this.permisos = new TreeSet<>();
 	}
-
+	
+	public Empleado(String nickname,String password) {
+		
+	}
+	
 	@Override
 	public void mostrarPanelPrincipal() {
 	}
@@ -45,6 +49,7 @@ public class Empleado extends UsuarioRegistrado {
 			if (estado == EstadoProducto.NO_ACEPTADO) {
 				p.getPropietario()
 						.recibirNotificacion("El producto " + p.getNombre() + " ha sido rechazado al no cumplir .");
+				return;
 			}
 
 			Valoracion nuevaVal = new Valoracion(precio, estado, this);
@@ -62,15 +67,17 @@ public class Empleado extends UsuarioRegistrado {
 
 	}
 
-	public void confirmarIntercambio(Oferta o) {
+	public boolean confirmarIntercambio(Oferta o) {
 		if (!this.getPermisos().contains(TipoPermisos.CONFIRMACION_INTERCAMBIO)) {
 			System.out.println(
 					"El empleado " + this.getNickname() + "no tiene permisos paara hacer confirmacion de intercambios");
+		return false;
 		}
-		if (o.getEstado() != EstadoOferta.PENDIENTE) {
+		if (o.getEstado() != EstadoOferta.ACEPTADA) {
 			this.recibirNotificacion("La oferta no ha sido aceptada por ambos usuarios por lo que no se puede aceptar");
 		}
 		o.aceptarYEjecutar();
+		return true;
 	}
 //Hay que ver la cantidad supongio que habra una funcion de que si contine sacarlo rapido y ahi modificas la cantidad
 
@@ -209,7 +216,7 @@ public class Empleado extends UsuarioRegistrado {
 				unidades = unidades + cantidad;
 				p.setStockDisponible(unidades);
 				System.out.println("Se han añadiendo las unidades correctamente. Ahora el producto " + p.getId()
-						+ " tiene" + p.getStockDisponible() + ".");
+						+ " tiene " + p.getStockDisponible() + ".");
 				return true;
 			}
 		}
@@ -377,10 +384,8 @@ public class Empleado extends UsuarioRegistrado {
 	}
 
 	private void modificarProductosPackCreado() {
-		// TODO Auto-generated method stub
-
-	}
 	
+	}
 	
 	
 	
@@ -397,7 +402,7 @@ public class Empleado extends UsuarioRegistrado {
 		Tienda tienda = Tienda.getInstancia();
 		if (tienda.getStockVentas().contains(p)) {
 			for (ProductoVenta pro : tienda.getStockVentas()) {
-				if (pro.getId() == p.getId()) {
+				if (pro.getId().equals(p.getId())) {
 					pro.setDescripcion(descripcion);
 					return true;
 				}
@@ -406,8 +411,33 @@ public class Empleado extends UsuarioRegistrado {
 		}
 		return false;
 	}
+	public boolean modificarImagenProducto(ProductoVenta p, String imagen) {
+		if (p==null||imagen==null) {
+			System.out.println("No se ha podido modificar la imagen del producto");
+			return false;
+		}
+		if (!this.getPermisos().contains(TipoPermisos.MODIFICAR_PRODUCTO)) {
+			System.out.println("El empleado con id " + this.getId() + " y nombre " + this.getNickname()
+					+ " no tiene permiso para modificar la informacion de los productos");
+			return false;
+		}
+		Tienda tienda=Tienda.getInstancia();
+		if (tienda.getStockVentas().contains(p)) {
+			for (ProductoVenta pro: tienda.getStockVentas()) {
+				if (pro.getId().equals(p.getId())) {
+					p.setImagenRuta(imagen);
+					return true;
+				}
+				
+			}
+		}
+		System.out.println("No se ha encontrado el producto sobre el que se quiere realizar la modificacion");
+		return false;
+	}
+	
+	
+	
 
-//-Esra debe sobrar creo
 	public void asignarPermiso(TipoPermisos p) {
 		this.permisos.add(p);
 	}

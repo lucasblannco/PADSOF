@@ -5,5 +5,6 @@ public enum EstadoOferta {
     RECHAZADA,
     PENDIENTE,
     CADUCADA,
+    REALIZADA,
     RETIRADA
 }
