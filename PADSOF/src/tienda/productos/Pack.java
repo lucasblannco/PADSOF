@@ -10,6 +10,22 @@ public class Pack extends ProductoVenta {
 		this.productosIncluidos = new ArrayList<>();
 	}
 
+	public Pack(String nombre, String descripcion, String imagenRuta, double precioOficial, int stockDisponible,
+			ArrayList<ProductoVenta> productosIncluidos) {
+		super(nombre, descripcion, imagenRuta, precioOficial, stockDisponible);
+
+		this.productosIncluidos = new ArrayList<>(productosIncluidos);
+
+		double suma = 0;
+		for (ProductoVenta pv : this.productosIncluidos) {
+			suma += pv.getPrecioVenta();
+		}
+
+		if (precioOficial >= suma) {
+			throw new IllegalArgumentException("MAL PRECIO PACK");
+		}
+	}
+
 	public boolean addProducto(ProductoVenta p) {
 		if (p == null || contieneProducto(p)) {
 			return false;
@@ -43,6 +59,15 @@ public class Pack extends ProductoVenta {
 		}
 
 		p.setStockDisponible(p.getStockDisponible() + this.stockDisponible);
+		return true;
+	}
+
+	public boolean vaciarPack() {
+		for (ProductoVenta pv : this.productosIncluidos) {
+			if (!eliminarProducto(pv)) {
+				return false;
+			}
+		}
 		return true;
 	}
 
