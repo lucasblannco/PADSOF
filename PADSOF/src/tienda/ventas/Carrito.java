@@ -178,4 +178,8 @@ public class Carrito {
 		}
 		Carrito.tiempoMaximo = tiempo;
 	}
+	
+	public boolean caducar() {
+		
+	}
 }

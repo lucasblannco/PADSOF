@@ -1,93 +1,53 @@
 package tienda;
 
 import java.util.List;
-
 import usuarios.Cliente;
 
 public class Estadistica {
-	
-	private int nProductosVentas =1;
-	private int nUsuarioRegistrado =1;
-	private int nProducto2Mano = 1;
-	private int nVentas =1;
-	private int nDescuentos =1;
-	private int nIntercambiosFinalizados =1;
-	private int nCategorias =1;
 
-	 public int getnProductosVentas() {
-		return nProductosVentas;
-	}
+    // ── Singleton ──────────────────────────────────────
+    private static Estadistica instancia;
 
-	public void setnProductosVentas(int nProductosVentas) {
-		this.nProductosVentas = nProductosVentas;
-	}
+    private Estadistica() {} // constructor privado, nadie puede hacer new Estadistica()
 
-	public int getnUsuarioRegistrado() {
-		return nUsuarioRegistrado;
-	}
+    public static Estadistica getInstancia() {
+        if (instancia == null)
+            instancia = new Estadistica();
+        return instancia;
+    }
+    // ───────────────────────────────────────────────────
 
-	public void setnUsuarioRegistrado(int nUsuarioRegistrado) {
-		this.nUsuarioRegistrado = nUsuarioRegistrado;
-	}
+    private int nProductosVentas = 1;
+    private int nUsuarioRegistrado = 1;
+    private int nProducto2Mano = 1;
+    private int nVentas = 1;
+    private int nDescuentos = 1;
+    private int nIntercambiosFinalizados = 1;
+    private int nCategorias = 1;
 
-	public int getnProducto2Mano() {
-		return nProducto2Mano;
-	}
+    public int getnProductosVentas() { return nProductosVentas; }
+    public void setnProductosVentas(int n) { this.nProductosVentas = n; }
 
-	public void setnProducto2Mano(int nProducto2Mano) {
-		this.nProducto2Mano = nProducto2Mano;
-	}
+    public int getnUsuarioRegistrado() { return nUsuarioRegistrado; }
+    public void setnUsuarioRegistrado(int n) { this.nUsuarioRegistrado = n; }
 
-	public int getnVentas() {
-		return nVentas;
-	}
+    public int getnProducto2Mano() { return nProducto2Mano; }
+    public void setnProducto2Mano(int n) { this.nProducto2Mano = n; }
 
-	public void setnVentas(int nVentas) {
-		this.nVentas = nVentas;
-	}
+    public int getnVentas() { return nVentas; }
+    public void setnVentas(int n) { this.nVentas = n; }
 
-	public int getnDescuentos() {
-		return nDescuentos;
-	}
+    public int getnDescuentos() { return nDescuentos; }
+    public void setnDescuentos(int n) { this.nDescuentos = n; }
 
-	public void setnDescuentos(int nDescuentos) {
-		this.nDescuentos = nDescuentos;
-	}
+    public int getnIntercambiosFinalizados() { return nIntercambiosFinalizados; }
+    public void setnIntercambiosFinalizados(int n) { this.nIntercambiosFinalizados = n; }
 
-	public int getnIntercambiosFinalizados() {
-		return nIntercambiosFinalizados;
-	}
+    public int getnCategorias() { return nCategorias; }
+    public void setnCategorias(int n) { this.nCategorias = n; }
 
-	public void setnIntercambiosFinalizados(int nIntercambiosFinalizados) {
-		this.nIntercambiosFinalizados = nIntercambiosFinalizados;
-	}
+    // ── Métodos a implementar ──────────────────────────
+    public List<Cliente> obtenerClientesConMasCompras() { return null; }
+    public List<Cliente> obtenerClientesConMasIntercambios() { return null; }
 
-	public int getnCategorias() {
-		return nCategorias;
-	}
-
-	public void setnCategorias(int nCategorias) {
-		this.nCategorias = nCategorias;
-	}
-
-	 public List<Cliente> obtenerClientesConMasCompras(){
-		 
-	 }
-	 
-	 public List<Cliente> obtenerClientesConMasIntercambios(){
-		 
-	 }
-	 public double calcularIngresosRango(LocalDate inicio,  LocalDate fin) {
-		 
-	 }
-	 public List<double> calcularIngresosMeses(){
-		 
-	 }
-	 public doublecalcularIngresosVenta() {
-		 
-	 }
-	 public double calcularIngresosTasacion() {
-		 
-	 }
-	
 }

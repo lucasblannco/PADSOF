@@ -1,4 +1,4 @@
-package productos; // o el paquete donde tengas el main
+package productos; 
 import tienda.Tienda;
 
 import usuarios.Empleado;
@@ -26,7 +26,7 @@ public class pruebaCategoriasProductos {
         tienda.getCategorias().add(catJuegos);
 
         // Listas de categorías para cada producto
-        ArrayList<Categoria> categoriasComic = new ArrayList<>();
+		ArrayList<Categoria> categoriasComic = new ArrayList<>();
         categoriasComic.add(catComics);
 
         ArrayList<Categoria> categoriasJuego = new ArrayList<>();
@@ -50,7 +50,7 @@ public class pruebaCategoriasProductos {
         ProductoVenta spiderman = tienda.getStockVentas().get(0);
         ProductoVenta catan = tienda.getStockVentas().get(1);
 
-        // --- AÑADIR A CATEGORÍA (ya asignada al crear) ---
+        // Añadir a categoría
         System.out.println("\n=== AÑADIR PRODUCTO A CATEGORÍA YA ASIGNADA (debe fallar) ===");
         System.out.println("Añadir Spiderman a Comics (ya está): " + emp.añadirProductoACategoria(spiderman, catComics)); // false
 

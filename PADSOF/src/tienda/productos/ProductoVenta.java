@@ -2,6 +2,8 @@ package productos;
 
 import java.util.*;
 
+import tienda.Estadistica;
+
 public abstract class ProductoVenta extends Producto {
 	protected double precioOficial;
 	protected int stockDisponible;
@@ -14,6 +16,9 @@ public abstract class ProductoVenta extends Producto {
 			int stockDisponible) {
 
 		super(nombre, descripcion, imagenRuta);
+		Estadistica est = Estadistica.getInstancia();
+		this.id = "PV" + est.getnProductosVentas();
+		est.setnProductosVentas(est.getnProductosVentas() + 1);
 		this.precioOficial = precioOficial;
 		this.stockDisponible = stockDisponible;
 		this.reseñas = new ArrayList<Reseña>();
@@ -96,11 +101,16 @@ public abstract class ProductoVenta extends Producto {
 	}
 
 	public boolean addReseña(Reseña r) {
-		if (r == null) {
+		if (r == null)
 			return false;
-		}
-		if (this.reseñas.contains(r)) {
+		if (this.reseñas.contains(r))
 			return false;
+
+		for (Reseña existente : this.reseñas) {
+			if (existente.getAutor() != null && existente.getAutor().equals(r.getAutor())) {
+				System.out.println("Este cliente ya ha reseñado este producto.");
+				return false;
+			}
 		}
 
 		this.reseñas.add(r);

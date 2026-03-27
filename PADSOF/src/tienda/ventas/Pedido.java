@@ -4,6 +4,7 @@ import java.time.*;
 import java.util.*;
 
 import productos.ProductoVenta;
+import tienda.Estadistica;
 import usuarios.Cliente;
 
 public class Pedido {
@@ -24,50 +25,52 @@ public class Pedido {
 	private Descuento descuentoAplicado;
 
 	public Pedido(Cliente cliente, Carrito carrito) {
-		if (cliente == null) {
-			throw new IllegalArgumentException("El cliente no puede ser null");
-		}
+	    if (cliente == null) {
+	        throw new IllegalArgumentException("El cliente no puede ser null");
+	    }
 
-		if (carrito == null) {
-			throw new IllegalArgumentException("El carrito no puede ser null");
-		}
+	    if (carrito == null) {
+	        throw new IllegalArgumentException("El carrito no puede ser null");
+	    }
 
-		if (carrito.estaCaducado()) {
-			throw new IllegalArgumentException("No se puede crear un pedido desde un carrito caducado");
-		}
+	    if (carrito.estaCaducado()) {
+	        throw new IllegalArgumentException("No se puede crear un pedido desde un carrito caducado");
+	    }
 
-		if (carrito.estaVacio()) {
-			throw new IllegalArgumentException("No se puede crear un pedido con un carrito vacío");
-		}
+	    if (carrito.estaVacio()) {
+	        throw new IllegalArgumentException("No se puede crear un pedido con un carrito vacío");
+	    }
 
-		this.idPedido = "ORDER-" + UUID.randomUUID().toString().substring(0, 8);
-		this.fechaCreacion = LocalDateTime.now();
-		this.fechaPreparado = null;
-		this.fechaEntregado = null;
-		this.recogida_solicitada=false;
-		this.cliente = cliente;
-		this.lineas = new ArrayList<>();
-		this.pago = null;
-		this.estado = EstadoPedido.PENDIENTE_PAGO;
-		this.codigoRecogida = null;
-		this.descuentoAplicado = null;
+	    Estadistica est = Estadistica.getInstancia();
+	    this.idPedido = "ORDER-" + String.valueOf(est.getnVentas());
+	    est.setnVentas(est.getnVentas() + 1);
+	    this.fechaCreacion = LocalDateTime.now();
+	    this.fechaPreparado = null;
+	    this.fechaEntregado = null;
+	    this.recogida_solicitada = false;
+	    this.cliente = cliente;
+	    this.lineas = new ArrayList<>();
+	    this.pago = null;
+	    this.estado = EstadoPedido.PENDIENTE_PAGO;
+	    this.codigoRecogida = null;
+	    this.descuentoAplicado = null;
 
-		for (LineaCarrito linea : carrito.getLineas()) {
-			ProductoVenta producto = linea.getProducto();
-			int cantidad = linea.getCantidad();
-			double precioUnitarioFijado = producto.getPrecioVenta();
+	    for (LineaCarrito linea : carrito.getLineas()) {
+	        ProductoVenta producto = linea.getProducto();
+	        int cantidad = linea.getCantidad();
+	        double precioUnitarioFijado = producto.getPrecioVenta();
 
-			this.lineas.add(new LineaPedido(producto, cantidad, precioUnitarioFijado));
-		}
+	        this.lineas.add(new LineaPedido(producto, cantidad, precioUnitarioFijado));
+	    }
 
-		this.total = recalcularTotal();
+	    this.total = recalcularTotal();
 	}
 
 	private double recalcularTotal() {
 		double suma = 0.0;
 
 		for (LineaPedido linea : this.lineas) {
-			suma += linea.getSubtotal(); 
+			suma += linea.getSubtotal();
 		}
 
 		if (this.descuentoAplicado != null) {
@@ -95,13 +98,13 @@ public class Pedido {
 	}
 
 	public boolean marcarPreparado() {
-	    if (this.estado != EstadoPedido.PAGADO) {
-	        return false;
-	    }
+		if (this.estado != EstadoPedido.PAGADO) {
+			return false;
+		}
 
-	    this.estado = EstadoPedido.LISTO_PARA_RECOGER;
-	    this.fechaPreparado = LocalDateTime.now();
-	    return true;
+		this.estado = EstadoPedido.LISTO_PARA_RECOGER;
+		this.fechaPreparado = LocalDateTime.now();
+		return true;
 	}
 
 	public boolean marcarEntregado() {
@@ -209,15 +212,15 @@ public class Pedido {
 	}
 
 	public boolean setDescuentoAplicado(Descuento descuentoAplicado) {
-	    if (this.estado != EstadoPedido.PENDIENTE_PAGO) {
-	        return false;
-	    }
+		if (this.estado != EstadoPedido.PENDIENTE_PAGO) {
+			return false;
+		}
 
-	    this.descuentoAplicado = descuentoAplicado;
-	    this.total = recalcularTotal();
-	    return true;
+		this.descuentoAplicado = descuentoAplicado;
+		this.total = recalcularTotal();
+		return true;
 	}
-	
+
 	public boolean isCaducado() {
 		if (this.estado != EstadoPedido.PENDIENTE_PAGO) {
 			return false;
@@ -273,7 +276,7 @@ public class Pedido {
 	public Descuento getDescuentoAplicado() {
 		return this.descuentoAplicado;
 	}
-	
+
 	public static void setTiempoMaximo(Duration tiempo) {
 		if (tiempo == null || tiempo.isZero() || tiempo.isNegative()) {
 			throw new IllegalArgumentException("El tiempo máximo del pedido debe ser positivo");

@@ -37,9 +37,9 @@ public class GestorTiempo {
 			String idUsuario = entry.getKey();
 			Carrito carrito1 = entry.getValue();
 
-			if (carrito != null && carrito.estaCaducado()) {
-				carrito.caducar(); // devuelve stock y lo deja inutilizable
-				carritosPorUsuario.remove(idUsuario, carrito);
+			if (carrito1 != null && carrito1.estaCaducado()) {
+				carrito1.caducar(); // devuelve stock y lo deja inutilizable
+				carritosPorUsuario.remove(idUsuario, carrito1);
 			}
 		}
 	}

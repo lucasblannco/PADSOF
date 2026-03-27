@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 import tienda.Tienda;
+import tienda.Estadistica;
 import tienda.Productos.*;
 public abstract class UsuarioRegistrado {
 	protected String name;
@@ -18,13 +19,13 @@ public abstract class UsuarioRegistrado {
         //this.notificaciones = new ArrayList<>();
     }
 
-    public  UsuarioRegistrado(String nickname, String password,String email) {
-    	//HAY QUE COMPROBAR QUE EL USUARIO EXISTE
-    	this.id = "USERREG-" + java.util.UUID.randomUUID().toString().substring(0,8);
-    	this.nickname = nickname;
-    	this.password = password;
-    	this.email = email;
-    	
+    public UsuarioRegistrado(String nickname, String password, String email) { 
+        Estadistica est = Estadistica.getInstancia();
+        this.id = "USERREG-" + String.valueOf(est.getnUsuarioRegistrado());
+        this.nickname = nickname;
+        this.password = password;
+        this.email = email;
+        est.setnUsuarioRegistrado(est.getnUsuarioRegistrado() + 1);
     }
     
     public List<ProductoVenta> navegarCatalogoNuevos() {

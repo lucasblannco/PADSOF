@@ -1,11 +1,5 @@
 package productos;
 
 public enum EstadoProducto {
-    PERFECTO,
-    MUY_BUENO,
-    USO_LIGERO,
-    USO_EVIDENTE,
-    MUY_USADO,
-    DAÑADO,
-    NO_ACEPTADO 
+	PERFECTO, MUY_BUENO, USO_LIGERO, USO_EVIDENTE, MUY_USADO, DAÑADO, NO_ACEPTADO
 }

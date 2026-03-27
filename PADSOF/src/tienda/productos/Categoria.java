@@ -20,15 +20,14 @@ public class Categoria {
 			return false;
 		}
 		if (this.productos.contains(p)) {
-			System.out.println("La categoria "+ this.getNombre()+" ya contiene al producto "+ p.getNombre()+" . No se puede añadir.");
+			System.out.println("La categoria " + this.getNombre() + " ya contiene al producto " + p.getNombre()
+					+ " . No se puede añadir.");
 			return false;
 		}
 
 		this.productos.add(p);
 
-	
-		 p.addCategoriaInterno(this);
-		
+		p.addCategoriaInterno(this);
 
 		return true;
 	}
@@ -38,13 +37,13 @@ public class Categoria {
 			return false;
 		}
 		if (!this.productos.contains(p)) {
-			System.out.println("La categoria "+this.getNombre()+" no contiene al producto "+p.getNombre()+". No se puede eliminar");
+			System.out.println("La categoria " + this.getNombre() + " no contiene al producto " + p.getNombre()
+					+ ". No se puede eliminar");
 			return false;
 		}
 
 		this.productos.remove(p);
 
-	
 		p.deleteCategoriaInterno(this);
 		return true;
 	}
@@ -67,7 +66,7 @@ public class Categoria {
 
 	@Override
 	public String toString() {
-		return "Categoria [nombre=" + nombre + ", descripcion=" + descripcion  + "]";
+		return "Categoria [nombre=" + nombre + ", descripcion=" + descripcion + "]";
 	}
 
 	public String getNombre() {
@@ -77,6 +76,9 @@ public class Categoria {
 	public void setNombre(String nombre) {
 		this.nombre = nombre;
 	}
-	
-	
+
+	public ArrayList<ProductoVenta> getProductos() {
+		return productos;
+	}
+
 }

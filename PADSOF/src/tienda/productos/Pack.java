@@ -16,8 +16,7 @@ public class Pack extends ProductoVenta {
 		}
 		if (descuentoPorcentaje < 0) {
 			descuentoPorcentaje = 0;
-		}
-		if (descuentoPorcentaje > 1) {
+		} else if (descuentoPorcentaje > 1) {
 			descuentoPorcentaje = 1;
 		}
 		this.descuentoPorcentaje = descuentoPorcentaje;
@@ -53,13 +52,13 @@ public class Pack extends ProductoVenta {
 
 	@Override
 	public String toString() {
-		String s = null;
+		String s = "";
 
 		for (ProductoVenta pv : this.productosIncluidos) {
 			s = s + pv.toString() + "\n";
 		}
 
-		return super.toString() + "/n" + s;
+		return super.toString() + "\n" + s;
 	}
 
 }

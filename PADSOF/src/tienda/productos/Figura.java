@@ -22,5 +22,5 @@ public class Figura extends ProductoVenta {
 		return "Figura [altura=" + altura + ", ancho=" + ancho + ", largo=" + largo + ", material=" + material
 				+ ", marca=" + marca + ", toString()=" + super.toString() + "]";
 	}
-	
+
 }

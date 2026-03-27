@@ -18,7 +18,5 @@ public class Comic extends ProductoVenta {
 		return "Comic [numeroPaginas=" + numeroPaginas + ", editorial=" + editorial + ", añoPublicacion="
 				+ añoPublicacion + ", toString()=" + super.toString() + "]";
 	}
-	
-
 
 }

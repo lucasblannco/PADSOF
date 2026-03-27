@@ -5,6 +5,8 @@ import intercambios.*;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.ArrayList;
+
+import tienda.Estadistica;
 import tienda.Tienda;
 import productos.*;
 import usuarios.*;
@@ -20,7 +22,9 @@ public class Oferta {
 
 	public Oferta(Cliente origen, Cliente destino, List<Producto2Mano> productosOfertados,
 			List<Producto2Mano> productosSolicitados) {
-		this.id = "OFER-" + java.util.UUID.randomUUID().toString().substring(0, 8);
+		Estadistica est = Estadistica.getInstancia();
+		this.id = "OFER-" + String.valueOf(est.getnIntercambiosFinalizados());
+		est.setnIntercambiosFinalizados(est.getnIntercambiosFinalizados() + 1);
 		this.fechaOferta = LocalDateTime.now();
 		this.estado = EstadoOferta.PENDIENTE;
 		this.origen = origen;
@@ -38,13 +42,14 @@ public class Oferta {
 		// mas ofertas
 		this.origen.getOfertasPendientes().remove(this);
 		this.destino.getOfertasPendientes().remove(this);
-		this.origen.recibirNotificacion("Tu oferta con ID " + this.getId() + " ha sido RECHAZADA por el cliente"+ this.destino.getNickname()+".");
+		this.origen.recibirNotificacion("Tu oferta con ID " + this.getId() + " ha sido RECHAZADA por el cliente"
+				+ this.destino.getNickname() + ".");
 	}
 
 	public void aceptarOferta() {
-		this.estado=EstadoOferta.ACEPTADA;
+		this.estado = EstadoOferta.ACEPTADA;
 	}
-	
+
 	public void aceptarYEjecutar() {
 		origen.getHistorialIntercambios().add(this);
 		destino.getHistorialIntercambios().add(this);
@@ -61,8 +66,10 @@ public class Oferta {
 			// AHORA SE ENVIARIAN
 		}
 		Tienda.getInstancia().registrarIntercambioFinalizado(this);
-		this.origen.recibirNotificacion("¡Intercambio ID " + this.id + " aceptado por el usuario"+ this.getDestino().getNickname()+ "! Preparando envío.");
-		this.destino.recibirNotificacion("Has aceptado el intercambio con el usuario" + this.origen.getNickname()+". Los productos han salido de tu inventario.");
+		this.origen.recibirNotificacion("¡Intercambio ID " + this.id + " aceptado por el usuario"
+				+ this.getDestino().getNickname() + "! Preparando envío.");
+		this.destino.recibirNotificacion("Has aceptado el intercambio con el usuario" + this.origen.getNickname()
+				+ ". Los productos han salido de tu inventario.");
 	}
 
 	public boolean haCaducado() {

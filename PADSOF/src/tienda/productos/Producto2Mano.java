@@ -2,6 +2,7 @@ package productos;
 
 import usuarios.Cliente;
 import usuarios.Empleado;
+import tienda.Estadistica;
 
 public class Producto2Mano extends Producto {
 	private Valoracion valoracion = null;
@@ -12,14 +13,20 @@ public class Producto2Mano extends Producto {
 	public Producto2Mano(String nombre, String descripcion, String imagenRuta, Valoracion valoracion,
 			Cliente propietario, boolean bloqueado, boolean visible) {
 		super(nombre, descripcion, imagenRuta);
+		Estadistica est = Estadistica.getInstancia();
+		this.id = "P2M" + String.valueOf(est.getnProducto2Mano());
 		this.valoracion = valoracion;
 		this.propietario = propietario;
 		this.bloqueado = bloqueado;
 		this.visible = visible;
+		est.setnProducto2Mano(est.getnProducto2Mano() + 1);
 	}
 
 	public Producto2Mano(Cliente propietario, String nombre, String descripcion, String imagenRuta) {
 		super(nombre, descripcion, imagenRuta);
+		Estadistica est = Estadistica.getInstancia();
+		this.id = "P2M" + String.valueOf(est.getnProducto2Mano());
+		est.setnProducto2Mano(est.getnProducto2Mano() + 1);
 		this.valoracion = null;
 		this.propietario = propietario;
 		this.bloqueado = true;
@@ -39,8 +46,8 @@ public class Producto2Mano extends Producto {
 			return false;
 		}
 
-		this.visible = true;
-		this.bloqueado = false;
+		this.visible = false;
+		this.bloqueado = true;
 		return true;
 	}
 
@@ -78,5 +85,4 @@ public class Producto2Mano extends Producto {
 				+ ", visible=" + visible + ", toString()=" + super.toString() + "]";
 	}
 
-	
 }
