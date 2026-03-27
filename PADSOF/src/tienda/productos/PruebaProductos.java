@@ -39,6 +39,7 @@ public class PruebaProductos {
 
 	
 		System.out.println("\nCATEGORIAS");
+		System.out.println("\n");
 		Categoria catComics = new Categoria("Comics", "desc");
 		Categoria catJuegos = new Categoria("Juegos", "desc");
 
@@ -120,13 +121,13 @@ public class PruebaProductos {
 		check("Reseña null falla", !c2.addReseña(null));
 		check("Mismo cliente no puede reseñar dos veces", !c2.addReseña(new Reseña(cli, null, 5.0, "otro")));
 
-<<<<<<< HEAD
+
 		/**/
 		System.out.println("\n SEGUNDA MANO ");
-=======
+
 		/*Miramos si los estados de segunda mano funciona el paso de uno a otro o no*/
 		System.out.println("\n============= SEGUNDA MANO =============");
->>>>>>> a8ba4ba6d80b78f051264932e344444d4ab15842
+
 		Empleado emp = new Empleado("ana", "pass", "ana@mail.com");
 		Producto2Mano p2m = new Producto2Mano("ProductoSegunda1", "desc", "", null, cli, true, false);
 

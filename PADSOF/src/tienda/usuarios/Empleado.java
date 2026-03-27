@@ -75,123 +75,121 @@ public class Empleado extends UsuarioRegistrado {
 //Hay que ver la cantidad supongio que habra una funcion de que si contine sacarlo rapido y ahi modificas la cantidad
 
 	/// Funcion para añadir un nuevo producto a la tienda
-		public boolean añadirProducto_nuevo(String letra, String nombre, String descripcion, String imagen,
-				double precioOficial, int Stock, ArrayList<Categoria> categorias, int numpaginas, String editorial,
-				int añoPublicacion, double altura, double ancho, double largo, String material, String marca,
-				int minNumjugadores, int maxNumjugadores, int minEdad, int maxEdad, String Estilo) {
-	
-			if (!this.getPermisos().contains(TipoPermisos.GESTION_STOCK)) {
-				System.out.println("No tienes permiso para trabajar con productos");
-				return false;
-			}
-			Tienda tienda = Tienda.getInstancia();
-	
-			// 1. Validar atributos básicos
-			if (nombre == null || precioOficial <= 0 || Stock <= 0 || descripcion == null || imagen == null) {
-				System.out.println("Los atributos de producto deben aparecer correctamente");
-				return false;
-			}
-			if (categorias == null) {
-				return false;
-			}
-			boolean flag = true;
-	
-			for (Categoria c : categorias) {
-				if (!tienda.getCategorias().contains(c)) {
-					flag = false;
-					break;
-				}
-			}
-	
-			if (!flag) {
-				System.out.println("Las categorias que se introduzcan deben existir en la tienda");
-				return false;
-			}
-	
-			// 2. Validar letra ANTES de comprobar existencia
-			if (letra == null || letra.length() != 1) {
-				this.recibirNotificacion(
-						"El tipo de producto que has intentado crear no es correcta. Deben ser Comics(C), Figuras(F) o Juegos(J)");
-				return false;
-			}
-	
-			
-	
-			switch (letra.toUpperCase()) {
-			case "C":
-				if (numpaginas <= 0 || editorial == null || añoPublicacion <= 0) {
-					System.out.println("Estas añadiendo un comic, los atributos deben cumplir las condiciones necesarias");
-					return false;
-				}
-				ProductoVenta comic = new Comic(nombre, descripcion, imagen, precioOficial, Stock, numpaginas, editorial,
-						añoPublicacion);
-				tienda.añadirProducto(comic);
-				for (Categoria cats:categorias) {
-					
-				cats.addProducto(comic);
-					
-				}
-				this.recibirNotificacion("Has añadido el comic " + comic.getNombre() + " a la tienda");
-				return true; 
-	
-			case "J":
-				if (minEdad <= 0) {
-					System.out.println("La edad minima del juego tiene que ser mayor que 0");
-					return false;
-				}
-				if (maxEdad <= 0 || maxEdad > 100) {
-					System.out.println("La edad maxima del juego debe estar entre 1 y 100 años");
-					return false;
-				}
-				if (minNumjugadores <= 0) {
-					System.out.println("El juego tendrá mínimo 1 jugador");
-					return false;
-				}
-				if (maxNumjugadores <= 0) {
-					System.out.println("El juego debe tener por lo menos un jugador");
-					return false;
-				}
-				ProductoVenta juego = new JuegoMesa(nombre, descripcion, imagen, precioOficial, Stock, minNumjugadores,
-						maxNumjugadores, minEdad, maxEdad, Estilo);
-				tienda.añadirProducto(juego);
-				for (Categoria cats:categorias) {
-					
-					cats.addProducto(juego);
-						
-					}
-				this.recibirNotificacion("Has añadido el juego " + juego.getNombre() + " a la tienda");
-				return true; // <-- faltaba el return Y el break
-	
-			case "F":
-				if (altura <= 0 || ancho <= 0 || largo <= 0) {
-					System.out.println("Las dimensiones deben ser positivas");
-					return false;
-				}
-				if (material == null) {
-					System.out.println("Las figuras deben tener material");
-					return false; // <-- faltaba el return
-				}
-				if (marca == null) {
-					System.out.println("Las figuras deben tener marca");
-					return false; // <-- faltaba el return
-				}
-				ProductoVenta figura = new Figura(nombre, descripcion, imagen, precioOficial, Stock, altura, ancho, largo,
-						material, marca);
-				tienda.añadirProducto(figura);
-				for (Categoria cats:categorias) {
-					
-					cats.addProducto(figura);
-						
-					}
-				this.recibirNotificacion("Has añadido la figura " + figura.getNombre() + " a la tienda");
-				return true;
-	
-			default:
-				this.recibirNotificacion(
-						"El tipo de producto que has intentado crear no es correcta. Deben ser Comics(C), Figuras(F) o Juegos(J)");
-				return false; // <-- cambiado de throw a return false, más consistente con el resto
+	public boolean añadirProducto_nuevo(String letra, String nombre, String descripcion, String imagen,
+			double precioOficial, int Stock, ArrayList<Categoria> categorias, int numpaginas, String editorial,
+			int añoPublicacion, double altura, double ancho, double largo, String material, String marca,
+			int minNumjugadores, int maxNumjugadores, int minEdad, int maxEdad, String Estilo) {
+
+		if (!this.getPermisos().contains(TipoPermisos.GESTION_STOCK)) {
+			System.out.println("No tienes permiso para trabajar con productos");
+			return false;
+		}
+		Tienda tienda = Tienda.getInstancia();
+
+		// 1. Validar atributos básicos
+		if (nombre == null || precioOficial <= 0 || Stock <= 0 || descripcion == null || imagen == null) {
+			System.out.println("Los atributos de producto deben aparecer correctamente");
+			return false;
+		}
+		if (categorias == null) {
+			return false;
+		}
+		boolean flag = true;
+
+		for (Categoria c : categorias) {
+			if (!tienda.getCategorias().contains(c)) {
+				flag = false;
+				break;
 			}
 		}
+
+		if (!flag) {
+			System.out.println("Las categorias que se introduzcan deben existir en la tienda");
+			return false;
+		}
+
+		// 2. Validar letra ANTES de comprobar existencia
+		if (letra == null || letra.length() != 1) {
+			this.recibirNotificacion(
+					"El tipo de producto que has intentado crear no es correcta. Deben ser Comics(C), Figuras(F) o Juegos(J)");
+			return false;
+		}
+
+		switch (letra.toUpperCase()) {
+		case "C":
+			if (numpaginas <= 0 || editorial == null || añoPublicacion <= 0) {
+				System.out.println("Estas añadiendo un comic, los atributos deben cumplir las condiciones necesarias");
+				return false;
+			}
+			ProductoVenta comic = new Comic(nombre, descripcion, imagen, precioOficial, Stock, numpaginas, editorial,
+					añoPublicacion);
+			tienda.añadirProducto(comic);
+			for (Categoria cats : categorias) {
+
+				cats.addProducto(comic);
+
+			}
+			this.recibirNotificacion("Has añadido el comic " + comic.getNombre() + " a la tienda");
+			return true;
+
+		case "J":
+			if (minEdad <= 0) {
+				System.out.println("La edad minima del juego tiene que ser mayor que 0");
+				return false;
+			}
+			if (maxEdad <= 0 || maxEdad > 100) {
+				System.out.println("La edad maxima del juego debe estar entre 1 y 100 años");
+				return false;
+			}
+			if (minNumjugadores <= 0) {
+				System.out.println("El juego tendrá mínimo 1 jugador");
+				return false;
+			}
+			if (maxNumjugadores <= 0) {
+				System.out.println("El juego debe tener por lo menos un jugador");
+				return false;
+			}
+			ProductoVenta juego = new JuegoMesa(nombre, descripcion, imagen, precioOficial, Stock, minNumjugadores,
+					maxNumjugadores, minEdad, maxEdad, Estilo);
+			tienda.añadirProducto(juego);
+			for (Categoria cats : categorias) {
+
+				cats.addProducto(juego);
+
+			}
+			this.recibirNotificacion("Has añadido el juego " + juego.getNombre() + " a la tienda");
+			return true; // <-- faltaba el return Y el break
+
+		case "F":
+			if (altura <= 0 || ancho <= 0 || largo <= 0) {
+				System.out.println("Las dimensiones deben ser positivas");
+				return false;
+			}
+			if (material == null) {
+				System.out.println("Las figuras deben tener material");
+				return false; // <-- faltaba el return
+			}
+			if (marca == null) {
+				System.out.println("Las figuras deben tener marca");
+				return false; // <-- faltaba el return
+			}
+			ProductoVenta figura = new Figura(nombre, descripcion, imagen, precioOficial, Stock, altura, ancho, largo,
+					material, marca);
+			tienda.añadirProducto(figura);
+			for (Categoria cats : categorias) {
+
+				cats.addProducto(figura);
+
+			}
+			this.recibirNotificacion("Has añadido la figura " + figura.getNombre() + " a la tienda");
+			return true;
+
+		default:
+			this.recibirNotificacion(
+					"El tipo de producto que has intentado crear no es correcta. Deben ser Comics(C), Figuras(F) o Juegos(J)");
+			return false; // <-- cambiado de throw a return false, más consistente con el resto
+		}
+	}
 
 	public boolean añadirUnidadesProductoExistente(String id, int cantidad) {
 		if (!this.getPermisos().contains(TipoPermisos.GESTION_STOCK)) {
@@ -264,127 +262,146 @@ public class Empleado extends UsuarioRegistrado {
 		System.out.println("No se ha podido entregar el pedido correctamente");
 		return false;
 	}
-	
-	
-	public boolean añadirProductoACategoria(ProductoVenta p,Categoria c) {
-		Tienda tienda=Tienda.getInstancia();
-		if (p==null||c==null) {
+
+	public boolean añadirProductoACategoria(ProductoVenta p, Categoria c) {
+		Tienda tienda = Tienda.getInstancia();
+		if (p == null || c == null) {
 			System.out.println("El producto o la categoria no pueden ser null");
 			return false;
 		}
-		 if (!this.getPermisos().contains(TipoPermisos.GESTION_CATEGORIAS)) {
-		        System.out.println("El empleado "+ this.getNickname()+ " no tiene el permiso de gestion de categorias");
-		        return false;
-		    }
-		
+		if (!this.getPermisos().contains(TipoPermisos.GESTION_CATEGORIAS)) {
+			System.out.println("El empleado " + this.getNickname() + " no tiene el permiso de gestion de categorias");
+			return false;
+		}
+
 		if (!tienda.getStockVentas().contains(p)) {
-			System.out.println("El producto "+ p.getId()+ "no existe en la tienda. No se puede añadir a ninguna categoria");
+			System.out.println(
+					"El producto " + p.getId() + "no existe en la tienda. No se puede añadir a ninguna categoria");
 			return false;
 		}
 		if (!tienda.getCategorias().contains(c)) {
-			System.out.println("La tienda no tiene ninguna categoria "+ c.getNombre()+". ");
+			System.out.println("La tienda no tiene ninguna categoria " + c.getNombre() + ". ");
 			return false;
 		}
 		return c.addProducto(p);
 	}
-	
-	public boolean eliminarProductoDeCategoria(ProductoVenta p,Categoria c) {
-		Tienda tienda=Tienda.getInstancia();
-		if (p==null || c==null) {
+
+	public boolean eliminarProductoDeCategoria(ProductoVenta p, Categoria c) {
+		Tienda tienda = Tienda.getInstancia();
+		if (p == null || c == null) {
 			System.out.println("El producto o la categoria no pueden ser null");
 			return false;
 		}
-		 if (!this.getPermisos().contains(TipoPermisos.GESTION_CATEGORIAS)) {
-		        System.out.println("El empleado "+ this.getNickname()+ " no tiene el permiso de gestion de categorias");
-		        return false;
-		    }
-		 if (!tienda.getStockVentas().contains(p)) {
-				System.out.println("El producto "+ p.getId()+ "no existe en la tienda. No se puede quitar de ninguna categoria");
+		if (!this.getPermisos().contains(TipoPermisos.GESTION_CATEGORIAS)) {
+			System.out.println("El empleado " + this.getNickname() + " no tiene el permiso de gestion de categorias");
+			return false;
+		}
+		if (!tienda.getStockVentas().contains(p)) {
+			System.out.println(
+					"El producto " + p.getId() + "no existe en la tienda. No se puede quitar de ninguna categoria");
+			return false;
+		}
+		if (!tienda.getCategorias().contains(c)) {
+			System.out.println("La tienda no tiene ninguna categoria " + c.getNombre() + ". ");
+			return false;
+		}
+		return c.deleteProducto(p);
+	}
+
+	public boolean crearPack(String nombre, String descripcion, String imagen, double precioOficial, int stock,
+			ArrayList<ProductoVenta> productos) {
+
+		if (!this.getPermisos().contains(TipoPermisos.GESTION_PACKS)) {
+			System.out.println("No tienes permiso para gestionar packs");
+			return false;
+		}
+
+		if (nombre == null || descripcion == null || imagen == null) {
+			System.out.println("El nombre, descripción e imagen no pueden ser null");
+			return false;
+		}
+
+		if (productos == null || productos.size() <= 1) {
+			System.out.println("El pack debe tener al menos dos producto");
+			return false;
+		}
+
+		if (stock <= 0) {
+			System.out.println("El stock debe ser mayor que 0");
+			return false;
+		}
+
+		Tienda tienda = Tienda.getInstancia();
+
+		// Comprobar que todos los productos existen en la tienda
+		for (ProductoVenta p : productos) {
+			if (p == null || !tienda.getStockVentas().contains(p)) {
+				System.out.println("Algún producto de los que has solicitado no existe en la tienda");
 				return false;
 			}
-			if (!tienda.getCategorias().contains(c)) {
-				System.out.println("La tienda no tiene ninguna categoria "+ c.getNombre()+". ");
-				return false;
+		}
+		// comprobamos que el numero de unidades de cada pack comprovbamos que haya
+		// suficientes
+		int stockMinimo = Integer.MAX_VALUE;
+		for (ProductoVenta p : productos) {
+			if (p.getStockDisponible() < stockMinimo) {
+				stockMinimo = p.getStockDisponible();
 			}
-			return c.deleteProducto(p);
+		}
+
+		if (stock > stockMinimo) {
+			System.out.println("El stock del pack no puede superar el mínimo de sus productos (" + stockMinimo + ")");
+			return false;
+		}
+
+		double suma = 0;
+		for (ProductoVenta pv : productos) {
+			suma += pv.getPrecioVenta();
+		}
+
+		if (precioOficial >= suma - 1) {
+			System.out.println(
+					"El precio del pack tiene que ser menor al menos un eruro que la suma de los productos que contenga");
+		}
+		Pack pack = new Pack(nombre, descripcion, imagen, precioOficial, stock, productos);
+
+		pack.setStockDisponible(stock);
+
+		for (ProductoVenta pr : productos) {
+			int unidades = pr.getStockDisponible();
+			pr.setStockDisponible(unidades - stock);
+		}
+		tienda.añadirProducto(pack);
+		this.recibirNotificacion("Has creado el pack " + nombre + " correctamente con el id " + pack.getId());
+		return true;
+	}
+
+	private void modificarProductosPackCreado() {
+		// TODO Auto-generated method stub
+
 	}
 	
-	public Pack crearPack(String nombre, String descripcion, String imagen,double precioOficial,
-	         int stock, ArrayList<ProductoVenta> productos) {
-
-	    if (!this.getPermisos().contains(TipoPermisos.GESTION_PACKS)) {
-	        System.out.println("No tienes permiso para gestionar packs");
-	        return null;
-	    }
-
-	    
-	    if (nombre == null || descripcion == null || imagen == null) {
-	        System.out.println("El nombre, descripción e imagen no pueden ser null");
-	        return null;
-	    }
-
-	    if (productos == null || productos.size()<=1) {
-	        System.out.println("El pack debe tener al menos dos producto");
-	        return null;
-	    }
-
-	    if (stock <= 0) {
-	        System.out.println("El stock debe ser mayor que 0");
-	        return null;
-	    }
-
-	    Tienda tienda = Tienda.getInstancia();
-
-	    // Comprobar que todos los productos existen en la tienda
-	    for (ProductoVenta p : productos) {
-	        if (p == null || !tienda.getStockVentas().contains(p)) {
-	            System.out.println("Algún producto de los que has solicitado no existe en la tienda");
-	            return null;
-	        }
-	    }
-	  
-	    int stockMinimo = Integer.MAX_VALUE;
-	    for (ProductoVenta p : productos) {
-	        if (p.getStockDisponible() < stockMinimo) {
-	            stockMinimo = p.getStockDisponible();
-	        }
-	    }
-
-	    if (stock > stockMinimo) {
-	        System.out.println("El stock del pack no puede superar el mínimo de sus productos (" + stockMinimo + ")");
-	        return null;
-	    }
-
-	    Pack pack = new Pack(nombre, descripcion, imagen, descuentoPorcentaje);
-	    for (ProductoVenta p : productos) {
-	        pack.addProducto(p);
-	    }
-	    pack.setStockDisponible(stock);
-
-	    tienda.añadirProducto(pack);
-	    this.recibirNotificacion("Has creado el pack " + nombre + " correctamente");
-	    return pack;
-	}
 	
 	
 	
 	public boolean modificarDescripcionProducto(ProductoVenta p, String descripcion) {
-		if (p==null||descripcion==null) {
+		if (p == null || descripcion == null) {
 			System.out.println("No se ha podido modificaer la descripcion del producto");
 			return false;
 		}
 		if (!this.getPermisos().contains(TipoPermisos.MODIFICAR_PRODUCTO)) {
-			System.out.println("El empleado con id " + this.getId()+ " y nombre "+ this.getNickname()+ " no tiene permiso para modificar la informacion de los productos");
+			System.out.println("El empleado con id " + this.getId() + " y nombre " + this.getNickname()
+					+ " no tiene permiso para modificar la informacion de los productos");
 			return false;
 		}
-		Tienda tienda=Tienda.getInstancia();
+		Tienda tienda = Tienda.getInstancia();
 		if (tienda.getStockVentas().contains(p)) {
-			for (ProductoVenta pro:tienda.getStockVentas()) {
-				if (pro.getId()==p.getId()) {
+			for (ProductoVenta pro : tienda.getStockVentas()) {
+				if (pro.getId() == p.getId()) {
 					pro.setDescripcion(descripcion);
 					return true;
 				}
-				
+
 			}
 		}
 		return false;

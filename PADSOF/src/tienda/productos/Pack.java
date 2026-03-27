@@ -16,14 +16,6 @@ public class Pack extends ProductoVenta {
 
 		this.productosIncluidos = new ArrayList<>(productosIncluidos);
 
-		double suma = 0;
-		for (ProductoVenta pv : this.productosIncluidos) {
-			suma += pv.getPrecioVenta();
-		}
-
-		if (precioOficial >= suma) {
-			throw new IllegalArgumentException("MAL PRECIO PACK");
-		}
 	}
 
 	public boolean addProducto(ProductoVenta p) {
