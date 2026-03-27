@@ -12,7 +12,7 @@ public class LineaCarrito {
 	}
 
 	public boolean productoPertence(ProductoVenta p) {
-		if (producto.getId() == p.getId()) {
+		if (producto.getId().equals(p.getId())) {
 			return true;
 		}
 		return false;

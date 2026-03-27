@@ -1,7 +1,5 @@
 package productos;
 
-import java.util.*;
-
 public abstract class Producto {
 	protected String id;
 	protected String nombre;

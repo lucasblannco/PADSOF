@@ -38,7 +38,7 @@ public class GestorTiempo {
 			Carrito carrito1 = entry.getValue();
 
 			if (carrito1 != null && carrito1.estaCaducado()) {
-				carrito1.caducar(); // devuelve stock y lo deja inutilizable
+				carrito1.caducar();
 				carritosPorUsuario.remove(idUsuario, carrito1);
 			}
 		}
@@ -57,8 +57,8 @@ public class GestorTiempo {
 			while (it.hasNext()) {
 				Pedido pedido = it.next();
 
-				if (pedido != null && pedido.haSuperadoTiempoMaximoPendientePago()) {
-					pedido.cancelarPedido(); // devuelve stock y pasa a CANCELADO
+				if (pedido != null && pedido.isCaducado()) {
+					pedido.cancelarPedido();
 					it.remove();
 				}
 			}
@@ -97,7 +97,7 @@ public class GestorTiempo {
 		Carrito carrito = carritosPorUsuario.remove(idUsuario);
 
 		if (carrito != null) {
-			carrito.cancelar();
+			carrito.vaciarCarrito();
 		}
 	}
 
@@ -120,17 +120,10 @@ public class GestorTiempo {
 
 		if (carrito.estaVacio()) {
 			throw new IllegalStateException("El carrito está vacío");
-		}
+		}1
 
 		Pedido pedido = new Pedido(cliente, carrito);
-
-		boolean confirmado = carrito.confirmarCompra();
-		if (!confirmado) {
-			throw new IllegalStateException("No se pudo confirmar el carrito");
-		}
-
 		carritosPorUsuario.remove(idUsuario, carrito);
-
 		pedidosPendientesPorUsuario.computeIfAbsent(idUsuario, k -> new ArrayList<>()).add(pedido);
 
 		return pedido;

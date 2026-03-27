@@ -1,7 +1,7 @@
 package productos;
 
 import usuarios.Cliente;
-import java.util.*;
+import tienda.Estadistica;
 import java.time.*;
 
 public class Reseña {
@@ -13,7 +13,9 @@ public class Reseña {
 	private LocalDate fecha;
 
 	public Reseña(Cliente autor, ProductoVenta productoV, double puntuacion, String comentario) {
-		this.idReseña = UUID.randomUUID().toString().substring(0, 8);
+		Estadistica est = Estadistica.getInstancia();
+		this.idReseña = "RESEÑA" + String.valueOf(est.getnReseñas());
+		est.setnReseñas(est.getnReseñas() + 1);
 		this.autor = autor;
 		this.producto = null;
 
