@@ -115,13 +115,7 @@ public class Empleado extends UsuarioRegistrado {
 				return false;
 			}
 	
-			// 3. Comprobar si ya existe
-			for (ProductoVenta p : tienda.getStockVentas()) {
-				if (p.getNombre().equalsIgnoreCase(nombre)) {
-					this.recibirNotificacion("El producto '" + nombre + "' ya existe en la tienda.");
-					return false;
-				}
-			}
+			
 	
 			switch (letra.toUpperCase()) {
 			case "C":
@@ -315,21 +309,22 @@ public class Empleado extends UsuarioRegistrado {
 			return c.deleteProducto(p);
 	}
 	
-	public Pack crearPack(String nombre, String descripcion, String imagen,
-	        double descuentoPorcentaje, int stock, ArrayList<ProductoVenta> productos) {
+	public Pack crearPack(String nombre, String descripcion, String imagen,double precioOficial,
+	         int stock, ArrayList<ProductoVenta> productos) {
 
 	    if (!this.getPermisos().contains(TipoPermisos.GESTION_PACKS)) {
 	        System.out.println("No tienes permiso para gestionar packs");
 	        return null;
 	    }
 
+	    
 	    if (nombre == null || descripcion == null || imagen == null) {
 	        System.out.println("El nombre, descripción e imagen no pueden ser null");
 	        return null;
 	    }
 
-	    if (productos == null || productos.isEmpty()) {
-	        System.out.println("El pack debe tener al menos un producto");
+	    if (productos == null || productos.size()<=1) {
+	        System.out.println("El pack debe tener al menos dos producto");
 	        return null;
 	    }
 
@@ -340,23 +335,14 @@ public class Empleado extends UsuarioRegistrado {
 
 	    Tienda tienda = Tienda.getInstancia();
 
-	    // Comprobar que no existe ya un producto con ese nombre
-	    for (ProductoVenta p : tienda.getStockVentas()) {
-	        if (p.getNombre().equalsIgnoreCase(nombre)) {
-	            System.out.println("Ya existe un producto con ese nombre");
-	            return null;
-	        }
-	    }
-
 	    // Comprobar que todos los productos existen en la tienda
 	    for (ProductoVenta p : productos) {
 	        if (p == null || !tienda.getStockVentas().contains(p)) {
-	            System.out.println("Algún producto no existe en la tienda");
+	            System.out.println("Algún producto de los que has solicitado no existe en la tienda");
 	            return null;
 	        }
 	    }
-
-	    // Validar que el stock no supera el mínimo de sus componentes
+	  
 	    int stockMinimo = Integer.MAX_VALUE;
 	    for (ProductoVenta p : productos) {
 	        if (p.getStockDisponible() < stockMinimo) {
@@ -396,11 +382,12 @@ public class Empleado extends UsuarioRegistrado {
 			for (ProductoVenta pro:tienda.getStockVentas()) {
 				if (pro.getId()==p.getId()) {
 					pro.setDescripcion(descripcion);
-					return false;
+					return true;
 				}
 				
 			}
 		}
+		return false;
 	}
 
 //-Esra debe sobrar creo

@@ -24,7 +24,7 @@ public class PruebaProductos {
 		 * Miramos que funciona la asignacion de ids para diferentes productos de clases
 		 * producto venta y producto segunda mano.
 		 */
-		System.out.println("\n============= PRUEBA IDS UNICOS =============");
+		System.out.println("\n PRUEBA IDS UNICOS");
 		Cliente usuario = new Cliente("lucasblannco", "1234", "luketss@gmail");
 		Comic c1 = new Comic("ObjetpVenta1", "descripcion1", "imagen1", 20, 10, 200, "Alfaguara", 2020);
 		Comic c2 = new Comic("ObjetoVenta2", "descripcion2", "imagen2", 10, 5, 150, "Santillana", 2016);
@@ -37,15 +37,8 @@ public class PruebaProductos {
 		check("j1 tiene id PV", j1.getId().startsWith("PV"));
 		check("IDs distintos entre c1 y c2", !c1.getId().equals(c2.getId()));
 
-		/*
-		 * Comprobamos el correcto funcionamiento dde las categorias en los productos.
-		 * En ellas vemos que funciona la biderccionalidad del añadir categorias a
-		 * productos, en el caso en el que se añada un produccto a una categoría, desde
-		 * categoría el objeto de clase producto debe añadirlo directamente a su array
-		 * de categorías a las que pertenece. Además vemos que los duplicados fallan. Lo
-		 * mismo lo hacemos para el borrar productos de categorías.
-		 */
-		System.out.println("\n============= CATEGORIAS =============");
+	
+		System.out.println("\nCATEGORIAS");
 		Categoria catComics = new Categoria("Comics", "desc");
 		Categoria catJuegos = new Categoria("Juegos", "desc");
 
@@ -69,7 +62,7 @@ public class PruebaProductos {
 		 * que funcionan correctamente el calcular los precios en los packs, teniendo en
 		 * cuenta que pueden haber packs dentro de packs.
 		 */
-		System.out.println("\n============= GESTION DE STOCKS Y PRECIOS =============");
+		System.out.println("\n GESTION DE STOCKS Y PRECIOS ");
 
 		Pack pk = new Pack("Pack1", "descripcionPack1", "imagenPack1", 0, 3);
 		Pack pack = new Pack("Pack2", "descripcionPack2", "imagenPack2", 0, 2);
@@ -114,7 +107,7 @@ public class PruebaProductos {
 		 * prueba los casos límite de la puntuación. Además comprobamos que un mismo
 		 * cliente no puede reseñar el mismo objeto más de una vez.
 		 */
-		System.out.println("\n============= RESEÑAS =============");
+		System.out.println("\n RESEÑAS ");
 		Cliente cli = new Cliente("danisaa", "1234", "danisaa@gmail");
 		Cliente cli2 = new Cliente("antoal", "1234", "antoal@gmail");
 		Reseña r1 = new Reseña(cli, c2, 8.5, "Muy bueno");
@@ -128,7 +121,7 @@ public class PruebaProductos {
 		check("Mismo cliente no puede reseñar dos veces", !c2.addReseña(new Reseña(cli, null, 5.0, "otro")));
 
 		/**/
-		System.out.println("\n============= SEGUNDA MANO =============");
+		System.out.println("\n SEGUNDA MANO ");
 		Empleado emp = new Empleado("ana", "pass", "ana@mail.com");
 		Producto2Mano p2m = new Producto2Mano("ProductoSegunda1", "desc", "", null, cli, true, false);
 
@@ -149,8 +142,8 @@ public class PruebaProductos {
 		 * Imprimimos el resultado del test en el que mostramos cuantos se han pasado y
 		 * cuantos no al final.
 		 */
-		System.out.println("\n==============================================");
+		System.out.println("\n");
 		System.out.println("	RESULTADO: " + correctos + " CORRECTOS  |  " + fallos + " FALLOS");
-		System.out.println("==============================================");
+		System.out.println("");
 	}
 }
