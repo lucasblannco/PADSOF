@@ -13,33 +13,61 @@ public class Estadistica {
 	private int nDescuentos =1;
 	private int nIntercambiosFinalizados =1;
 	private int nCategorias =1;
-	
-	public int getNumPV() {
-		return this.nProductosVentas;
+
+	 public int getnProductosVentas() {
+		return nProductosVentas;
 	}
-	
-	public int getNumUR() {
-		return this.nUsuarioRegistrado;
+
+	public void setnProductosVentas(int nProductosVentas) {
+		this.nProductosVentas = nProductosVentas;
 	}
-	
-	private int getNumP2Mano() {
-		return this.nProducto2Mano;
+
+	public int getnUsuarioRegistrado() {
+		return nUsuarioRegistrado;
 	}
-	
-	private int getNumVentas() {
-		return this.nVentas;
+
+	public void setnUsuarioRegistrado(int nUsuarioRegistrado) {
+		this.nUsuarioRegistrado = nUsuarioRegistrado;
 	}
-	
-	private int getNumDescuentos() {
-		return this.nDescuentos;
+
+	public int getnProducto2Mano() {
+		return nProducto2Mano;
 	}
-	
-	private int getNumIF() {
-		return this.nIntercambiosFinalizados;
+
+	public void setnProducto2Mano(int nProducto2Mano) {
+		this.nProducto2Mano = nProducto2Mano;
 	}
-	
-	private int getNumCategorias() {
-		return this.nCategorias;
+
+	public int getnVentas() {
+		return nVentas;
+	}
+
+	public void setnVentas(int nVentas) {
+		this.nVentas = nVentas;
+	}
+
+	public int getnDescuentos() {
+		return nDescuentos;
+	}
+
+	public void setnDescuentos(int nDescuentos) {
+		this.nDescuentos = nDescuentos;
+	}
+
+	public int getnIntercambiosFinalizados() {
+		return nIntercambiosFinalizados;
+	}
+
+	public void setnIntercambiosFinalizados(int nIntercambiosFinalizados) {
+		this.nIntercambiosFinalizados = nIntercambiosFinalizados;
+	}
+
+	public int getnCategorias() {
+		return nCategorias;
+	}
+
+	public void setnCategorias(int nCategorias) {
+		this.nCategorias = nCategorias;
 	}
 
 	 public List<Cliente> obtenerClientesConMasCompras(){
@@ -61,4 +89,5 @@ public class Estadistica {
 	 public double calcularIngresosTasacion() {
 		 
 	 }
+	
 }
