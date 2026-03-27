@@ -34,7 +34,7 @@ public class Producto2Mano extends Producto {
 	}
 
 	public boolean valorar(double precioTasacion, EstadoProducto estado, Empleado empleado) {
-		if (estado == null || empleado == null || precioTasacion <= 0) {
+		if (estado == null || empleado == null || precioTasacion < 0) {
 			return false;
 		}
 
@@ -46,7 +46,7 @@ public class Producto2Mano extends Producto {
 			return false;
 		}
 
-		this.visible = false;
+		this.visible = true;
 		this.bloqueado = true;
 		return true;
 	}

@@ -24,7 +24,7 @@ public abstract class Descuento {
 		return ahora.isAfter(fechaInicio) && ahora.isBefore(fechaFin);
 	}
 
-	public abstract double calcularDescuento(Carrito carrito);
+	public abstract double aplicarDescuento(Carrito carrito);
 
 	// --- GETTERS Y SETTERS ---
 

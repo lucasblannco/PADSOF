@@ -2,6 +2,7 @@ package ventas;
 
 import java.time.*;
 import java.util.*;
+import tienda.Estadistica;
 
 import productos.ProductoVenta;
 
@@ -13,14 +14,18 @@ public class Carrito {
 	private static Duration tiempoMaximo;
 
 	public Carrito() {
-		this.idCarrito = UUID.randomUUID().toString().substring(0, 8);
+		Estadistica est = Estadistica.getInstancia();
+		this.idCarrito = "CARRITO" + String.valueOf(est.getnCarritos());
+		est.setnCarritos(est.getnCarritos() + 1);
 		this.lineas = new ArrayList<>();
 		this.fechaCreacion = LocalDateTime.now();
 		this.descuentoAplicado = null;
 	}
 
 	public Carrito(Descuento descuentoAplicado) {
-		this.idCarrito = UUID.randomUUID().toString().substring(0, 8);
+		Estadistica est = Estadistica.getInstancia();
+		this.idCarrito = "CARRITO" + String.valueOf(est.getnCarritos());
+		est.setnCarritos(est.getnCarritos() + 1);
 		this.lineas = new ArrayList<>();
 		this.fechaCreacion = LocalDateTime.now();
 		this.descuentoAplicado = descuentoAplicado;
@@ -134,7 +139,7 @@ public class Carrito {
 
 		/* LA PARTE DE DESCUENTOS ESRA SIN HACER ENTONCES NO SÉ */
 		if (this.descuentoAplicado != null) {
-			total = this.descuentoAplicado.aplicarDescuento(total);
+			total = this.descuentoAplicado.aplicarDescuento(this);
 		}
 
 		return total;
@@ -178,8 +183,9 @@ public class Carrito {
 		}
 		Carrito.tiempoMaximo = tiempo;
 	}
-	
+
 	public boolean caducar() {
-		
+		vaciarCarrito();
+		return true;
 	}
 }

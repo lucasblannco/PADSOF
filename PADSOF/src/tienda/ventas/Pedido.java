@@ -25,45 +25,54 @@ public class Pedido {
 	private Descuento descuentoAplicado;
 
 	public Pedido(Cliente cliente, Carrito carrito) {
-	    if (cliente == null) {
-	        throw new IllegalArgumentException("El cliente no puede ser null");
-	    }
+		if (cliente == null) {
+			throw new IllegalArgumentException("El cliente no puede ser null");
+		}
 
-	    if (carrito == null) {
-	        throw new IllegalArgumentException("El carrito no puede ser null");
-	    }
+		if (carrito == null) {
+			throw new IllegalArgumentException("El carrito no puede ser null");
+		}
 
-	    if (carrito.estaCaducado()) {
-	        throw new IllegalArgumentException("No se puede crear un pedido desde un carrito caducado");
-	    }
+		if (carrito.estaCaducado()) {
+			throw new IllegalArgumentException("No se puede crear un pedido desde un carrito caducado");
+		}
 
-	    if (carrito.estaVacio()) {
-	        throw new IllegalArgumentException("No se puede crear un pedido con un carrito vacío");
-	    }
+		if (carrito.estaVacio()) {
+			throw new IllegalArgumentException("No se puede crear un pedido con un carrito vacío");
+		}
 
-	    Estadistica est = Estadistica.getInstancia();
-	    this.idPedido = "ORDER-" + String.valueOf(est.getnVentas());
-	    est.setnVentas(est.getnVentas() + 1);
-	    this.fechaCreacion = LocalDateTime.now();
-	    this.fechaPreparado = null;
-	    this.fechaEntregado = null;
-	    this.recogida_solicitada = false;
-	    this.cliente = cliente;
-	    this.lineas = new ArrayList<>();
-	    this.pago = null;
-	    this.estado = EstadoPedido.PENDIENTE_PAGO;
-	    this.codigoRecogida = null;
-	    this.descuentoAplicado = null;
+		Estadistica est = Estadistica.getInstancia();
+		this.idPedido = "PEDIDO-" + String.valueOf(est.getnVentas());
+		est.setnVentas(est.getnVentas() + 1);
+		this.fechaCreacion = LocalDateTime.now();
+		this.fechaPreparado = null;
+		this.fechaEntregado = null;
+		this.recogidaSolicitada = false;
+		this.cliente = cliente;
+		this.lineas = new ArrayList<>();
+		this.pago = null;
+		this.estado = EstadoPedido.PENDIENTE_PAGO;
+		this.codigoRecogida = null;
+		this.descuentoAplicado = null;
 
-	    for (LineaCarrito linea : carrito.getLineas()) {
-	        ProductoVenta producto = linea.getProducto();
-	        int cantidad = linea.getCantidad();
-	        double precioUnitarioFijado = producto.getPrecioVenta();
+		for (LineaCarrito linea : carrito.getLineas()) {
+			ProductoVenta producto = linea.getProducto();
+			int cantidad = linea.getCantidad();
+			double precioUnitarioFijado = producto.getPrecioVenta();
 
-	        this.lineas.add(new LineaPedido(producto, cantidad, precioUnitarioFijado));
-	    }
+			this.lineas.add(new LineaPedido(producto, cantidad, precioUnitarioFijado));
+		}
 
-	    this.total = recalcularTotal();
+		this.total = recalcularTotal();
+
+		if (carrito.getDescuentoAplicado() instanceof Regalo) {
+			Regalo regalo = (Regalo) carrito.getDescuentoAplicado();
+			if (regalo.aplicaRegalo(carrito)) {
+				ProductoVenta prod = regalo.getProductoRegalo();
+				this.lineas.add(new LineaPedido(prod, 1, 0.0));
+				prod.setStockDisponible(prod.getStockDisponible() - 1);
+			}
+		}
 	}
 
 	private double recalcularTotal() {
