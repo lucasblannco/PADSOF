@@ -315,6 +315,27 @@ public class Empleado extends UsuarioRegistrado {
 			return c.deleteProducto(p);
 	}
 	
+	public Pack crearPack(String nombre,String descripcion,String imagen,double descuentoPorcentaje,ArrayList<ProductoVenta> productos) {
+		if (!this.getPermisos().contains(TipoPermisos.GESTION_PACKS)) {
+			System.out.println("El empleado "+ this.getId() +" no tiene permisos para trabajar con packs");
+			return null;
+		}
+		if (nombre==null||descripcion==null||imagen==null) {
+			System.out.println("Error en la creacion del pack");
+			return null;
+		}
+		if (productos==null || productos.size()<=1) {
+			System.out.println("No se pueden crear packs con 1 solo producto. Estos se venderán como productos individuales");
+			return null;
+		}
+		Tienda tienda=Tienda.getInstancia();
+		
+	}
+	
+	
+	
+	
+	
 
 //-Esra debe sobrar creo
 	public void asignarPermiso(TipoPermisos p) {

@@ -15,9 +15,7 @@ public abstract class UsuarioRegistrado {
     protected boolean sesionIniciada;
     //protected List<String> notificaciones; el gestor no tiene notifiaciones
 
-    public UsuarioRegistrado() {
-        //this.notificaciones = new ArrayList<>();
-    }
+    
 
     public UsuarioRegistrado(String nickname, String password, String email) { 
         Estadistica est = Estadistica.getInstancia();
