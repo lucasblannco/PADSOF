@@ -1,5 +1,6 @@
 package tienda;
 
+import java.time.LocalDate;
 import java.util.List;
 import usuarios.Cliente;
 
@@ -108,7 +109,9 @@ public class Estadistica {
 	public void setnReseñas(int n) {
 		this.nReseñas = n;
 	}
-
+	
+	
+	
 	// ── Métodos a implementar ──────────────────────────
 	public List<Cliente> obtenerClientesConMasCompras() {
 		return null;
@@ -116,6 +119,22 @@ public class Estadistica {
 
 	public List<Cliente> obtenerClientesConMasIntercambios() {
 		return null;
+	}
+	
+	public double calcularIngresosRango(LocalDate inicio , LocalDate fin ) {
+		
+	}
+	
+	public List<double> calcularIngresosMeses(){
+		
+	}
+	
+	public double calcularIngresosVenta(){
+		
+	}
+	
+	public double calcularIngresosTasacion(){
+		
 	}
 
 }
