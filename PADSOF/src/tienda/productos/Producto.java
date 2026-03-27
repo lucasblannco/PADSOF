@@ -28,4 +28,12 @@ public abstract class Producto {
 		return "Producto [id=" + id + ", nombre=" + nombre + ", imagenRuta=" + imagenRuta + "]";
 	}
 
+	public String getDescripcion() {
+		return descripcion;
+	}
+
+	public void setDescripcion(String descripcion) {
+		this.descripcion = descripcion;
+	}
+
 }

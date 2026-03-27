@@ -138,7 +138,7 @@ public class Empleado extends UsuarioRegistrado {
 					
 				}
 				this.recibirNotificacion("Has añadido el comic " + comic.getNombre() + " a la tienda");
-				return true; // <-- faltaba
+				return true; 
 	
 			case "J":
 				if (minEdad <= 0) {
@@ -315,27 +315,93 @@ public class Empleado extends UsuarioRegistrado {
 			return c.deleteProducto(p);
 	}
 	
-	public Pack crearPack(String nombre,String descripcion,String imagen,double descuentoPorcentaje,ArrayList<ProductoVenta> productos) {
-		if (!this.getPermisos().contains(TipoPermisos.GESTION_PACKS)) {
-			System.out.println("El empleado "+ this.getId() +" no tiene permisos para trabajar con packs");
-			return null;
-		}
-		if (nombre==null||descripcion==null||imagen==null) {
-			System.out.println("Error en la creacion del pack");
-			return null;
-		}
-		if (productos==null || productos.size()<=1) {
-			System.out.println("No se pueden crear packs con 1 solo producto. Estos se venderán como productos individuales");
-			return null;
-		}
-		Tienda tienda=Tienda.getInstancia();
-		
+	public Pack crearPack(String nombre, String descripcion, String imagen,
+	        double descuentoPorcentaje, int stock, ArrayList<ProductoVenta> productos) {
+
+	    if (!this.getPermisos().contains(TipoPermisos.GESTION_PACKS)) {
+	        System.out.println("No tienes permiso para gestionar packs");
+	        return null;
+	    }
+
+	    if (nombre == null || descripcion == null || imagen == null) {
+	        System.out.println("El nombre, descripción e imagen no pueden ser null");
+	        return null;
+	    }
+
+	    if (productos == null || productos.isEmpty()) {
+	        System.out.println("El pack debe tener al menos un producto");
+	        return null;
+	    }
+
+	    if (stock <= 0) {
+	        System.out.println("El stock debe ser mayor que 0");
+	        return null;
+	    }
+
+	    Tienda tienda = Tienda.getInstancia();
+
+	    // Comprobar que no existe ya un producto con ese nombre
+	    for (ProductoVenta p : tienda.getStockVentas()) {
+	        if (p.getNombre().equalsIgnoreCase(nombre)) {
+	            System.out.println("Ya existe un producto con ese nombre");
+	            return null;
+	        }
+	    }
+
+	    // Comprobar que todos los productos existen en la tienda
+	    for (ProductoVenta p : productos) {
+	        if (p == null || !tienda.getStockVentas().contains(p)) {
+	            System.out.println("Algún producto no existe en la tienda");
+	            return null;
+	        }
+	    }
+
+	    // Validar que el stock no supera el mínimo de sus componentes
+	    int stockMinimo = Integer.MAX_VALUE;
+	    for (ProductoVenta p : productos) {
+	        if (p.getStockDisponible() < stockMinimo) {
+	            stockMinimo = p.getStockDisponible();
+	        }
+	    }
+
+	    if (stock > stockMinimo) {
+	        System.out.println("El stock del pack no puede superar el mínimo de sus productos (" + stockMinimo + ")");
+	        return null;
+	    }
+
+	    Pack pack = new Pack(nombre, descripcion, imagen, descuentoPorcentaje);
+	    for (ProductoVenta p : productos) {
+	        pack.addProducto(p);
+	    }
+	    pack.setStockDisponible(stock);
+
+	    tienda.añadirProducto(pack);
+	    this.recibirNotificacion("Has creado el pack " + nombre + " correctamente");
+	    return pack;
 	}
 	
 	
 	
-	
-	
+	public boolean modificarDescripcionProducto(ProductoVenta p, String descripcion) {
+		if (p==null||descripcion==null) {
+			System.out.println("No se ha podido modificaer la descripcion del producto");
+			return false;
+		}
+		if (!this.getPermisos().contains(TipoPermisos.MODIFICAR_PRODUCTO)) {
+			System.out.println("El empleado con id " + this.getId()+ " y nombre "+ this.getNickname()+ " no tiene permiso para modificar la informacion de los productos");
+			return false;
+		}
+		Tienda tienda=Tienda.getInstancia();
+		if (tienda.getStockVentas().contains(p)) {
+			for (ProductoVenta pro:tienda.getStockVentas()) {
+				if (pro.getId()==p.getId()) {
+					pro.setDescripcion(descripcion);
+					return false;
+				}
+				
+			}
+		}
+	}
 
 //-Esra debe sobrar creo
 	public void asignarPermiso(TipoPermisos p) {
