@@ -51,12 +51,14 @@ public class pruebaCategoriasProductos {
         ProductoVenta catan = tienda.getStockVentas().get(1);
 
         // Añadir a categoría
-        System.out.println("\n=== AÑADIR PRODUCTO A CATEGORÍA YA ASIGNADA (debe fallar) ===");
+        System.out.println("\n=== AÑADIR PRODUCTO A CATEGORÍA YA ASIGNADA (debe fallar) ");
         System.out.println("Añadir Spiderman a Comics (ya está): " + emp.añadirProductoACategoria(spiderman, catComics)); // false
 
         System.out.println("\n=== AÑADIR PRODUCTO A OTRA CATEGORÍA (debe funcionar) ===");
-        System.out.println("Añadir Spiderman a Juegos: " + emp.añadirProductoACategoria(spiderman, catJuegos)); // true
-
+        System.out.println("Añadir Spiderman a Juegos: "); // true
+        if (emp.añadirProductoACategoria(spiderman, catJuegos)) {
+			System.out.println("Se ha añadido correctamente");
+		}
         System.out.println("\n CASOS DE ERROR(nulls)");
         System.out.println("Añadir null a Comics: " + emp.añadirProductoACategoria(null, catComics)); // false, null
         System.out.println("creamos una categoria pero no la añadimos a la tienda");

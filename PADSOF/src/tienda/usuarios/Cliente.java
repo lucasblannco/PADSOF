@@ -30,8 +30,8 @@ public class Cliente extends UsuarioRegistrado {
 	private PreferenciaNotificacion preferencias;
 
 	// Constructor//
-	public Cliente() {
-		super();
+	public Cliente(String nickname, String password, String email) {
+		super(nickname,password,email);
 		this.historialPedidos = new ArrayList<>();
 		this.carteraIntercambio = new ArrayList<>();
 		this.ofertasPendientes = new ArrayList<>();
@@ -59,7 +59,7 @@ public class Cliente extends UsuarioRegistrado {
 	}
 
 	public void solicitarTasacion(Producto2Mano p, String tarjeta, int CVV, Date caducidad) {
-		if (tieneProductoenSuCartera(p) && (p.getVisible() == false)) {// Comprobamos que ese producto este en la
+		if (tieneProductoenSuCartera(p) && (p.isVisible() == false)) {// Comprobamos que ese producto este en la
 																		// cartera del usuario y
 																		// que ese producto no tenga una hecha una
 																		// valoracion. Si un producto ya esta
