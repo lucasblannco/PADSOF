@@ -25,7 +25,7 @@ public class PruebaProductos {
 		 * producto venta y producto segunda mano.
 		 */
 		System.out.println("\n============= PRUEBA IDS UNICOS =============");
-		Cliente usuario = new Cliente();
+		Cliente usuario = new Cliente("lucasblannco", "1234", "luketss@gmail");
 		Comic c1 = new Comic("ObjetpVenta1", "descripcion1", "imagen1", 20, 10, 200, "Alfaguara", 2020);
 		Comic c2 = new Comic("ObjetoVenta2", "descripcion2", "imagen2", 10, 5, 150, "Santillana", 2016);
 		Comic c3 = new Comic("ObjetoVenta3", "descripcion3", "imagen3", 15, 8, 180, "Santillana", 2018);
@@ -115,8 +115,8 @@ public class PruebaProductos {
 		 * cliente no puede reseñar el mismo objeto más de una vez.
 		 */
 		System.out.println("\n============= RESEÑAS =============");
-		Cliente cli = new Cliente();
-		Cliente cli2 = new Cliente();
+		Cliente cli = new Cliente("danisaa", "1234", "danisaa@gmail");
+		Cliente cli2 = new Cliente("antoal", "1234", "antoal@gmail");
 		Reseña r1 = new Reseña(cli, c2, 8.5, "Muy bueno");
 		Reseña r2 = new Reseña(cli2, c2, 6.0, "Regular");
 
