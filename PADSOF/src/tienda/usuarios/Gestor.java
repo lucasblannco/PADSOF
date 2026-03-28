@@ -1,12 +1,16 @@
 package usuarios;
 
+import java.security.PublicKey;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.IllegalFormatFlagsException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale.Category;
 
 import com.sun.xml.internal.stream.events.AttributeImpl;
-
+import ventas.*;
+import productos.Categoria;
 import productos.Pack;
 import productos.ProductoVenta;
 import tienda.*;
@@ -62,7 +66,42 @@ public class Gestor extends UsuarioRegistrado {
 			return null;
 		}
 		return null;
+	}
 
+	private boolean validarFechas(LocalDateTime inicio, LocalDateTime fin) {
+		if (inicio == null || fin == null) {
+			System.out.println("Las fechas no pueden ser null");
+			return false;
+		}
+		if (!fin.isAfter(inicio)) {
+			System.out.println("La fecha de fin debe ser posterior a la de inicio.");
+			return false;
+		}
+		return true;
+	}
+
+	public boolean existeProducto(String id) {
+		if (id == null || id.isBlank()) {
+			return false;
+		}
+		if (buscarProductoVentaPorId(id) == null) {
+			System.out.println("No existe ningun producto en el catalogo de la tienda con el id: " + id);
+			return false;
+		}
+		return true;
+	}
+	public Categoria buscarCategoriaPorNombre(String name) {
+		if (name==null||name.isBlank()) {
+			System.out.println("El nombre de la categoria no puede estar vacio");
+			return null;
+		}
+		for (Categoria cat:Tienda.getInstancia().getCategorias()) {
+			if (cat.getNombre().equals(name)) {
+				
+			}
+		}
+			
+		}
 	}
 	/*
 	 * private ProductoVenta buscarProductoporID(String id) { if
@@ -233,6 +272,74 @@ public class Gestor extends UsuarioRegistrado {
 				+ " ha sido modificado por el gestor correctamente. Ahora vale " + nuevoPrecio + ". ");
 		return true;
 	}
+
+	// GESTION DE LOS DESCUENTOS
+
+	public boolean crearDescuentoCantidad(String nombre, String idProducto, int cantidadMinima, double porcentaje,
+			LocalDateTime inicio, LocalDateTime fin) {
+
+		if (!validarFechas(inicio, fin)) {
+			return false;
+		}
+		if (nombre == null || nombre.isBlank()) {
+			System.out.println("El nombre del descuento no puede estar vacio");
+			return false;
+		}
+		if (cantidadMinima <= 1) {
+			System.out.println("La cantidad minima para poder crear un descuento es de dos unidades");
+			return false;
+		}
+		if (!existeProducto(idProducto)) {
+			return false;
+		}
+
+		Descuento d = new DescuentoCantidad(nombre, inicio, fin, cantidadMinima, porcentaje);
+		Tienda.getInstancia().agregarDescuento(d);
+		System.out
+				.println("Descuento por cantidad agregado correctamente sobre el producto con id:" + idProducto + ". ");
+		return true;
+	}
+
+	public boolean crearDescuentoVolumen(String nombre, double precioMinimo, double porcentaje, LocalDateTime inicio,
+			LocalDateTime fin) {
+		if (!validarFechas(inicio, fin)) {
+			return false;
+		}
+		if (nombre == null || nombre.isBlank()) {
+			System.out.println("El nombre del descuento no puede estar vacio");
+			return false;
+		}
+		if (precioMinimo<=20) {//Ponemos minimo 20 euros
+			System.out.println("Para crear un descuento por volumen de gasto el precio total de la compra debe ser al menos de 20 euros");
+			return false;
+		}
+		Descuento  desc=new DescuentoVolumen(nombre, inicio, fin, precioMinimo, porcentaje);
+		Tienda.getInstancia().agregarDescuento(desc);
+		System.out.println("Se ha creado un descuento por volumen de gasto superior a "+precioMinimo);
+		return true;
+	}
+	
+	public boolean crearDescuentoCategoria(String nombre,String nombreCategoria,double porcentaje, LocalDateTime inicio,LocalDateTime fin) {
+		if (!validarFechas(inicio, fin)) {
+			return false;
+		}
+		if (nombre==null||nombre.isBlank()) {
+			System.out.println("El nombre del descuento no puede estar vacio");
+		return false;
+		}
+		if (nombreCategoria==null|| nombreCategoria.isBlank()) {
+			System.out.println("El nombre de la categoria sobre la que se va a plicar el descuento no puede estar vacio");
+			return false;
+		}
+		
+	}
+	
+	
+	
+	
+	
+	
+	
 
 	public void configurarParametrosGlobales() {
 		// Implementación según requisitos

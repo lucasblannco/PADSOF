@@ -22,6 +22,7 @@ public class Tienda {
     private List<Pedido> historialVentas;
     private List<Producto2Mano>  pendientes_Tasacion; //Productos que no han sido tasados
     private List<Descuento> descuentosActivos = new ArrayList<>();
+    private List <Descuento> historialDescuentos=new ArrayList<>();
     private List<Oferta> intercambiosFinalizados = new ArrayList<>();
     private List<Categoria> categorias = new ArrayList<>();
     private Recomendador recomendador;
@@ -99,6 +100,19 @@ public class Tienda {
     
     public void agregarDescuento(Descuento d) {
         this.descuentosActivos.add(d);
+        this.historialDescuentos.add(d);
+    }
+    
+    
+    
+    public void limpiarDescuentosCaducados() {
+    	List <Descuento>descuentos_finalizados=new ArrayList<>();
+    	for(Descuento d:this.descuentosActivos) {
+    		if (!d.estaActivo()) {
+				descuentos_finalizados.add(d);
+			}
+    	}
+    	this.descuentosActivos.removeAll(descuentos_finalizados);
     }
 
     /*public double buscarDescuentoParaProducto(String idProducto) {
