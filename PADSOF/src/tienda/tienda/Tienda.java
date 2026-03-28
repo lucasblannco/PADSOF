@@ -25,6 +25,9 @@ public class Tienda {
     private List<Oferta> intercambiosFinalizados = new ArrayList<>();
     private List<Categoria> categorias = new ArrayList<>();
     private Recomendador recomendador;
+    private int tiempoMaxCarrito;
+    private int tiempoMaxOferta;
+    private int tiempoMaxPago;
     
    
     //private List<Producto2Mano> pendientesTasacion = new ArrayList<>();
@@ -262,5 +265,29 @@ public class Tienda {
 
 	public void setStockVentas(List<ProductoVenta> stockVentas) {
 		this.stockVentas = stockVentas;
+	}
+
+	public int getTiempoMaxCarrito() {
+		return tiempoMaxCarrito;
+	}
+
+	public void setTiempoMaxCarrito(int tiempoMaxCarrito) {
+		this.tiempoMaxCarrito = tiempoMaxCarrito;
+	}
+
+	public int getTiempoMaxOferta() {
+		return tiempoMaxOferta;
+	}
+
+	public void setTiempoMaxOferta(int tiempoMaxOferta) {
+		this.tiempoMaxOferta = tiempoMaxOferta;
+	}
+
+	public int getTiempoMaxPago() {
+		return tiempoMaxPago;
+	}
+
+	public void setTiempoMaxPago(int tiempoMaxPago) {
+		this.tiempoMaxPago = tiempoMaxPago;
 	}
 }

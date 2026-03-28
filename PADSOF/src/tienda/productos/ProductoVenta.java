@@ -133,11 +133,20 @@ public abstract class ProductoVenta extends Producto {
 	public double getPrecioVenta() {
 		return this.precioOficial;
 	}
+	
 
 	@Override
 	public String toString() {
 		return "ProductoVenta [precioOficial=" + precioOficial + ", stockDisponible=" + stockDisponible + ", reseñas="
 				+ reseñas + ", categorias=" + categorias + ", toString()=" + super.toString() + "]\n";
+	}
+
+	public double getPrecioOficial() {
+		return precioOficial;
+	}
+
+	public void setPrecioOficial(double precioOficial) {
+		this.precioOficial = precioOficial;
 	}
 
 }

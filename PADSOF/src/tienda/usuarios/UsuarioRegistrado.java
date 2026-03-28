@@ -10,16 +10,16 @@ import tienda.Tienda;
 import tienda.Estadistica;
 import tienda.Productos.*;
 public abstract class UsuarioRegistrado {
-	protected String name;
+
     protected String id;
     protected String nickname;
     protected String password;
-    protected String email;
+
     protected boolean sesionIniciada;
     //protected List<String> notificaciones; el gestor no tiene notifiaciones
 
     
-
+/*
     public UsuarioRegistrado(String nickname, String password, String email) { 
         Estadistica est = Estadistica.getInstancia();
         this.id = "USERREG-" + String.valueOf(est.getnUsuarioRegistrado());
@@ -28,7 +28,7 @@ public abstract class UsuarioRegistrado {
         this.email = email;
         est.setnUsuarioRegistrado(est.getnUsuarioRegistrado() + 1);
     }
-    
+  */  
     
     public UsuarioRegistrado(String nickname,String password) {
     	Estadistica est=Estadistica.getInstancia();

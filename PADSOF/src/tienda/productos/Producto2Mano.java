@@ -10,6 +10,7 @@ public class Producto2Mano extends Producto {
 	private boolean bloqueado = true;
 	private boolean visible = false;
 
+	
 	public Producto2Mano(String nombre, String descripcion, String imagenRuta, Valoracion valoracion,
 			Cliente propietario, boolean bloqueado, boolean visible) {
 		super(nombre, descripcion, imagenRuta);

@@ -3,7 +3,6 @@ package usuarios;
 import tienda.*;
 import productos.*;
 
-
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,20 +20,35 @@ public class Empleado extends UsuarioRegistrado {
 
 	protected List<Notificacion> notificaciones;
 	private Set<TipoPermisos> permisos;
+	private boolean despedido;
 	private List<Valoracion> valoraciones;
+	/*
+	 * public Empleado(String nickname, String password, String email) {
+	 * super(nickname, password, email); this.valoraciones = new ArrayList<>();
+	 * this.permisos = new TreeSet<>(); }
+	 */
 
-	public Empleado(String nickname, String password, String email) {
-		super(nickname, password, email);
+	public Empleado(String nickname, String password) {
+		super(nickname, password);
 		this.valoraciones = new ArrayList<>();
 		this.permisos = new TreeSet<>();
+		this.despedido = false;
 	}
-	
-	public Empleado(String nickname,String password) {
-		
-	}
-	
+
 	@Override
 	public void mostrarPanelPrincipal() {
+	}
+
+	private boolean puedeRealizarTarea(TipoPermisos permiso) {
+		if (this.despedido) {
+			System.out.println("Este empleado está dado de baja y no puede realizar acciones.");
+			return false;
+		}
+		if (!this.tienePermiso(permiso)) {
+			System.out.println("El empleado " + this.getNickname() + " no tiene el permiso " + permiso);
+			return false;
+		}
+		return true;
 	}
 
 	// si un producto no es aceptado, como borramos ese producto? habria que hacer
@@ -44,11 +58,11 @@ public class Empleado extends UsuarioRegistrado {
 		// demas no puedan hacerlo
 		Tienda.getInstancia().getPendientes_Tasacion().remove(p);
 
-		if (this.tienePermiso(TipoPermisos.VALORACION_PRODUCTOS)) {
+		if (puedeRealizarTarea(TipoPermisos.VALORACION_PRODUCTOS)) {
 
 			if (estado == EstadoProducto.NO_ACEPTADO) {
-				p.getPropietario()
-						.recibirNotificacion("El producto " + p.getNombre() + " ha sido rechazado al no cumplir .");
+				p.getPropietario().recibirNotificacion("El producto " + p.getNombre()
+						+ " ha sido rechazado al no cumplir las expectativas suficientes .");
 				return;
 			}
 
@@ -68,10 +82,10 @@ public class Empleado extends UsuarioRegistrado {
 	}
 
 	public boolean confirmarIntercambio(Oferta o) {
-		if (!this.getPermisos().contains(TipoPermisos.CONFIRMACION_INTERCAMBIO)) {
+		if (!puedeRealizarTarea(TipoPermisos.CONFIRMACION_INTERCAMBIO)) {
 			System.out.println(
 					"El empleado " + this.getNickname() + "no tiene permisos paara hacer confirmacion de intercambios");
-		return false;
+			return false;
 		}
 		if (o.getEstado() != EstadoOferta.ACEPTADA) {
 			this.recibirNotificacion("La oferta no ha sido aceptada por ambos usuarios por lo que no se puede aceptar");
@@ -87,7 +101,7 @@ public class Empleado extends UsuarioRegistrado {
 			int añoPublicacion, double altura, double ancho, double largo, String material, String marca,
 			int minNumjugadores, int maxNumjugadores, int minEdad, int maxEdad, String Estilo) {
 
-		if (!this.getPermisos().contains(TipoPermisos.GESTION_STOCK)) {
+		if (!puedeRealizarTarea(TipoPermisos.GESTION_STOCK)) {
 			System.out.println("No tienes permiso para trabajar con productos");
 			return false;
 		}
@@ -199,7 +213,7 @@ public class Empleado extends UsuarioRegistrado {
 	}
 
 	public boolean añadirUnidadesProductoExistente(String id, int cantidad) {
-		if (!this.getPermisos().contains(TipoPermisos.GESTION_STOCK)) {
+		if (!puedeRealizarTarea(TipoPermisos.GESTION_STOCK)) {
 			System.out.println("No tienes permiso para trabajar con productos");
 			return false;
 		}
@@ -225,15 +239,16 @@ public class Empleado extends UsuarioRegistrado {
 	}
 
 	public boolean prepararPedido(Pedido p) {
-		Tienda tienda = Tienda.getInstancia();
+
 		if (p == null) {
 			System.out.println("No se puede preparar un pedido que sea null");
 			return false;
 		}
-		if (!this.tienePermiso(TipoPermisos.GESTION_PEDIDOS)) {
+		if (!puedeRealizarTarea(TipoPermisos.GESTION_PEDIDOS)) {
 			System.out.println("No tienes permiso para preparar los pedidos");
 			return false;
 		}
+		Tienda tienda = Tienda.getInstancia();
 		for (Pedido ped : tienda.getHistorialVentas()) {
 			if (ped.equals(p) && ped.getEstado() == EstadoPedido.PAGADO) {
 				boolean ok = ped.marcarPreparado();
@@ -250,11 +265,12 @@ public class Empleado extends UsuarioRegistrado {
 	}
 
 	public boolean entregarPedido(String codigoRecogida) {
-		Tienda tienda = Tienda.getInstancia();
-		if (!this.getPermisos().contains(TipoPermisos.ENTREGA_PEDIDOS)) {
+
+		if (!puedeRealizarTarea(TipoPermisos.ENTREGA_PEDIDOS)) {
 			System.out.println("No tienes permiso para entregar con pedidos");
 			return false;
 		}
+		Tienda tienda = Tienda.getInstancia();
 		for (Pedido ped : tienda.getHistorialVentas()) {
 			if (ped.getCodigoRecogida().equals(codigoRecogida) && (ped.getEstado() == EstadoPedido.LISTO_PARA_RECOGER)
 					&& ped.isRecogida_solicitada()) {
@@ -271,16 +287,16 @@ public class Empleado extends UsuarioRegistrado {
 	}
 
 	public boolean añadirProductoACategoria(ProductoVenta p, Categoria c) {
-		Tienda tienda = Tienda.getInstancia();
+
 		if (p == null || c == null) {
 			System.out.println("El producto o la categoria no pueden ser null");
 			return false;
 		}
-		if (!this.getPermisos().contains(TipoPermisos.GESTION_CATEGORIAS)) {
+		if (!puedeRealizarTarea(TipoPermisos.GESTION_CATEGORIAS)) {
 			System.out.println("El empleado " + this.getNickname() + " no tiene el permiso de gestion de categorias");
 			return false;
 		}
-
+		Tienda tienda = Tienda.getInstancia();
 		if (!tienda.getStockVentas().contains(p)) {
 			System.out.println(
 					"El producto " + p.getId() + "no existe en la tienda. No se puede añadir a ninguna categoria");
@@ -294,15 +310,16 @@ public class Empleado extends UsuarioRegistrado {
 	}
 
 	public boolean eliminarProductoDeCategoria(ProductoVenta p, Categoria c) {
-		Tienda tienda = Tienda.getInstancia();
+
 		if (p == null || c == null) {
 			System.out.println("El producto o la categoria no pueden ser null");
 			return false;
 		}
-		if (!this.getPermisos().contains(TipoPermisos.GESTION_CATEGORIAS)) {
+		if (!puedeRealizarTarea(TipoPermisos.GESTION_CATEGORIAS)) {
 			System.out.println("El empleado " + this.getNickname() + " no tiene el permiso de gestion de categorias");
 			return false;
 		}
+		Tienda tienda = Tienda.getInstancia();
 		if (!tienda.getStockVentas().contains(p)) {
 			System.out.println(
 					"El producto " + p.getId() + "no existe en la tienda. No se puede quitar de ninguna categoria");
@@ -384,17 +401,15 @@ public class Empleado extends UsuarioRegistrado {
 	}
 
 	private void modificarProductosPackCreado() {
-	
+
 	}
-	
-	
-	
+
 	public boolean modificarDescripcionProducto(ProductoVenta p, String descripcion) {
 		if (p == null || descripcion == null) {
 			System.out.println("No se ha podido modificaer la descripcion del producto");
 			return false;
 		}
-		if (!this.getPermisos().contains(TipoPermisos.MODIFICAR_PRODUCTO)) {
+		if (!puedeRealizarTarea(TipoPermisos.MODIFICAR_PRODUCTO)) {
 			System.out.println("El empleado con id " + this.getId() + " y nombre " + this.getNickname()
 					+ " no tiene permiso para modificar la informacion de los productos");
 			return false;
@@ -411,24 +426,25 @@ public class Empleado extends UsuarioRegistrado {
 		}
 		return false;
 	}
+
 	public boolean modificarImagenProducto(ProductoVenta p, String imagen) {
-		if (p==null||imagen==null) {
+		if (p == null || imagen == null) {
 			System.out.println("No se ha podido modificar la imagen del producto");
 			return false;
 		}
-		if (!this.getPermisos().contains(TipoPermisos.MODIFICAR_PRODUCTO)) {
+		if (!puedeRealizarTarea(TipoPermisos.MODIFICAR_PRODUCTO)) {
 			System.out.println("El empleado con id " + this.getId() + " y nombre " + this.getNickname()
 					+ " no tiene permiso para modificar la informacion de los productos");
 			return false;
 		}
-		Tienda tienda=Tienda.getInstancia();
+		Tienda tienda = Tienda.getInstancia();
 		if (tienda.getStockVentas().contains(p)) {
-			for (ProductoVenta pro: tienda.getStockVentas()) {
+			for (ProductoVenta pro : tienda.getStockVentas()) {
 				if (pro.getId().equals(p.getId())) {
 					p.setImagenRuta(imagen);
 					return true;
 				}
-				
+
 			}
 		}
 		System.out.println("No se ha encontrado el producto sobre el que se quiere realizar la modificacion");
@@ -437,7 +453,15 @@ public class Empleado extends UsuarioRegistrado {
 	
 	
 	
-
+	
+	@Override
+	public boolean login(String nickname, String password) {
+	    if (this.despedido) {
+	        System.out.println("Este empleado está dado de baja y no puede iniciar sesión.");
+	        return false;
+	    }
+	    return super.login(nickname, password);
+	}
 	public void asignarPermiso(TipoPermisos p) {
 		this.permisos.add(p);
 	}
@@ -486,6 +510,14 @@ public class Empleado extends UsuarioRegistrado {
 
 	public void setValoraciones(List<Valoracion> valoraciones) {
 		this.valoraciones = valoraciones;
+	}
+
+	public boolean isDespedido() {
+		return despedido;
+	}
+
+	public void setDespedido(boolean despedido) {
+		this.despedido = despedido;
 	}
 
 	@Override

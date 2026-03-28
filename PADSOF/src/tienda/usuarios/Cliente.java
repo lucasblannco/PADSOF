@@ -30,8 +30,8 @@ public class Cliente extends UsuarioRegistrado {
 	private PreferenciaNotificacion preferencias;
 
 	// Constructor//
-	public Cliente(String nickname, String password, String email) {
-		super(nickname,password,email);
+	public Cliente(String nickname, String password) {
+		super(nickname,password);
 		this.historialPedidos = new ArrayList<>();
 		this.carteraIntercambio = new ArrayList<>();
 		this.ofertasPendientes = new ArrayList<>();
