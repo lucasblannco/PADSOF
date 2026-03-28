@@ -50,24 +50,6 @@ public class Gestor extends UsuarioRegistrado {
 		return null;
 	}
 
-	private ProductoVenta buscarProductoVentaPorId(String id) {
-		if (id == null || id.isBlank()) {
-			return null;
-		}
-		try {
-			int numero = Integer.parseInt(id.substring(2));// devuelve lo que hay a partir de la segunda letra
-			int indice = numero - 1;// Segun lo tenemos implementado el primer producto tiene id 1 entonces ese
-									// ocupara la posicion 0, retsamos 1
-			if (indice >= 0 && indice < Tienda.getInstancia().getStockVentas().size()) {
-				return Tienda.getInstancia().getStockVentas().get(indice);
-			}
-		} catch (NumberFormatException e) {
-
-			return null;
-		}
-		return null;
-	}
-
 	private boolean validarFechas(LocalDateTime inicio, LocalDateTime fin) {
 		if (inicio == null || fin == null) {
 			System.out.println("Las fechas no pueden ser null");
@@ -80,28 +62,18 @@ public class Gestor extends UsuarioRegistrado {
 		return true;
 	}
 
-	public boolean existeProducto(String id) {
-		if (id == null || id.isBlank()) {
-			return false;
-		}
-		if (buscarProductoVentaPorId(id) == null) {
-			System.out.println("No existe ningun producto en el catalogo de la tienda con el id: " + id);
-			return false;
-		}
-		return true;
-	}
 	public Categoria buscarCategoriaPorNombre(String name) {
-		if (name==null||name.isBlank()) {
+		if (name == null || name.isBlank()) {
 			System.out.println("El nombre de la categoria no puede estar vacio");
 			return null;
 		}
-		for (Categoria cat:Tienda.getInstancia().getCategorias()) {
+		for (Categoria cat : Tienda.getInstancia().getCategorias()) {
 			if (cat.getNombre().equals(name)) {
-				
+				return cat;
 			}
 		}
-			
-		}
+		System.out.println("No hay ninguna categoria de productos con ese nombre");
+		return null;
 	}
 	/*
 	 * private ProductoVenta buscarProductoporID(String id) { if
@@ -251,7 +223,7 @@ public class Gestor extends UsuarioRegistrado {
 			System.out.println("El precio de los productos debe ser mayor que 0");
 			return false;
 		}
-		ProductoVenta p = buscarProductoVentaPorId(idProductoVenta);
+		ProductoVenta p = Tienda.getInstancia().buscarProductoVentaPorId(idProductoVenta);
 		if (p == null) {
 			System.out.println("No existe ningun producto venta con id: " + idProductoVenta);
 			return false;
@@ -289,7 +261,7 @@ public class Gestor extends UsuarioRegistrado {
 			System.out.println("La cantidad minima para poder crear un descuento es de dos unidades");
 			return false;
 		}
-		if (!existeProducto(idProducto)) {
+		if (Tienda.getInstancia().buscarProductoVentaPorId(idProducto) == null) {
 			return false;
 		}
 
@@ -309,99 +281,191 @@ public class Gestor extends UsuarioRegistrado {
 			System.out.println("El nombre del descuento no puede estar vacio");
 			return false;
 		}
-		if (precioMinimo<=20) {//Ponemos minimo 20 euros
-			System.out.println("Para crear un descuento por volumen de gasto el precio total de la compra debe ser al menos de 20 euros");
+		if (precioMinimo <= 20) {// Ponemos minimo 20 euros
+			System.out.println(
+					"Para crear un descuento por volumen de gasto el precio total de la compra debe ser al menos de 20 euros");
 			return false;
 		}
-		Descuento  desc=new DescuentoVolumen(nombre, inicio, fin, precioMinimo, porcentaje);
+		Descuento desc = new DescuentoVolumen(nombre, inicio, fin, precioMinimo, porcentaje);
 		Tienda.getInstancia().agregarDescuento(desc);
-		System.out.println("Se ha creado un descuento por volumen de gasto superior a "+precioMinimo);
+		System.out.println("Se ha creado un descuento por volumen de gasto superior a " + precioMinimo);
 		return true;
 	}
-	
-	public boolean crearDescuentoCategoria(String nombre,String nombreCategoria,double porcentaje, LocalDateTime inicio,LocalDateTime fin) {
+
+	public boolean crearDescuentoCategoria(String nombre, String nombreCategoria, double porcentaje,
+			LocalDateTime inicio, LocalDateTime fin) {
 		if (!validarFechas(inicio, fin)) {
 			return false;
 		}
-		if (nombre==null||nombre.isBlank()) {
+		if (nombre == null || nombre.isBlank()) {
 			System.out.println("El nombre del descuento no puede estar vacio");
-		return false;
-		}
-		if (nombreCategoria==null|| nombreCategoria.isBlank()) {
-			System.out.println("El nombre de la categoria sobre la que se va a plicar el descuento no puede estar vacio");
 			return false;
 		}
-		
-	}
-	
-	
-	
-	
-	
-	
-	
-
-	public void configurarParametrosGlobales() {
-		// Implementación según requisitos
-	}
-
-	public void crearDescuento(String idProducto, double porcentaje, LocalDate inicio, LocalDate fin) {
-		if (porcentaje <= 0 || porcentaje > 100) {
-			System.out.println("Porcentaje no válido");
-			return;
+		if (nombreCategoria == null || nombreCategoria.isBlank()) {
+			System.out
+					.println("El nombre de la categoria sobre la que se va a plicar el descuento no puede estar vacio");
+			return false;
 		}
-		Descuento nuevoDesc = new Descuento(idProducto, porcentaje / 100, inicio, fin);
-		Tienda.getInstancia().agregarDescuento(nuevoDesc);
-	}
-
-	public void modificarPrecio(String idProd, double nuevoPrecio) {
-		// Lógica para buscar producto en Tienda y cambiar precioOficial
-	}
-
-	public void configurarComposicionPack(String idPack, List<String> productos) {
-		// Lógica para definir qué productos forman un pack
-	}
-
-	public void crearCategoria(String nombre) {
-		// Lógica para añadir categorías al sistema
-	}
-
-	public void añadirProductoaCategoria(String idProd, String nombreCat) {
-		// Lógica de organización del catálogo
-	}
-
-	public boolean setTiemposSistema(double tInter, double tCar, double tPago) {
-		// Configura tiempos de expiración de ofertas, carritos, etc.
+		Categoria cat = buscarCategoriaPorNombre(nombreCategoria);
+		if (cat == null) {
+			return false;
+		}
+		Descuento descuento = new DescuentoCategoria(nombreCategoria, inicio, fin, cat, porcentaje);
+		Tienda.getInstancia().agregarDescuento(descuento);
+		System.out
+				.println("Descuento para los productos de la categoria " + cat.getNombre() + " creado correctamente.");
 		return true;
 	}
 
-	public void modificarPerfil(String nuevoNick, String nuevaPass) {
-		this.nickname = nuevoNick;
-		this.password = nuevaPass;
-		System.out.println("Perfil de administrador actualizado.");
+	public boolean crearDescuentoRegalo(String nombre, String idProductoRegalado, double gastoNecesario,
+			LocalDateTime inicio, LocalDateTime fin) {
+		if (!validarFechas(inicio, fin))
+			return false;
+		if (nombre == null || nombre.isBlank()) {
+			System.out.println("El nombre del descuento no puede estar vacío.");
+			return false;
+		}
+		if (gastoNecesario <= 35) {
+			System.out.println("El gasto necesario debe ser mayor que 35.");
+			return false;
+		}
+		if (Tienda.getInstancia().buscarProductoVentaPorId(idProductoRegalado)==null))
+			return false;
+
+		ProductoVenta productoRegalado = Tienda.getInstancia().buscarProductoVentaPorId(idProductoRegalado));
+		Descuento d = new Regalo(nombre, inicio, fin, gastoNecesario, productoRegalado);
+		Tienda.getInstancia().agregarDescuento(d);
+		System.out.println("Descuento regalo '" + nombre + "' creado correctamente.");
+		return true;
 	}
 
-	// --- MÉTODOS DE CONSULTA (Delegación en Estadistica) ---
+	public boolean eliminarDescuento(String idDescuento) {
+		if (idDescuento == null || idDescuento.isBlank()) {
+			System.out.println("El id del descuento no puede estar vacío.");
+			return false;
+		}
+		List<Descuento> descuentos = Tienda.getInstancia().getDescuentosActivos();
+		for (Descuento d : descuentos) {
+			if (d.getId().equals(idDescuento)) {
+				descuentos.remove(d);
+				System.out.println("Descuento " + idDescuento + " eliminado correctamente de la tienda.");
+				return true;
+			}
+		}
+		System.out.println("No se encontró ningún descuento con id: " + idDescuento);
+		return false;
+	}
+
+	/// METODOS RELACIONADOS CON LAS CATEGORIAS
+	public boolean crearCategoria(String nombre, String descripcion) {
+		if (nombre == null || nombre.isBlank()) {
+			System.out.println("El nombre no puede estar vacio");
+		}
+		if (descripcion == null || descripcion.isBlank()) {
+			System.out.println("La descripcion no puede estar vacia");
+			return false;
+		}
+		Categoria c = new Categoria(nombre, descripcion);
+		Tienda.getInstancia().getCategorias().add(c);
+		System.out.println("La categoria " + nombre + " ha sifo creada y añadida correctamente.");
+		return true;
+	}
+
+	public boolean añadirProductoACategoria(String idProducto, String nombreCat) {
+		if (idProducto == null || nombreCat == null) {
+			System.out.println("El id del producto o el nombre de la categoría no pueden ser null.");
+			return false;
+		}
+		Tienda tienda = Tienda.getInstancia();
+		ProductoVenta p = tienda.buscarProductoVentaPorId(idProducto);
+		if (p == null) {
+			System.out.println("No existe ningún producto con id: " + idProducto);
+			return false;
+		}
+		Categoria c = tienda.buscarCategoriaPorNombre(nombreCat);
+		if (c == null) {
+			System.out.println("No existe ninguna categoría con nombre: " + nombreCat);
+			return false;
+		}
+		return c.addProducto(p);
+	}
+
+	public boolean eliminarProductoDeCategoria(String idProducto, String nombreCat) {
+		if (idProducto == null || nombreCat == null) {
+			System.out.println("El id del producto o el nombre de la categoría no pueden ser null.");
+			return false;
+		}
+		Tienda tienda = Tienda.getInstancia();
+		ProductoVenta p = tienda.buscarProductoVentaPorId(idProducto);
+		if (p == null) {
+			System.out.println("No existe ningún producto con id: " + idProducto);
+			return false;
+		}
+		Categoria c = tienda.buscarCategoriaPorNombre(nombreCat);
+		if (c == null) {
+			System.out.println("No existe ninguna categoría con nombre: " + nombreCat);
+			return false;
+		}
+		return c.deleteProducto(p);
+	}
+
+	// ----------------------------------------------------------------
+	// PERFIL DEL GESTOR
+	// El gestor SÍ puede modificar sus credenciales (requisito 2.1.1.9)
+	// ----------------------------------------------------------------
+
+	/**
+	 * Modifica el perfil del gestor (nickname y contraseña).
+	 * 
+	 * @param nuevoNickname El nuevo nombre de usuario.
+	 * @param nuevoPass     La nueva contraseña que debe cumplir requisitos de
+	 *                      seguridad.
+	 * @return true si se cambió con éxito, false si los datos no son válidos.
+	 */
+	public boolean modificarPerfil(String nuevoNickname, String nuevoPass) {
+
+		if (nuevoNickname == null || nuevoNickname.isBlank()) {
+			System.out.println("El nuevo nickname no puede estar vacío");
+			return false;
+		}
+
+		// Validar que la nueva contraseña cumpla la seguridad
+		if (!validarPassword(nuevoPass)) {
+			return false;
+		}
+		this.setNickname(nuevoNickname);
+		this.setPassword(nuevoPass); // Recuerda tener estos métodos en la clase padre
+
+		System.out.println("Perfil del gestor actualizado con éxito.");
+		return true;
+	}
+
+	// ----------------------------------------------------------------
+	// ESTADÍSTICAS
+	// ----------------------------------------------------------------
 
 	public List<Cliente> verClientesTopCompras() {
-		return motor.obtenerClientesConMasCompras();
+		return motorEstadistico.obtenerClientesConMasCompras();
 	}
 
 	public List<Cliente> verClientesTopIntercambios() {
-		return motor.obtenerClientesConMasIntercambios();
+		return motorEstadistico.obtenerClientesConMasIntercambios();
 	}
 
-	public double consultarIngresos(LocalDate inicio, LocalDate fin) {
-		return motor.calcularIngresosRango(inicio, fin);
+	public double consultarIngresosRango(LocalDate inicio, LocalDate fin) {
+		return motorEstadistico.calcularIngresosRango(inicio, fin);
 	}
 
-	public double consultarExitoIntercambios() {
-		return motor.calcularTasaExitoIntercambios();
+	public double[] consultarIngresosPorMeses() {
+		return motorEstadistico.calcularIngresosMeses();
 	}
 
-	public void configurarSistemaRecomendacion(int nuevoLimite, boolean encender) {
-		// Accede al recomendador a través de la tienda y lo configura
-		Tienda.getInstancia().getRecomendador().setConfiguracion(nuevoLimite, encender);
-		System.out.println("Sistema de recomendaciones actualizado por el Gestor.");
+	public double consultarIngresosVenta() {
+		return motorEstadistico.calcularIngresosVenta();
 	}
+
+	public double consultarIngresosTasacion() {
+		return motorEstadistico.calcularIngresosTasacion();
+	}
+
 }

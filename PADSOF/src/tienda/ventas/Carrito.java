@@ -3,7 +3,7 @@ package ventas;
 import java.time.*;
 import java.util.*;
 import tienda.Estadistica;
-
+import tienda.Tienda;
 import productos.ProductoVenta;
 
 public class Carrito {
@@ -11,7 +11,7 @@ public class Carrito {
 	private final List<LineaCarrito> lineas;
 	private final LocalDateTime fechaCreacion;
 	private Descuento descuentoAplicado;
-	private static Duration tiempoMaximo;
+		
 
 	public Carrito() {
 		Estadistica est = Estadistica.getInstancia();
@@ -21,7 +21,7 @@ public class Carrito {
 		this.fechaCreacion = LocalDateTime.now();
 		this.descuentoAplicado = null;
 	}
-
+//No tiene mucho sentido crear un carrito ya con descuento aplicado. El descuento se aplica cuando se va a pagar, no al crear el carrito.???????
 	public Carrito(Descuento descuentoAplicado) {
 		Estadistica est = Estadistica.getInstancia();
 		this.idCarrito = "CARRITO" + String.valueOf(est.getnCarritos());
@@ -133,25 +133,22 @@ public class Carrito {
 		return suma;
 	}
 
-	/* FUNCION QUE AUN NO VA PORQUE NO SE COMO VAMOS A HACER DESCUENTOS */
 	public double getTotal() {
-		double total = calcularSubtotal();
-
-		/* LA PARTE DE DESCUENTOS ESRA SIN HACER ENTONCES NO SÉ */
-		if (this.descuentoAplicado != null) {
-			total = this.descuentoAplicado.aplicarDescuento(this);
-		}
-
-		return total;
+	    // Primero aplicamos el descuento prioritario de la tienda
+	    Tienda.getInstancia().aplicarDescuentoPrioritario(this);
+	    
+	    if (this.descuentoAplicado != null) {
+	        return this.descuentoAplicado.aplicarDescuento(this);
+	    }
+	    return calcularSubtotal();
 	}
 
 	public boolean estaCaducado() {
-		if (Carrito.tiempoMaximo == null) {
-			return false;
-		}
-
-		return LocalDateTime.now().isAfter(this.fechaCreacion.plus(Carrito.tiempoMaximo));
+	    int tiempoMax = Tienda.getInstancia().getTiempoMaxCarrito();
+	    if (tiempoMax == 0) return false;
+	    return LocalDateTime.now().isAfter(this.fechaCreacion.plusMinutes(tiempoMax));
 	}
+	
 
 	public String getIdCarrito() {
 		return this.idCarrito;
@@ -177,12 +174,6 @@ public class Carrito {
 		return this.lineas.isEmpty();
 	}
 
-	public static void setTiempoMaximo(Duration tiempo) {
-		if (tiempo == null || tiempo.isZero() || tiempo.isNegative()) {
-			throw new IllegalArgumentException("El tiempo máximo debe ser positivo");
-		}
-		Carrito.tiempoMaximo = tiempo;
-	}
 
 	public boolean caducar() {
 		vaciarCarrito();

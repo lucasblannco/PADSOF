@@ -51,34 +51,59 @@ public class Empleado extends UsuarioRegistrado {
 		return true;
 	}
 
+	private Producto2Mano buscarProductoPendientePorId(String idProducto) {
+	    if (idProducto == null || idProducto.isBlank()) {
+	        System.out.println("El id del producto no puede estar vacío.");
+	        return null;
+	    }
+	    for (Producto2Mano p : Tienda.getInstancia().getPendientes_Tasacion()) {
+	        if (p.getId().equals(idProducto)) return p;
+	    }
+	    System.out.println("No existe ningún producto pendiente de tasación con id: " + idProducto);
+	    return null;
+	}
+	
+	private Pedido buscarPedidoPorId(String idPedido) {
+	    if (idPedido == null || idPedido.isBlank()) {
+	        System.out.println("El id del pedido no puede estar vacío.");
+	        return null;
+	    }
+	    for (Pedido p : Tienda.getInstancia().getHistorialVentas()) {
+	        if (p.getIdPedido().equals(idPedido)) return p;
+	    }
+	    System.out.println("No existe ningún pedido con id: " + idPedido);
+	    return null;
+	}
+	
 	// si un producto no es aceptado, como borramos ese producto? habria que hacer
 	// una funcion en tienda.
-	public void tasarProducto(Producto2Mano p, double precio, EstadoProducto estado) {
-		// En cuanto un empleado empieza la valoracion del producto se borra por que los
-		// demas no puedan hacerlo
-		Tienda.getInstancia().getPendientes_Tasacion().remove(p);
-
-		if (puedeRealizarTarea(TipoPermisos.VALORACION_PRODUCTOS)) {
-
-			if (estado == EstadoProducto.NO_ACEPTADO) {
-				p.getPropietario().recibirNotificacion("El producto " + p.getNombre()
-						+ " ha sido rechazado al no cumplir las expectativas suficientes .");
-				return;
-			}
-
-			Valoracion nuevaVal = new Valoracion(precio, estado, this);
-			p.setValoracion(nuevaVal);
-			p.setVisible(true);
-			this.valoraciones.add(nuevaVal);
-			Tienda.getInstancia().publicarParaIntercambio(p);
-			p.getPropietario()
-					.recibirNotificacion("El producto " + p.getNombre() + " ha sido tasado  y publicadocon éxito .");
-			this.recibirNotificacion("Has completado la valoracion del producto" + p.getNombre() + " con exito");
-		} else {
-			System.out
-					.println("Error: El empleado" + this.getNickname() + "no tiene permisos de VALORACION_PRODUCTOS.");
-		}
-
+	public void tasarProducto(String idProducto, double precio, EstadoProducto estado) {
+	    if (!puedeRealizarTarea(TipoPermisos.VALORACION_PRODUCTOS)) return;
+	    
+	    // Comprobamos que el producto esté pendiente de tasación
+	    Producto2Mano p = buscarProductoPendientePorId(idProducto);
+	    if (p == null) {
+	        System.out.println("El producto " + idProducto + " no está pendiente de tasación.");
+	        return;
+	    }
+	    
+	    Tienda.getInstancia().getPendientes_Tasacion().remove(p);
+	    
+	    if (estado == EstadoProducto.NO_ACEPTADO) {
+	        p.getPropietario().recibirNotificacion("El producto " + p.getNombre()
+	                + " ha sido rechazado al no cumplir las expectativas suficientes.");
+	        return;
+	    }
+	    
+	    Valoracion nuevaVal = new Valoracion(precio, estado, this);
+	    p.setValoracion(nuevaVal);
+	    p.setVisible(true);
+	    this.valoraciones.add(nuevaVal);
+	    Tienda.getInstancia().publicarParaIntercambio(p);
+	    p.getPropietario().recibirNotificacion("El producto " + p.getNombre()
+	            + " ha sido tasado y publicado con éxito.");
+	    this.recibirNotificacion("Has completado la valoración del producto "
+	            + p.getNombre() + " con éxito.");
 	}
 
 	public boolean confirmarIntercambio(Oferta o) {
@@ -238,30 +263,23 @@ public class Empleado extends UsuarioRegistrado {
 		return false;
 	}
 
-	public boolean prepararPedido(Pedido p) {
-
-		if (p == null) {
-			System.out.println("No se puede preparar un pedido que sea null");
-			return false;
-		}
-		if (!puedeRealizarTarea(TipoPermisos.GESTION_PEDIDOS)) {
-			System.out.println("No tienes permiso para preparar los pedidos");
-			return false;
-		}
-		Tienda tienda = Tienda.getInstancia();
-		for (Pedido ped : tienda.getHistorialVentas()) {
-			if (ped.equals(p) && ped.getEstado() == EstadoPedido.PAGADO) {
-				boolean ok = ped.marcarPreparado();
-				if (ok) {
-					ped.getCliente().recibirNotificacion("Tu pedido con codigo de recogida" + ped.getCodigoRecogida()
-							+ " está preparado. Puedes recogerlo.");
-
-				}
-				return true;
-			}
-		}
-		System.out.println("El pedido no se ha encontrado o no está pagado todavia");
-		return false;
+	public boolean prepararPedido(String idPedido) {
+	    if (!puedeRealizarTarea(TipoPermisos.GESTION_PEDIDOS)) return false;
+	    
+	    Pedido ped = buscarPedidoPorId(idPedido);
+	    if (ped == null) return false;
+	    
+	    if (ped.getEstado() != EstadoPedido.PAGADO) {
+	        System.out.println("El pedido " + idPedido + " no se ha podido preparar.");
+	        return false;
+	    }
+	    
+	    boolean ok = ped.marcarPreparado();
+	    if (ok) {
+	        ped.getCliente().recibirNotificacion("Tu pedido con codigo de recogida "
+	                + ped.getCodigoRecogida() + " está preparado. Puedes recogerlo.");
+	    }
+	    return ok;
 	}
 
 	public boolean entregarPedido(String codigoRecogida) {
@@ -286,50 +304,52 @@ public class Empleado extends UsuarioRegistrado {
 		return false;
 	}
 
-	public boolean añadirProductoACategoria(ProductoVenta p, Categoria c) {
-
-		if (p == null || c == null) {
-			System.out.println("El producto o la categoria no pueden ser null");
-			return false;
-		}
-		if (!puedeRealizarTarea(TipoPermisos.GESTION_CATEGORIAS)) {
-			System.out.println("El empleado " + this.getNickname() + " no tiene el permiso de gestion de categorias");
-			return false;
-		}
-		Tienda tienda = Tienda.getInstancia();
-		if (!tienda.getStockVentas().contains(p)) {
-			System.out.println(
-					"El producto " + p.getId() + "no existe en la tienda. No se puede añadir a ninguna categoria");
-			return false;
-		}
-		if (!tienda.getCategorias().contains(c)) {
-			System.out.println("La tienda no tiene ninguna categoria " + c.getNombre() + ". ");
-			return false;
-		}
-		return c.addProducto(p);
+	public boolean añadirProductoACategoria(String idProducto, String nombreCat) {
+	    if (idProducto == null || nombreCat == null) {
+	        System.out.println("El id del producto o el nombre de la categoría no pueden ser null.");
+	        return false;
+	    }
+	    if (!puedeRealizarTarea(TipoPermisos.GESTION_CATEGORIAS)) {
+	        System.out.println("El empleado " + this.getNickname() + " no tiene el permiso de gestion de categorias.");
+	        return false;
+	    }
+	    Tienda tienda = Tienda.getInstancia();
+	    
+	    ProductoVenta p = tienda.buscarProductoVentaPorId(idProducto);
+	    if (p == null) {
+	        System.out.println("No existe ningún producto con id: " + idProducto);
+	        return false;
+	    }
+	    Categoria c = tienda.buscarCategoriaPorNombre(nombreCat);
+	    if (c == null) {
+	        System.out.println("No existe ninguna categoría con nombre: " + nombreCat);
+	        return false;
+	    }
+	    return c.addProducto(p);
 	}
 
-	public boolean eliminarProductoDeCategoria(ProductoVenta p, Categoria c) {
-
-		if (p == null || c == null) {
-			System.out.println("El producto o la categoria no pueden ser null");
-			return false;
-		}
-		if (!puedeRealizarTarea(TipoPermisos.GESTION_CATEGORIAS)) {
-			System.out.println("El empleado " + this.getNickname() + " no tiene el permiso de gestion de categorias");
-			return false;
-		}
-		Tienda tienda = Tienda.getInstancia();
-		if (!tienda.getStockVentas().contains(p)) {
-			System.out.println(
-					"El producto " + p.getId() + "no existe en la tienda. No se puede quitar de ninguna categoria");
-			return false;
-		}
-		if (!tienda.getCategorias().contains(c)) {
-			System.out.println("La tienda no tiene ninguna categoria " + c.getNombre() + ". ");
-			return false;
-		}
-		return c.deleteProducto(p);
+	public boolean eliminarProductoDeCategoria(String idProducto, String nombreCat) {
+	    if (idProducto == null || nombreCat == null) {
+	        System.out.println("El id del producto o el nombre de la categoría no pueden ser null.");
+	        return false;
+	    }
+	    if (!puedeRealizarTarea(TipoPermisos.GESTION_CATEGORIAS)) {
+	        System.out.println("El empleado " + this.getNickname() + " no tiene el permiso de gestion de categorias.");
+	        return false;
+	    }
+	    Tienda tienda = Tienda.getInstancia();
+	    
+	    ProductoVenta p = tienda.buscarProductoVentaPorId(idProducto);
+	    if (p == null) {
+	        System.out.println("No existe ningún producto con id: " + idProducto);
+	        return false;
+	    }
+	    Categoria c = tienda.buscarCategoriaPorNombre(nombreCat);
+	    if (c == null) {
+	        System.out.println("No existe ninguna categoría con nombre: " + nombreCat);
+	        return false;
+	    }
+	    return c.deleteProducto(p);
 	}
 
 	public boolean crearPack(String nombre, String descripcion, String imagen, double precioOficial, int stock,
@@ -404,55 +424,35 @@ public class Empleado extends UsuarioRegistrado {
 
 	}
 
-	public boolean modificarDescripcionProducto(ProductoVenta p, String descripcion) {
-		if (p == null || descripcion == null) {
-			System.out.println("No se ha podido modificaer la descripcion del producto");
-			return false;
-		}
-		if (!puedeRealizarTarea(TipoPermisos.MODIFICAR_PRODUCTO)) {
-			System.out.println("El empleado con id " + this.getId() + " y nombre " + this.getNickname()
-					+ " no tiene permiso para modificar la informacion de los productos");
-			return false;
-		}
-		Tienda tienda = Tienda.getInstancia();
-		if (tienda.getStockVentas().contains(p)) {
-			for (ProductoVenta pro : tienda.getStockVentas()) {
-				if (pro.getId().equals(p.getId())) {
-					pro.setDescripcion(descripcion);
-					return true;
-				}
-
-			}
-		}
-		return false;
+	public boolean modificarDescripcionProducto(String idProducto, String descripcion) {
+	    if (idProducto == null || descripcion == null) {
+	        System.out.println("El id del producto o la descripción no pueden ser null.");
+	        return false;
+	    }
+	    if (!puedeRealizarTarea(TipoPermisos.MODIFICAR_PRODUCTO)) return false;
+	    
+	    ProductoVenta p = Tienda.getInstancia().buscarProductoVentaPorId(idProducto);
+	    if (p == null) return false;
+	    
+	    p.setDescripcion(descripcion);
+	    System.out.println("Descripción del producto " + idProducto + " modificada correctamente.");
+	    return true;
 	}
 
-	public boolean modificarImagenProducto(ProductoVenta p, String imagen) {
-		if (p == null || imagen == null) {
-			System.out.println("No se ha podido modificar la imagen del producto");
-			return false;
-		}
-		if (!puedeRealizarTarea(TipoPermisos.MODIFICAR_PRODUCTO)) {
-			System.out.println("El empleado con id " + this.getId() + " y nombre " + this.getNickname()
-					+ " no tiene permiso para modificar la informacion de los productos");
-			return false;
-		}
-		Tienda tienda = Tienda.getInstancia();
-		if (tienda.getStockVentas().contains(p)) {
-			for (ProductoVenta pro : tienda.getStockVentas()) {
-				if (pro.getId().equals(p.getId())) {
-					p.setImagenRuta(imagen);
-					return true;
-				}
-
-			}
-		}
-		System.out.println("No se ha encontrado el producto sobre el que se quiere realizar la modificacion");
-		return false;
+	public boolean modificarImagenProducto(String idProducto, String imagen) {
+	    if (idProducto == null || imagen == null) {
+	        System.out.println("El id del producto o la imagen no pueden ser null.");
+	        return false;
+	    }
+	    if (!puedeRealizarTarea(TipoPermisos.MODIFICAR_PRODUCTO)) return false;
+	    
+	    ProductoVenta p = Tienda.getInstancia().buscarProductoVentaPorId(idProducto);
+	    if (p == null) return false;
+	    
+	    p.setImagenRuta(imagen);
+	    System.out.println("Imagen del producto " + idProducto + " modificada correctamente.");
+	    return true;
 	}
-	
-	
-	
 	
 	@Override
 	public boolean login(String nickname, String password) {

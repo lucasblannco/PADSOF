@@ -74,7 +74,8 @@ public class Oferta {
 	}
 
 	public boolean haCaducado() {
-
+		int tiempoMaxOferta	=Tienda.getInstancia().getTiempoMaxOferta();
+		 return LocalDateTime.now().isAfter(fechaOferta.plusMinutes(tiempoMaxOferta));//Comprobamos si el tiempo en el que finaliza la oferta es anterior al tiempo real de ahora
 	}
 
 	// Getters y Setters

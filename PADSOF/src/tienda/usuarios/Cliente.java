@@ -31,7 +31,7 @@ public class Cliente extends UsuarioRegistrado {
 
 	// Constructor//
 	public Cliente(String nickname, String password) {
-		super(nickname,password);
+		super(nickname, password);
 		this.historialPedidos = new ArrayList<>();
 		this.carteraIntercambio = new ArrayList<>();
 		this.ofertasPendientes = new ArrayList<>();
@@ -44,12 +44,11 @@ public class Cliente extends UsuarioRegistrado {
 	}
 
 	public void subirProducto(String nombre, String descripString, String imagen) {
-
-		Producto2Mano product = new Producto2Mano(this, nombre, descripString, imagen);/
+		Producto2Mano product = new Producto2Mano(this, nombre, descripString, imagen);
 		carteraIntercambio.add(product);
 	}
 
-	public boolean tieneProductoenSuCartera(Producto p) {
+	public boolean tieneProductoenSuCartera(Producto2Mano p) {
 		if (p == null) {
 			return false;
 		}
@@ -108,27 +107,48 @@ public class Cliente extends UsuarioRegistrado {
 
 	public boolean proponerOferta(Cliente destinatario, List<Producto2Mano> misProductos,
 			List<Producto2Mano> susProductos) {
-
+		if (!Tienda.getInstancia().isSistemaTiemposConfigurando()) {
+			System.out.println("El sistema no está configurado aún. Contacte con el gestor.");
+			return false;
+		}
+		if (destinatario == null || misProductos == null || susProductos == null) {
+			System.out.println("Los parámetros no pueden ser null.");
+			return false;
+		}
+		if (destinatario.equals(this)) {
+			System.out.println("No puedes hacerte una oferta a ti mismo.");
+			return false;
+		}
+		if (misProductos.isEmpty() || susProductos.isEmpty()) {
+			System.out.println("Debes ofrecer al menos un producto.");
+			return false;
+		}
 		for (Producto2Mano p : misProductos) {
 
-			if (tieneProductoenSuCartera(p) || p.isBloqueado() == true) { // No puedes proponer productos que no esten
-																			// en tu cartera ni tampoco productos
+			if (!tieneProductoenSuCartera(p)) {
+				System.out.println("El producto " + p.getId() + " no está en tu cartera.");
 				return false;
 			}
-
-			if (p.isBloqueado() == true) {
-				return false; // Si uno de los productos de mi oferta esta bloqueado(eso es que lo hemos
-				// ofercido para otro intercambio) no lo puedo ofrecer para este intercambio.
+			if (p.isBloqueado()) {
+				System.out.println("El producto " + p.getId() + " está bloqueado en otra oferta.");
+				return false;
 			}
 		}
-		// Una vez que hemos comprobado que ningunoi de los productos que hemos ofrecido
-		// esta bloqueado ya si se crea la oferta.
+		for (Producto2Mano p : susProductos) {
+			if (!destinatario.tieneProductoenSuCartera(p)) {
+				System.out.println("El producto " + p.getId() + " no está en la cartera del destinatario.");
+				return false;
+			}
+			if (p.isBloqueado()) {
+				System.out.println("El producto " + p.getId() + " está bloqueado en otra oferta.");
+				return false;
+			}
+		}
 		Oferta nuevaOferta = new Oferta(this, destinatario, misProductos, susProductos);
 		this.ofertasPendientes.add(nuevaOferta);
-
-		destinatario.getOfertasPendientes().add(nuevaOferta);// Añadimos al destinatario de la oferta esta oferta.
+		destinatario.getOfertasPendientes().add(nuevaOferta);
 		destinatario.recibirNotificacion("Has recibido una propuesta de intercambio de " + this.nickname);
-		for (Producto2Mano p : misProductos)// Todos los productos ofrecidos en mi oferta pasan a estar bloqueados.
+		for (Producto2Mano p : misProductos)
 			p.setBloqueado(true);
 		return true;
 	}
@@ -236,7 +256,18 @@ public class Cliente extends UsuarioRegistrado {
 	}
 
 	public boolean añadirProductoCarrito(ProductoVenta p, int cantidad) {
+		if (!Tienda.getInstancia().isSistemaTiemposConfigurando()) {
+			System.out.println(
+					"Error. Los aprametros del sistema de tiempos no está configurados. Hay que esperar hasta que el gestor de la tienda lo configure");
+			return false;
+		}
+
 		if (p == null) {
+			System.out.println("El producto no puede ser null.");
+			return false;
+		}
+		if (cantidad <= 0) {
+			System.out.println("La cantidad debe ser mayor que 0.");
 			return false;
 		}
 		if (p.getStockDisponible() < cantidad) {
@@ -252,16 +283,24 @@ public class Cliente extends UsuarioRegistrado {
 
 	public boolean comprarCarrito() {
 		{
-			if (carritoActual == null) {
+			if (!Tienda.getInstancia().isSistemaTiemposConfigurando()) {
+				System.out
+						.println("El sistema  de tiempos no está configurado aún. Espere a que el gestor lo configure");
+				return false;
+			}
+			if (carritoActual == null || carritoActual.estaVacio()) {
 				System.out.println("No tienes productos en el carrito. Añade productos para poder comprarlo");
 				return false;
 			}
+			if (carritoActual.estaCaducado()) {
+
+			}
 			Pedido pedido = new Pedido(this, this.carritoActual);
 			this.getHistorialPedidos().add(pedido);
+			Tienda.getInstancia().registrarVenta(pedido);
 			this.carritoActual = null;
-
-			//// VER COMO SE BORRA el carrito
-			///
+			this.recibirNotificacion("Pedido creado correctamente. Tienes " + Tienda.getInstancia().getTiempoMaxPago()
+					+ " minutos para pagarlo.");
 			return true;
 		}
 	}
@@ -281,27 +320,24 @@ public class Cliente extends UsuarioRegistrado {
 	}
 
 	public boolean solicitarRecogidaPedido(String codigoRecogida) {
-		Tienda tienda=Tienda.getInstancia();
-		 
-	    for (Pedido ped : tienda.getHistorialVentas()) {
-	        if (ped.getCliente().equals(this) && codigoRecogida.equals(ped.getCodigoRecogida()) &&ped.getEstado() == EstadoPedido.LISTO_PARA_RECOGER) {
-	            
-	            ped.setRecogida_solicitada(true);
-	            return true;
-	        }
-	    }
-	    System.out.println("Error en la solicitud de recogida de pedido");
-	    return false;
+		Tienda tienda = Tienda.getInstancia();
+
+		for (Pedido ped : tienda.getHistorialVentas()) {
+			if (ped.getCliente().equals(this) && codigoRecogida.equals(ped.getCodigoRecogida())
+					&& ped.getEstado() == EstadoPedido.LISTO_PARA_RECOGER) {
+
+				ped.setRecogida_solicitada(true);
+				return true;
+			}
+		}
+		System.out.println("Error en la solicitud de recogida de pedido");
+		return false;
 	}
-	
+
 	public void establecerPreferenciasNotificaciones() {
-		
+
 	}
-	
-	
-	
-	
-	
+
 	// --- GETTERS ---
 
 	public List<Pedido> getHistorialPedidos() {

@@ -4,7 +4,6 @@ import java.security.PublicKey;
 import java.util.*;
 
 import intercambios.Oferta;
-import productos.Producto2Mano;
 import usuarios.Cliente;
 import usuarios.Empleado;
 import usuarios.TipoPermisos;
@@ -29,6 +28,7 @@ public class Tienda {
     private int tiempoMaxCarrito;
     private int tiempoMaxOferta;
     private int tiempoMaxPago;
+   
     
    
     //private List<Producto2Mano> pendientesTasacion = new ArrayList<>();
@@ -44,6 +44,16 @@ public class Tienda {
         this.catalogoIntercambio = new ArrayList<>();
         this.historialVentas = new ArrayList<>();
         this.pendientes_Tasacion=new ArrayList<>();
+        this.descuentosActivos=new ArrayList<>();
+        this.historialDescuentos=new ArrayList<>();
+        this.intercambiosFinalizados=new ArrayList<>();
+        this.categorias=new ArrayList<>();
+        this.recomendador=new Recomendador();
+        this.tiempoMaxCarrito=0;
+        this.tiempoMaxOferta=0;
+        this.tiempoMaxPago=0;
+      
+        
     }
 
     public static Tienda getInstancia() {
@@ -51,8 +61,32 @@ public class Tienda {
         return instancia;
     }
     
-    //--- añadir cosas
     
+    
+    //METODOS GLOBALES
+    //--- añadir cosas
+    public ProductoVenta buscarProductoVentaPorId(String idProducto) {
+        if (idProducto == null || idProducto.isBlank()) return null;
+        try {
+            int numero = Integer.parseInt(idProducto.substring(2)); // "PV5" → 5
+            int indice = numero - 1; // ids empiezan en 1,  luego hay que restar 1 para que los indices empiecen en 0índices en 0
+            if (indice >= 0 && indice < this.stockVentas.size()) {
+                return stockVentas.get(indice);
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Formato de id incorrecto: " + idProducto);
+        }
+        return null;
+    }
+	
+    public Categoria buscarCategoriaPorNombre(String nombre) {
+        if (nombre == null || nombre.isBlank()) return null;
+        for (Categoria c : this.categorias) {
+            if (c.getNombre().equalsIgnoreCase(nombre)) return c;
+        }
+        return null;
+    }
+
     public Cliente registrarNuevoCliente(String nickname, String email, String password) {
         
         Cliente nuevoCliente = new Cliente();
@@ -303,5 +337,17 @@ public class Tienda {
 
 	public void setTiempoMaxPago(int tiempoMaxPago) {
 		this.tiempoMaxPago = tiempoMaxPago;
+	}
+
+	public List<Descuento> getHistorialDescuentos() {
+		return historialDescuentos;
+	}
+
+	public void setHistorialDescuentos(List<Descuento> historialDescuentos) {
+		this.historialDescuentos = historialDescuentos;
+	}
+
+	public boolean isSistemaTiemposConfigurando() {
+		return this.tiempoMaxCarrito >0 &&this.tiempoMaxOferta>0&&this.tiempoMaxPago>0;
 	}
 }
