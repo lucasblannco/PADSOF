@@ -133,7 +133,6 @@ public abstract class ProductoVenta extends Producto {
 	public double getPrecioVenta() {
 		return this.precioOficial;
 	}
-	
 
 	@Override
 	public String toString() {
@@ -145,8 +144,12 @@ public abstract class ProductoVenta extends Producto {
 		return precioOficial;
 	}
 
-	public void setPrecioOficial(double precioOficial) {
+	public boolean setPrecioOficial(double precioOficial) {
+		if (precioOficial < 0) {
+			return false;
+		}
 		this.precioOficial = precioOficial;
+		return true;
 	}
 
 }
