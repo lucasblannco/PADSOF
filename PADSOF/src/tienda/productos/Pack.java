@@ -20,6 +20,7 @@ public class Pack extends ProductoVenta {
 		}
 	}
 
+	//AñADIR OTRO TIPO DE PRODUCTO AL PACK
 	public boolean addLinea(LineaPack lp) {
 		if (lp == null) {
 			return false;
@@ -36,7 +37,7 @@ public class Pack extends ProductoVenta {
 
 		this.lineas.add(lp);
 
-		if (this.precioOficial >= calcularSumaProductos()) {
+		if (this.precioOficial >= calcularSumaProductos()-1) {
 			this.lineas.remove(lp);
 			return false;
 		}
@@ -103,7 +104,7 @@ public class Pack extends ProductoVenta {
 
 		lineaActual.setUnidades(nuevasUnidades);
 
-		if (this.precioOficial >= calcularSumaProductos()) {
+		if (this.precioOficial >= calcularSumaProductos()-1) {
 			lineaActual.setUnidades(unidadesActuales);
 			return false;
 		}
@@ -128,7 +129,7 @@ public class Pack extends ProductoVenta {
 		return addLinea(lp);
 	}
 
-	public boolean addProducto(ProductoVenta p) {
+	public boolean addProducto_conunaUnidad(ProductoVenta p) {
 		if (p == null || p == this || contieneProducto(p)) {
 			return false;
 		}
@@ -160,8 +161,8 @@ public class Pack extends ProductoVenta {
 	public boolean setPrecioOficial(double nuevoPrecio) {
 		if (nuevoPrecio <= 0)
 			return false;
-		if (!this.lineas.isEmpty() && nuevoPrecio >= calcularSumaProductos()) {
-			System.out.println("El precio del pack debe ser menor que la suma (" + calcularSumaProductos() + ")");
+		if (!this.lineas.isEmpty() && nuevoPrecio >= calcularSumaProductos()-1) {
+			System.out.println("El precio del pack debe ser al menos un euro menor que la suma (" + calcularSumaProductos() + ")");
 			return false;
 		}
 		this.precioOficial = nuevoPrecio;
@@ -180,5 +181,13 @@ public class Pack extends ProductoVenta {
 			s += lp.getProducto().getNombre() + " x" + lp.getUnidades() + " = " + lp.getSubtotal() + "€\n";
 		}
 		return super.toString() + "\n" + s;
+	}
+
+	public ArrayList<LineaPack> getLineas() {
+		return lineas;
+	}
+
+	public void setLineas(ArrayList<LineaPack> lineas) {
+		this.lineas = lineas;
 	}
 }
