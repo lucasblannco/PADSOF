@@ -377,4 +377,12 @@ public class Cliente extends UsuarioRegistrado {
 	public void setCarritoActual(Carrito carritoActual) {
 		this.carritoActual = carritoActual;
 	}
+
+	public String getDni() {
+		return dni;
+	}
+
+	public void setDni(String dni) {
+		this.dni = dni;
+	}
 }

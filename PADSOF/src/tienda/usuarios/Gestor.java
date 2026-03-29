@@ -92,8 +92,13 @@ public class Gestor extends UsuarioRegistrado {
 			System.out.println("Error en la creacion del empleado. Los parametros son null.");
 			return false;
 		}
-		Empleado nuevoEmpleado = new Empleado(nickname, password);
 		Tienda tienda = Tienda.getInstancia();
+		if (tienda.existeUsuarioConNickname(nickname)) {
+			System.out.println("Error: El nickname '" + nickname + "' ya está en uso.");
+			return false;
+		}
+		Empleado nuevoEmpleado = new Empleado(nickname, password);
+
 		tienda.getUsuarios().add(nuevoEmpleado);
 		System.out.println("Empleado con id " + nuevoEmpleado.getId() + " ha sido dado de alta en la aplicacion");
 		return true;
@@ -108,6 +113,11 @@ public class Gestor extends UsuarioRegistrado {
 			System.out.println("Error. La contraseña o el nickname no pueden estar vacios");
 			return false;
 		}
+		Tienda tienda = Tienda.getInstancia();
+		if (tienda.existeUsuarioConNickname(nickname)) {
+			System.out.println("Error: El nickname '" + nickname + "' ya está en uso.");
+			return false;
+		}
 		Empleado nuevo = new Empleado(nickname, password);
 
 		if (permisos != null) {
@@ -115,7 +125,7 @@ public class Gestor extends UsuarioRegistrado {
 				nuevo.asignarPermiso(per);
 			}
 		}
-		Tienda tienda = Tienda.getInstancia();
+
 		tienda.getUsuarios().add(nuevo);
 		System.out.println("Empleado '" + nickname + "' dado de alta con id " + nuevo.getId() + ".");
 		return true;
@@ -319,20 +329,25 @@ public class Gestor extends UsuarioRegistrado {
 
 	public boolean crearDescuentoRegalo(String nombre, String idProductoRegalado, double gastoNecesario,
 			LocalDateTime inicio, LocalDateTime fin) {
+
 		if (!validarFechas(inicio, fin))
 			return false;
 		if (nombre == null || nombre.isBlank()) {
 			System.out.println("El nombre del descuento no puede estar vacío.");
 			return false;
 		}
+
 		if (gastoNecesario <= 35) {
 			System.out.println("El gasto necesario debe ser mayor que 35.");
 			return false;
 		}
-		if (Tienda.getInstancia().buscarProductoVentaPorId(idProductoRegalado)==null))
-			return false;
 
-		ProductoVenta productoRegalado = Tienda.getInstancia().buscarProductoVentaPorId(idProductoRegalado));
+		ProductoVenta productoRegalado = Tienda.getInstancia().buscarProductoVentaPorId(idProductoRegalado);
+		if (productoRegalado == null) {
+			System.out.println("Error: El producto con ID " + idProductoRegalado + " no existe.");
+			return false;
+		}
+
 		Descuento d = new Regalo(nombre, inicio, fin, gastoNecesario, productoRegalado);
 		Tienda.getInstancia().agregarDescuento(d);
 		System.out.println("Descuento regalo '" + nombre + "' creado correctamente.");
@@ -340,20 +355,17 @@ public class Gestor extends UsuarioRegistrado {
 	}
 
 	public boolean eliminarDescuento(String idDescuento) {
-		if (idDescuento == null || idDescuento.isBlank()) {
-			System.out.println("El id del descuento no puede estar vacío.");
+		if (idDescuento == null || idDescuento.isBlank())
 			return false;
+
+		List<Descuento> lista = Tienda.getInstancia().getDescuentosActivos();
+		boolean eliminado = lista.removeIf(d -> d.getId().equals(idDescuento));
+		if (eliminado) {
+			System.out.println("Descuento " + idDescuento + " eliminado correctamente.");
+		} else {
+			System.out.println("No se encontró el descuento.");
 		}
-		List<Descuento> descuentos = Tienda.getInstancia().getDescuentosActivos();
-		for (Descuento d : descuentos) {
-			if (d.getId().equals(idDescuento)) {
-				descuentos.remove(d);
-				System.out.println("Descuento " + idDescuento + " eliminado correctamente de la tienda.");
-				return true;
-			}
-		}
-		System.out.println("No se encontró ningún descuento con id: " + idDescuento);
-		return false;
+		return eliminado;
 	}
 
 	/// METODOS RELACIONADOS CON LAS CATEGORIAS
@@ -428,7 +440,13 @@ public class Gestor extends UsuarioRegistrado {
 			System.out.println("El nuevo nickname no puede estar vacío");
 			return false;
 		}
-
+		// puede cquerer cambiar solo la contraseÑa y dejarse el mismo nombre, entonces
+		// si el ya tiene ese nombre va a existir un usuario con ese nombre que es el.
+		if (!nuevoNickname.equalsIgnoreCase(this.getNickname())
+				&& Tienda.getInstancia().existeUsuarioConNickname(nuevoNickname)) {
+			System.out.println("Error: El nickname '" + nuevoNickname + "' ya está siendo usado por otro usuario.");
+			return false;
+		}
 		// Validar que la nueva contraseña cumpla la seguridad
 		if (!validarPassword(nuevoPass)) {
 			return false;
