@@ -29,6 +29,7 @@ public class Carrito {
 		this.lineas = new ArrayList<>();
 		this.fechaCreacion = LocalDateTime.now();
 		this.descuentoAplicado = descuentoAplicado;
+		
 	}
 
 	public boolean añadirProducto(ProductoVenta p, int cantidad) {
