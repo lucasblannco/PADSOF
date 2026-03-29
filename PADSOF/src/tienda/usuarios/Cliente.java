@@ -11,6 +11,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.sun.org.apache.xml.internal.serializer.utils.StringToIntTable;
+
 import intercambios.*;
 import productos.Producto2Mano;
 
@@ -20,6 +22,7 @@ public class Cliente extends UsuarioRegistrado {
 	// private double saldoPuntos;
 
 	private List<Pedido> historialPedidos;
+	private String dni;
 	private Carrito carritoActual;
 	private List<Producto2Mano> carteraIntercambio;
 	private List<Oferta> ofertasPendientes;
@@ -30,8 +33,9 @@ public class Cliente extends UsuarioRegistrado {
 	private PreferenciaNotificacion preferencias;
 
 	// Constructor//
-	public Cliente(String nickname, String password) {
+	public Cliente(String nickname, String password,String dni) {
 		super(nickname, password);
+		this.dni=dni;
 		this.historialPedidos = new ArrayList<>();
 		this.carteraIntercambio = new ArrayList<>();
 		this.ofertasPendientes = new ArrayList<>();

@@ -15,9 +15,8 @@ public abstract class UsuarioRegistrado {
 	protected String id;
 	protected String nickname;
 	protected String password;
-
 	protected boolean sesionIniciada;
-	// protected List<String> notificaciones; el gestor no tiene notifiaciones
+	
 
 	/*
 	 * public UsuarioRegistrado(String nickname, String password, String email) {
@@ -51,7 +50,7 @@ public abstract class UsuarioRegistrado {
 
 	}
 
-	protected static boolean validarPassword(String pass) {
+	public static boolean validarPassword(String pass) {
 		if (pass == null || pass.length() < 8// longitud minimo 8
 				|| !pass.matches(".*[A-Z].*")// busca al menos una letra mayuscula
 				|| !pass.matches(".*[a-z].*")// busca al menos una letra minuscula

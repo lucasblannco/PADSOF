@@ -90,18 +90,44 @@ public class Tienda {
         }
         return null;
     }
-
-    public Cliente registrarNuevoCliente(String nickname, String email, String password) {
-        
-        Cliente nuevoCliente = new Cliente();
-      
-        //nuevoCliente.login(nickname, password, email);
-        
-   
-        this.usuarios.add(nuevoCliente);
-        nuevoCliente.recibirNotificacion("¡Bienvenido a CheckPoint, " + nickname + "!");
-        return nuevoCliente;
+    
+    public UsuarioRegistrado login(String nickname,String password,String tipo) {
+    	for (UsuarioRegistrado u : usuarios) {
+			if (u.co) {
+				
+			}
+		}
     }
+    
+    
+    
+    
+
+    public Cliente registrarNuevoCliente(String nickname, String password, String dni) {
+        if (!dni.matches("\\d{8}[A-Za-z]")) {//	Comprobamos que el dni tenga 8 numeros seguidos de una letra
+            System.out.println("El DNI no tiene el formato correcto (8 dígitos y 1 letra).");
+            return null;
+        }
+        for (UsuarioRegistrado u : usuarios) {
+            if (u.getNickname().equalsIgnoreCase(nickname)) {
+                System.out.println("Ya existe un usuario con el nickname: " + nickname);
+                return null;
+            }
+        }
+        if (!UsuarioRegistrado.validarPassword(password)) return null;
+        
+        Cliente nuevo = new Cliente(nickname, password, dni);
+        this.usuarios.add(nuevo);
+        nuevo.recibirNotificacion("¡Bienvenido a CheckPoint, " + nickname + "!. Te has registrado correctamente, ahora podras consultar nuestra tienda.");
+        return nuevo;
+    }
+    
+    
+    
+    
+    
+    
+    
     
     public void registrarIntercambioFinalizado(Oferta oferta) {
         this.intercambiosFinalizados.add(oferta);
@@ -177,7 +203,7 @@ public class Tienda {
         }
     }
 
-    
+ 
     
     
     
