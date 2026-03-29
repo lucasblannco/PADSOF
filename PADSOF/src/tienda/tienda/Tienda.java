@@ -6,6 +6,7 @@ import java.util.*;
 import intercambios.Oferta;
 import usuarios.Cliente;
 import usuarios.Empleado;
+import usuarios.Gestor;
 import usuarios.TipoPermisos;
 import usuarios.UsuarioRegistrado;
 import ventas.Carrito;
@@ -28,6 +29,7 @@ public class Tienda {
     private int tiempoMaxCarrito;
     private int tiempoMaxOferta;
     private int tiempoMaxPago;
+    
    
     
    
@@ -52,7 +54,9 @@ public class Tienda {
         this.tiempoMaxCarrito=0;
         this.tiempoMaxOferta=0;
         this.tiempoMaxPago=0;
-      
+        // El gestor es el primer usuario del sistema, siempre tendrá id USR-1
+        Gestor gestor = new Gestor();
+        this.usuarios.add(gestor);
         
     }
 
