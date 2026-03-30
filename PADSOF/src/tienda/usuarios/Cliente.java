@@ -14,6 +14,7 @@ import java.util.Map;
 
 import com.sun.org.apache.bcel.internal.generic.RETURN;
 import com.sun.org.apache.xml.internal.serializer.utils.StringToIntTable;
+import com.sun.tools.javac.util.ClientCodeException;
 
 import intercambios.*;
 import productos.Producto2Mano;
@@ -50,6 +51,30 @@ public class Cliente extends UsuarioRegistrado {
 	public void mostrarPanelPrincipal() {
 	}
 
+	// Ver la cartera de otro usuario
+	public List<Producto2Mano> verCarteraCliente(String nickname) {
+		if (nickname == null || nickname.isBlank()) {
+			System.out.println(
+					"El nickname del usuario sobre el que se quiere ver la cartera de objetos de segunda mano no puede estar vacio");
+			return null;
+		}
+		Cliente c = Tienda.getInstancia().buscarClientePorNickname(nickname);
+		if (c == null) {
+			return new ArrayList<>();
+		}
+		if (c.equals(this)) {
+			System.out.println("Para ver tu propia cartera usa getCarteraIntercambio().");
+			return new ArrayList<>();
+		}
+		List<Producto2Mano> array = new ArrayList<>();
+		for (Producto2Mano p : c.getCarteraIntercambio()) {
+			if (p.isVisible() && !p.isBloqueado()) {
+				array.add(p);
+			}
+		}
+		return array;
+	}
+
 	public void subirProducto(String nombre, String descripString, String imagen) {
 		Producto2Mano product = new Producto2Mano(this, nombre, descripString, imagen);
 		carteraIntercambio.add(product);
@@ -64,27 +89,30 @@ public class Cliente extends UsuarioRegistrado {
 	}
 
 	public boolean solicitarTasacion(Producto2Mano p, String tarjeta, int CVV, Date caducidad) {
-		if (p==null) {
+		if (p == null) {
 			System.out.println("El producto no puede ser null");
-	        return false;
+			return false;
 		}
 		if (!tieneProductoenSuCartera(p)) {
-			 System.out.println("El producto no está en tu cartera del cliente "+ this.getNickname());
-		        return false;
+			System.out.println("El producto no está en tu cartera del cliente " + this.getNickname());
+			return false;
 		}
-		 if (p.isVisible()) {
-		        System.out.println("El producto ya ha sido tasado");
-		        return false;
-		    }
-		 Pago pagoValoracionPago=new Pago(tarjeta, Tienda.getInstancia().getPrecioTasacion(), caducidad, CVV);
+		if (p.isVisible()) {
+			System.out.println("El producto ya ha sido tasado");
+			return false;
+		}
+		Pago pagoValoracionPago = new Pago(tarjeta, Tienda.getInstancia().getPrecioTasacion(), caducidad, CVV);
 		if (!pagoValoracionPago.getExito()) {
-			this.recibirNotificacionTipo("Pago no aceptado, no se ha podido solicitar la valoracion del producto."+p.getNombre(), TipoNotificacion.Pago_FALLIDO);
+			this.recibirNotificacionTipo(
+					"Pago no aceptado, no se ha podido solicitar la valoracion del producto." + p.getNombre(),
+					TipoNotificacion.Pago_FALLIDO);
 			return false;
 		}
 
-	    Tienda.getInstancia().solicitarTasacion(p);
-	    this.recibirNotificacionTipo("Pago correcto. Tasación solicitada. Esperando a que un empleado tase el producto",TipoNotificacion.PAGO_EXITOSO);
-	    return true;
+		Tienda.getInstancia().solicitarTasacion(p);
+		this.recibirNotificacionTipo("Pago correcto. Tasación solicitada. Esperando a que un empleado tase el producto",
+				TipoNotificacion.PAGO_EXITOSO);
+		return true;
 	}
 
 	// OFERTAS
@@ -361,7 +389,10 @@ public class Cliente extends UsuarioRegistrado {
 				return false;
 			}
 			if (carritoActual.estaCaducado()) {
-
+				carritoActual.vaciarCarrito();
+				this.carritoActual = null;
+				System.out.println("El carrito ha caducado, no se puede reservar");
+				return false;
 			}
 			Pedido pedido = new Pedido(this, this.carritoActual);
 			this.getHistorialPedidos().add(pedido);
@@ -376,17 +407,26 @@ public class Cliente extends UsuarioRegistrado {
 	}
 
 	public boolean pagarCarrito(Pedido p, String numeroTarjeta, Date fechaTarjeta, int CVV) {
-	    if (p == null) {
-	        System.out.println("El pedido no puede ser null");
-	        return false;
-	    }
+		if (p == null) {
+			System.out.println("El pedido no puede ser null");
+			return false;
+		}
 
-	    if (!this.historialPedidos.contains(p)) {
-	        System.out.println("Este pedido no es tuyo");
-	        return false;
-	    }
-
-	    return p.pagar(numeroTarjeta, CVV, fechaTarjeta);
+		if (!this.historialPedidos.contains(p)) {
+			System.out.println("Este pedido no es tuyo");
+			return false;
+		}
+		if (p.isCaducado()) {
+			p.cancelarPedido();
+			System.out.println(
+					"El tiempo maximo para pagar el pedido ya expiro. Se han devuelto los productos del pedido al stock de la tienda. Disculpe las molestias.");
+			return false;
+		}
+		if (p.getEstado() != EstadoPedido.PENDIENTE_PAGO) {
+			System.out.println("Este pedido no está pendiente de pago");
+			return false;
+		}
+		return p.pagar(numeroTarjeta, CVV, fechaTarjeta);
 	}
 
 	public boolean solicitarRecogidaPedido(String codigoRecogida) {
@@ -459,5 +499,5 @@ public class Cliente extends UsuarioRegistrado {
 	public void setPreferencias(PreferenciaNotificacion preferencias) {
 		this.preferencias = preferencias;
 	}
-	
+
 }

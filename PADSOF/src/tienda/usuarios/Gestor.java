@@ -221,16 +221,15 @@ public class Gestor extends UsuarioRegistrado {
 		Tienda.getInstancia().setTiempoMaxPago(tiempo);
 		return true;
 	}
-	
-	public boolean setPrecioTasacion(double precio) {
-	    if (precio <= 5) {
-	        System.out.println("El precio de tasación debe ser mayor que 5");
-	        return false;
-	    }
-	    Tienda.getInstancia().setPrecioTasacion(precio);
-	    return true;
-	}
 
+	public boolean setPrecioTasacion(double precio) {
+		if (precio <= 5) {
+			System.out.println("El precio de tasación debe ser mayor que 5");
+			return false;
+		}
+		Tienda.getInstancia().setPrecioTasacion(precio);
+		return true;
+	}
 
 	// MODIFICACION DE LOS PRECIOS
 

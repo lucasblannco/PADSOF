@@ -5,6 +5,7 @@ import java.util.*;
 
 import productos.ProductoVenta;
 import tienda.Estadistica;
+import tienda.Tienda;
 import tienda.TipoNotificacion;
 import usuarios.Cliente;
 
@@ -14,7 +15,6 @@ public class Pedido {
 	private final LocalDateTime fechaCreacion;
 	private LocalDateTime fechaPreparado;
 	private LocalDateTime fechaEntregado;
-	private static Duration tiempoMaximo;
 
 	private final Cliente cliente;
 	private final List<LineaPedido> lineas;
@@ -142,7 +142,6 @@ public class Pedido {
 
 		this.estado = EstadoPedido.CANCELADO;
 		this.codigoRecogida = null;
-
 		return true;
 	}
 
@@ -238,12 +237,7 @@ public class Pedido {
 		if (this.estado != EstadoPedido.PENDIENTE_PAGO) {
 			return false;
 		}
-
-		if (Pedido.tiempoMaximo == null) {
-			return false;
-		}
-
-		return LocalDateTime.now().isAfter(this.fechaCreacion.plus(Pedido.tiempoMaximo));
+		return LocalDateTime.now().isAfter(this.fechaCreacion.plusMinutes(Tienda.getInstancia().getTiempoMaxPago()));
 	}
 
 	public String getIdPedido() {

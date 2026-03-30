@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import tienda.Estadistica;
 import tienda.Tienda;
 import tienda.FiltroVenta;
+import productos.Producto2Mano;
 import productos.ProductoVenta;
 
 public class UsuarioNoRegistrado {
@@ -20,7 +21,7 @@ public class UsuarioNoRegistrado {
 		return Tienda.getInstancia().buscarProductoVenta();
 	}
 
-	public List<ProductoVenta> buscarProductoPorNombre(String nombre) {
+	public List<ProductoVenta> buscarProductosPorNombre(String nombre) {
 		return Tienda.getInstancia().buscarproductoPorNombre(nombre);
 	}
 
@@ -28,8 +29,12 @@ public class UsuarioNoRegistrado {
 		return Tienda.getInstancia().buscarProductoVentaPorId(id);
 	}
 
-	public List<ProductoVenta> buscarProductosporCategoria(String nombreCategoria) {
+	public List<ProductoVenta> buscarProductosPorCategoria(String nombreCategoria) {
 		return Tienda.getInstancia().buscarProductoPorCategoria(nombreCategoria);
+	}
+
+	public List<Producto2Mano> buscarProductosSegundaMano() {
+		return Tienda.getInstancia().buscarSegundaMano();
 	}
 
 	public Cliente registrarse(String nickname, String password, String dni) {
