@@ -42,7 +42,7 @@ public abstract class UsuarioRegistrado {
 	 */
 	public void logout() {
 	this.sesionIniciada=false;
-	Tienda.getInstancia()getUsuariosConSesionActiva().remove(this);
+	Tienda.getInstancia().getUsuariosConSesionActiva().remove(this);
 	System.out.println("El usuario con id: "+ id+" ha cerrado sesion correctamente.");
 	}
 

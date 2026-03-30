@@ -36,6 +36,7 @@ public class Empleado extends UsuarioRegistrado {
 		this.valoraciones = new ArrayList<>();
 		this.permisos = new TreeSet<>();
 		this.despedido = false;
+		this.notificaciones = new ArrayList<>();
 	}
 
 	@Override
@@ -522,11 +523,6 @@ public class Empleado extends UsuarioRegistrado {
 	}
 
 	public void recibirNotificacion(String mensaje) {
-		if (this.notificaciones == null) {
-			this.notificaciones = new ArrayList<>();
-		}
-		// Si aún no has creado la clase Notificacion, puedes pasarle un String
-		// o crear el objeto aquí mismo si ya la tienes.
 		this.notificaciones.add(new Notificacion(mensaje));
 		System.out.println("[Notificación Empleado]: " + mensaje);
 	}

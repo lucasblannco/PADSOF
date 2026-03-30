@@ -56,7 +56,7 @@ public class Tienda {
 		// El gestor es el primer usuario del sistema, siempre tendrá id USR-1
 		Gestor gestor = new Gestor();
 		this.usuarios.add(gestor);
-
+		this.usuariosConSesionActiva = new ArrayList<>();
 	}
 
 	public static Tienda getInstancia() {
@@ -119,7 +119,7 @@ public class Tienda {
 			if (c.getNombre().equalsIgnoreCase(nombre))
 				return c;
 		}
-		System.out.println("No existe ninguna categoria en la tienda con el nombre "+nombre+".");
+		System.out.println("No existe ninguna categoria en la tienda con el nombre " + nombre + ".");
 		return null;
 	}
 
@@ -166,44 +166,41 @@ public class Tienda {
 		return null;
 	}
 
-	public List<ProductoVenta> buscarProductoVenta(){
-		List <ProductoVenta> productos= new ArrayList<>();
+	public List<ProductoVenta> buscarProductoVenta() {
+		List<ProductoVenta> productos = new ArrayList<>();
 		for (ProductoVenta p : stockVentas) {
-			if (p.getStockDisponible()>0) {
+			if (p.getStockDisponible() > 0) {
 				productos.add(p);
 			}
 		}
 		return productos;
 	}
-	public List<ProductoVenta>buscarproductoPorNombre(String nombre){
-		if (nombre==null||nombre.isBlank()) {
+
+	public List<ProductoVenta> buscarproductoPorNombre(String nombre) {
+		if (nombre == null || nombre.isBlank()) {
 			System.out.println("El nombre no puede estar vacio.");
 			return null;
 		}
-	List <ProductoVenta> productos=new ArrayList<>();
+		List<ProductoVenta> productos = new ArrayList<>();
 		for (ProductoVenta p : stockVentas) {
-			if (p.getStockDisponible()>0 && p.getNombre().toLowerCase().contains(nombre.toLowerCase())) {
+			if (p.getStockDisponible() > 0 && p.getNombre().toLowerCase().contains(nombre.toLowerCase())) {
 				productos.add(p);
 			}
 		}
 		return productos;
 	}
-	public List<ProductoVenta> buscarProductoPorCategoria(String nombreCategoria){
-		Categoria cat=buscarCategoriaPorNombre(nombreCategoria);
-		if (cat==null) {
+
+	public List<ProductoVenta> buscarProductoPorCategoria(String nombreCategoria) {
+		Categoria cat = buscarCategoriaPorNombre(nombreCategoria);
+		if (cat == null) {
 			return new ArrayList<>();
 		}
-		List<ProductoVenta> productos=new ArrayList<>();
+		List<ProductoVenta> productos = new ArrayList<>();
 		for (ProductoVenta productoVenta : cat.getProductos()) {
-			
+
 		}
 	}
-	
-	
-	
-	
-	
-	
+
 	public Cliente registrarNuevoCliente(String nickname, String password, String dni) {
 		if (!dni.matches("\\d{8}[A-Za-z]")) {// Comprobamos que el dni tenga 8 numeros seguidos de una letra
 			System.out.println("El DNI no tiene el formato correcto (8 dígitos y 1 letra).");
@@ -460,5 +457,13 @@ public class Tienda {
 
 	public boolean isSistemaTiemposConfigurando() {
 		return this.tiempoMaxCarrito > 0 && this.tiempoMaxOferta > 0 && this.tiempoMaxPago > 0;
+	}
+
+	public List<UsuarioRegistrado> getUsuariosConSesionActiva() {
+		return usuariosConSesionActiva;
+	}
+
+	public void setUsuariosConSesionActiva(List<UsuarioRegistrado> usuariosConSesionActiva) {
+		this.usuariosConSesionActiva = usuariosConSesionActiva;
 	}
 }

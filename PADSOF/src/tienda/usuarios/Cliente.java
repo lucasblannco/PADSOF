@@ -41,6 +41,7 @@ public class Cliente extends UsuarioRegistrado {
 		this.ofertasPendientes = new ArrayList<>();
 		this.reseñas = new ArrayList<>();
 		this.preferencias = new PreferenciaNotificacion();
+		this.notificaciones=new ArrayList<>();
 	}
 
 	@Override
@@ -232,10 +233,15 @@ public class Cliente extends UsuarioRegistrado {
 	}
 
 	// REVISAR.METER A TIENDA.
-	public void recibirNotificacion(String mensaje) {
-		if (this.notificaciones == null) {
-			this.notificaciones = new ArrayList<>();
+	public void recibirNotificacionTipo(String mensaje,TipoNotificacion tipo) {
+		
+		if (!this.preferencias.debeRecibirNotificacion(tipo)) {
+			return ;
 		}
+		this.notificaciones.add(null)
+		
+		
+		
 		// Si aún no has creado la clase Notificacion, puedes pasarle un String
 		// o crear el objeto aquí mismo si ya la tienes.
 		this.notificaciones.add(new Notificacion(mensaje));

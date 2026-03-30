@@ -1,0 +1,21 @@
+package tienda;
+
+import ventas.Pago;
+
+public enum TipoNotificacion {
+//Obligatorias
+	CODIGO_RECOGIDA,
+	PEDIDO_LISTO,
+	OFERTA_RECIBIDA,
+	PAGO_EXITOSO,
+	Pago_FALLIDO,
+	CARRITO_CADUCADO,
+//el cliente las puede configurar
+	DESCUENTO,
+	PEDIDO_CADUCADO,
+	PRODUCTO_INTERCAMBIO_NUEVO,
+	PEDIDO_ENTREGADO,
+	VALORACION_COMPLETADA,
+	OFERTA_CADUCADA
+	
+}

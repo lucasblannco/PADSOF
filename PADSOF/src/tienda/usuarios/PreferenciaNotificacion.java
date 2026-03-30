@@ -1,84 +1,180 @@
 package usuarios;
 
+import java.security.Identity;
+import java.security.PrivateKey;
+import java.util.ArrayList;
 import java.util.List;
 
 import productos.Categoria;
+import tienda.Tienda;
+import tienda.TipoNotificacion;
 
 public class PreferenciaNotificacion {
-	private boolean Descuentos;
-	private boolean Pago;
-	private boolean PedidosCaducados;
-	private boolean OfertasRecibidas;
-	private boolean OfertasContestadas;
-	private List<Categoria>  categoriasInteres;
-	
-	
+	private boolean descuentos;
+	private boolean pedidosCaducados;
+	private boolean nuevos_Intercambios;
+	private boolean pedido_entregado;
+	private boolean valoracion_completada;
+	private boolean oferta_caducada;
+	private List<Categoria> categoriasInteres;
+
 	public PreferenciaNotificacion() {
-		this.Descuentos=true;
-		this.PedidosCaducados=true;
-		this.Pago=true;
-		this.OfertasContestadas=true;
-		this.OfertasRecibidas=true;
-		this.categoriasInteres=null; // Inicializamos las categorias de interes a nulll. El cliente las podra meter
+		this.descuentos = true;
+		this.pedidosCaducados = true;
+		this.nuevos_Intercambios = true;
+		this.pedido_entregado = true;
+		this.valoracion_completada = true;
+		this.oferta_caducada = true; // Inicializamos las categorias de interes a nulll. El cliente las podra meter
+		this.categoriasInteres = new ArrayList<>();
 	}
 
-
-	public boolean isDescuentos_activado() {
-		return Descuentos;
+	public boolean debeRecibirNotificacion(TipoNotificacion tipo) {
+		switch (tipo) {
+		// Obligatorias
+		case CODIGO_RECOGIDA:
+		case PEDIDO_LISTO:
+		case OFERTA_RECIBIDA:
+		case PAGO_EXITOSO:
+		case Pago_FALLIDO:
+		case CARRITO_CADUCADO:
+			return true;
+		// Configurables
+		case DESCUENTO:
+			return descuentos;
+		case PEDIDO_CADUCADO:
+			return pedidosCaducados;
+		case PRODUCTO_INTERCAMBIO_NUEVO:
+			return nuevos_Intercambios;
+		case PEDIDO_ENTREGADO:
+			return pedido_entregado;
+		case VALORACION_COMPLETADA:
+			return valoracion_completada;
+		case OFERTA_CADUCADA:
+			return oferta_caducada;
+		default:
+			return true;
+		}
 	}
 
-
-	public void setDescuentos(boolean flag) {
-		Descuentos = flag;
+	public void modificarPreferencia(TipoNotificacion tipo, boolean valor) {
+		switch (tipo) {
+		case DESCUENTO:
+			this.descuentos = valor;
+			break;
+		case PEDIDO_CADUCADO:
+			this.pedidosCaducados = valor;
+			break;
+		case PRODUCTO_INTERCAMBIO_NUEVO:
+			this.nuevos_Intercambios = valor;
+			break;
+		case PEDIDO_ENTREGADO:
+			this.pedido_entregado = valor;
+			break;
+		case VALORACION_COMPLETADA:
+			this.valoracion_completada = valor;
+			break;
+		case OFERTA_CADUCADA:
+			this.oferta_caducada = valor;
+			break;
+		default:
+			System.out.println("Esta notificación es obligatoria y no se puede desactivar.");
+			break;
+		}
 	}
 
-
-	public boolean isPedidosPagados_activado() {
-		return Pago;
+	public boolean añadirCategoriaInteres(String nombreCategoria) {
+		if (nombreCategoria == null || nombreCategoria.isBlank()) {
+			System.out.println("El nombre de la categoria no puede estar vacio");
+			return false;
+		}
+		Categoria categoria = Tienda.getInstancia().buscarCategoriaPorNombre(nombreCategoria);
+		if (categoria == null) {
+			System.out.println("No hay ninguna categoria llamada " + nombreCategoria + ".");
+			return false;
+		}
+		categoriasInteres.add(categoria);
+		System.out.println("Categoría '" + nombreCategoria + "' añadida a tus intereses.");
+		return true;
 	}
 
-
-	public void setPedidosPagados(boolean flag) {
-		Pago = flag;
+	public boolean eliminarCategoriaInteres(String nombreCategoria) {
+		if (nombreCategoria == null || nombreCategoria.isBlank()) {
+			System.out.println("El nombre de la categoria no puede estar vacio");
+			return false;
+		}
+		Categoria categoria = Tienda.getInstancia().buscarCategoriaPorNombre(nombreCategoria);
+		if (categoria == null) {
+			System.out.println("No hay ninguna categoria llamada " + nombreCategoria + ".");
+			return false;
+		}
+		if (!categoriasInteres.contains(categoria)) {
+			System.out.println(
+					"La categoria con nombre " + nombreCategoria + " no estaba entre tus categorias de interes.");
+			return false;
+		}
+		boolean quitar = categoriasInteres.remove(categoria);
+		if (quitar) {
+			System.out.println("Categoría '" + nombreCategoria + "' eliminada de tus intereses.");
+		}
+		return quitar;
 	}
 
-
-	public boolean isPedidosCaducados_activado() {
-		return PedidosCaducados;
+	public boolean isDescuentos() {
+		return descuentos;
 	}
 
-
-	public void setPedidosCaducados(boolean flag) {
-		PedidosCaducados = flag;
+	public void setDescuentos(boolean descuentos) {
+		this.descuentos = descuentos;
 	}
 
-
-	public boolean isOfertasRecibidas_activado() {
-		return OfertasRecibidas;
+	public boolean isPedidosCaducados() {
+		return pedidosCaducados;
 	}
 
-
-	public void setOfertasRecibidas(boolean ofertasRecibidas) {
-		OfertasRecibidas = ofertasRecibidas;
+	public void setPedidosCaducados(boolean pedidosCaducados) {
+		this.pedidosCaducados = pedidosCaducados;
 	}
 
-
-	public boolean isOfertasContestadas_activado() {
-		return OfertasContestadas;
+	public boolean isNuevos_Intercambios() {
+		return nuevos_Intercambios;
 	}
 
-
-	public void setOfertasContestadas(boolean ofertasContestadas) {
-		OfertasContestadas = ofertasContestadas;
+	public void setNuevos_Intercambios(boolean nuevos_Intercambios) {
+		this.nuevos_Intercambios = nuevos_Intercambios;
 	}
 
+	public boolean isPedido_entregado() {
+		return pedido_entregado;
+	}
+
+	public void setPedido_entregado(boolean pedido_entregado) {
+		this.pedido_entregado = pedido_entregado;
+	}
+
+	public boolean isValoracion_completada() {
+		return valoracion_completada;
+	}
+
+	public void setValoracion_completada(boolean valoracion_completada) {
+		this.valoracion_completada = valoracion_completada;
+	}
+
+	public boolean isOferta_caducada() {
+		return oferta_caducada;
+	}
+
+	public void setOferta_caducada(boolean oferta_caducada) {
+		this.oferta_caducada = oferta_caducada;
+	}
 
 	public List<Categoria> getCategoriasInteres() {
 		return categoriasInteres;
 	}
 
-	public void añadirCategoriasInteres(List<Categoria> categoriasInteres) {
+	public void setCategoriasInteres(List<Categoria> categoriasInteres) {
 		this.categoriasInteres = categoriasInteres;
 	}
-
+	
+	
+	
 }

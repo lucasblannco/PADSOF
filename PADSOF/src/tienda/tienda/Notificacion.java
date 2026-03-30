@@ -7,7 +7,16 @@ public class Notificacion {
     private String mensaje;
     private LocalDateTime fechaEnvio;
     private boolean leida;
+    private TipoNotificacion tipo;
 
+    public Notificacion(String mensaje,TipoNotificacion tipo) {
+    	Estadistica
+    }
+    
+    
+    
+    
+    
     public Notificacion(String mensaje) {
         this.id = "NOT-" + java.util.UUID.randomUUID().toString().substring(0, 5);
         this.mensaje = mensaje;

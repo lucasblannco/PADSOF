@@ -1,11 +1,11 @@
 package usuarios;
 
 import java.util.List;
-import java.util.Scanner;
-
-import tienda.Tienda;
+import java.util.ArrayList;
 import tienda.Estadistica;
-import tienda.Productos.ProductoVenta;
+import tienda.Tienda;
+import tienda.FiltroVenta;
+import productos.ProductoVenta;
 
 public class UsuarioNoRegistrado {
 	protected String sessionId;
@@ -16,34 +16,24 @@ public class UsuarioNoRegistrado {
 		est.setnUsuarioNoRegistrado(est.getnUsuarioNoRegistrado() + 1);
 	}
 
-	public List<ProductoVenta> navegarCatalogoNuevos() {
-		System.out.println("Visitante " + sessionId + " consultando catálogo de productos nuevos.");
-		return Tienda.getInstancia().getStockNuevos();
+	public List<ProductoVenta> buscarProductos() {
+		return Tienda.getInstancia().buscarProductoVenta();
 	}
 
-	public void consultarSegundaMano() {
-		System.out
-				.println("Acceso denegado: Debes estar registrado para ver e intercambiar productos de segunda mano.");
+	public List<ProductoVenta> buscarProductoPorNombre(String nombre) {
+		return Tienda.getInstancia().buscarproductoPorNombre(nombre);
 	}
 
-	// Un método que represente la intención de registrarse
-	public void solicitarRegistro() {
-		Scanner sc = new Scanner(System.in);
-		System.out.println("--- FORMULARIO DE REGISTRO ---");
+	public ProductoVenta buscarProductoPorId(String id) {
+		return Tienda.getInstancia().buscarProductoVentaPorId(id);
+	}
 
-		System.out.print("Introduce tu Nickname: ");
-		String nick = sc.nextLine();
+	public List<ProductoVenta> buscarProductosporCategoria(String nombreCategoria) {
+		return Tienda.getInstancia().buscarProductoPorCategoria(nombreCategoria);
+	}
 
-		System.out.print("Introduce tu Email: ");
-		String email = sc.nextLine();
-
-		System.out.print("Introduce tu Password: ");
-		String pass = sc.nextLine();
-
-		Tienda.getInstancia().registrarNuevoCliente(nick, email, pass);
-
-		System.out.println("Registro completado con éxito. Ahora puedes iniciar sesión como Cliente.");
-
+	public Cliente registrarse(String nickname, String password, String dni) {
+		return Tienda.getInstancia().registrarNuevoCliente(nickname, password, dni);
 	}
 
 	public String getSessionId() {
