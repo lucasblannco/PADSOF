@@ -40,6 +40,7 @@ public class PreferenciaNotificacion {
 		case CARRITO_CADUCADO:
 		case OFERTA_RECHAZADA:
 		case INTERCAMBIO_REALIZADO:
+		case CATEGORIA_INTERES:
 		case CONFIRMACION_RESERVA_CARRITO:
 			return true;
 	
@@ -59,7 +60,7 @@ public class PreferenciaNotificacion {
 		case OFERTA_CADUCADA:
 			return oferta_caducada;
 		default:
-			return true;
+			return false;
 		}
 	}
 

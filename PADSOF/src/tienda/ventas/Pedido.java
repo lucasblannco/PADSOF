@@ -5,6 +5,7 @@ import java.util.*;
 
 import productos.ProductoVenta;
 import tienda.Estadistica;
+import tienda.TipoNotificacion;
 import usuarios.Cliente;
 
 public class Pedido {
@@ -91,6 +92,7 @@ public class Pedido {
 
 	public boolean pagar(String tarjeta, int cvv, Date caducidad) {
 		if (this.estado != EstadoPedido.PENDIENTE_PAGO) {
+			System.out.println("El pedido no está pendiente de pago");
 			return false;
 		}
 
@@ -100,9 +102,11 @@ public class Pedido {
 		if (this.pago.getExito()) {
 			this.estado = EstadoPedido.PAGADO;
 			this.codigoRecogida = "PICK-" + this.idPedido;
+			this.cliente.recibirNotificacionTipo("Pago confirmado. Tu código de recogida es: " + this.codigoRecogida,
+					TipoNotificacion.PAGO_EXITOSO);
 			return true;
 		}
-
+		System.out.println("El pago no se ha podido procesar");
 		return false;
 	}
 

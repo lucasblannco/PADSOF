@@ -15,6 +15,7 @@ public enum TipoNotificacion {
 	INTERCAMBIO_REALIZADO,
 	CONFIRMACION_RESERVA_CARRITO,
 	EMPLEADOS,
+	CATEGORIA_INTERES,
 //el cliente las puede configurar
 	DESCUENTO,
 	PEDIDO_CADUCADO,

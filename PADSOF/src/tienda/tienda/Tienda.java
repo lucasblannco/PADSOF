@@ -30,8 +30,13 @@ public class Tienda {
 	private int tiempoMaxCarrito;
 	private int tiempoMaxOferta;
 	private int tiempoMaxPago;
+	private double precioValoracion;
 	private List<UsuarioRegistrado> usuariosConSesionActiva = new ArrayList<>();
 	private List<Notificacion> historialNotificaciones = new ArrayList<>();
+	
+	
+	
+	
 
 	// private List<Producto2Mano> pendientesTasacion = new ArrayList<>();
 	// esta variable estatica, el constructor privado y el segundo metodo
@@ -54,6 +59,7 @@ public class Tienda {
 		this.tiempoMaxCarrito = 0;
 		this.tiempoMaxOferta = 0;
 		this.tiempoMaxPago = 0;
+		this.precioValoracion=10;
 		// El gestor es el primer usuario del sistema, siempre tendrá id USR-1
 		Gestor gestor = new Gestor();
 		this.usuarios.add(gestor);
@@ -98,6 +104,19 @@ public class Tienda {
 		return false;
 	}
 
+	
+	
+	//FUNCIONES DE BUSQUEDA.
+	public List<ProductoVenta> buscarProductoVenta() {
+		List<ProductoVenta> productos = new ArrayList<>();
+		for (ProductoVenta p : stockVentas) {
+			if (p.getStockDisponible() > 0) {
+				productos.add(p);
+			}
+		}
+		return productos;
+	}
+
 	public ProductoVenta buscarProductoVentaPorId(String idProducto) {
 		if (idProducto == null || idProducto.isBlank())
 			return null;
@@ -125,6 +144,71 @@ public class Tienda {
 		return null;
 	}
 
+	public List<ProductoVenta> buscarproductoPorNombre(String nombre) {
+		if (nombre == null || nombre.isBlank()) {
+			System.out.println("El nombre no puede estar vacio.");
+			return null;
+		}
+		List<ProductoVenta> productos = new ArrayList<>();
+		for (ProductoVenta p : stockVentas) {
+			if (p.getStockDisponible() > 0 && p.getNombre().toLowerCase().contains(nombre.toLowerCase())) {
+				productos.add(p);
+			}
+		}
+		return productos;
+	}
+
+	public List<ProductoVenta> buscarProductoPorCategoria(String nombreCategoria) {
+		Categoria cat = buscarCategoriaPorNombre(nombreCategoria);
+		if (cat == null) {
+			return new ArrayList<>();
+		}
+		List<ProductoVenta> productos = new ArrayList<>();
+		for (ProductoVenta productoVenta : cat.getProductos()) {
+			productos.add(productoVenta);
+		}
+		return productos;
+
+	}
+
+	public List<ProductoVenta> buscarProductosFiltrados(FiltroVenta filtro) {
+		List<ProductoVenta> productos = new ArrayList<>();
+		for (ProductoVenta productoVenta : stockVentas) {
+			if (productoVenta.getStockDisponible() > 0 && filtro.productoCumpleFiltro(productoVenta)) {
+				productos.add(productoVenta);
+			}
+		}
+		return productos;
+	}
+
+	// ver esto porque no se yo si debe ir ahi.
+
+	public List<Producto2Mano> buscarSegundaManoFiltrado(FiltroSegundaMano filtro) {
+		List<Producto2Mano> resultado = new ArrayList<>();
+		for (Producto2Mano p : catalogoIntercambio) {
+			if (filtro.cumpleFiltro(p)) {
+				resultado.add(p);
+			}
+		}
+		return resultado;
+	}
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	public UsuarioRegistrado login(String nickname, String password, String tipo) {
 		for (UsuarioRegistrado u : usuarios) {
 			if (u.comprobarCredenciales(nickname, password)) {
@@ -168,33 +252,14 @@ public class Tienda {
 		return null;
 	}
 
-	public List<ProductoVenta> buscarProductoVenta() {
-		List<ProductoVenta> productos = new ArrayList<>();
-		for (ProductoVenta p : stockVentas) {
-			if (p.getStockDisponible() > 0) {
-				productos.add(p);
-			}
-		}
-		return productos;
-	}
-
-	public List<ProductoVenta> buscarproductoPorNombre(String nombre) {
-		if (nombre == null || nombre.isBlank()) {
-			System.out.println("El nombre no puede estar vacio.");
-			return null;
-		}
-		List<ProductoVenta> productos = new ArrayList<>();
-		for (ProductoVenta p : stockVentas) {
-			if (p.getStockDisponible() > 0 && p.getNombre().toLowerCase().contains(nombre.toLowerCase())) {
-				productos.add(p);
-			}
-		}
-		return productos;
-	}
-
+	
+	
+	//Notificaciones
 	public void registrarNotificacion(Notificacion n) {
 		historialNotificaciones.add(n);
 	}
+	
+	
 
 	public List<Notificacion> getNotificacionesNoLeidas() {
 		List<Notificacion> resultado = new ArrayList<>();
@@ -214,19 +279,21 @@ public class Tienda {
 		return resultado;
 	}
 
-	public List<ProductoVenta> buscarProductoPorCategoria(String nombreCategoria) {
-		Categoria cat = buscarCategoriaPorNombre(nombreCategoria);
-		if (cat == null) {
-			return new ArrayList<>();
+	public void notificarDescuento(Descuento d) {
+		for (Cliente c : obtenerClientesTienda()) {
+			if (c.getPreferencias().debeRecibirNotificacion(TipoNotificacion.DESCUENTO)) {
+				c.recibirNotificacionTipo("Nuevo descuento disponible "+ d.getNombre(), TipoNotificacion.DESCUENTO);
+			}
+			
 		}
-		List<ProductoVenta> productos = new ArrayList<>();
-		for (ProductoVenta productoVenta : cat.getProductos()) {
-			productos.add(productoVenta);
-		}
-		return productos;
-
 	}
-
+	
+	
+	
+	
+	
+	
+	
 	public Cliente registrarNuevoCliente(String nickname, String password, String dni) {
 		if (!dni.matches("\\d{8}[A-Za-z]")) {// Comprobamos que el dni tenga 8 numeros seguidos de una letra
 			System.out.println("El DNI no tiene el formato correcto (8 dígitos y 1 letra).");
@@ -297,7 +364,7 @@ public class Tienda {
 		listaEmpleados = this.obtenerEmpleadosTienda();
 		for (Empleado empleado : listaEmpleados) {
 			if (empleado.tienePermiso(TipoPermisos.VALORACION_PRODUCTOS)) {
-				empleado.recibirNotificacion("Hay un nuevo producto para valorar. ");
+				empleado.recibirNotificacion("Hay un nuevo producto para valorar: "+p.getNombre());
 			}
 		}
 	}
@@ -513,5 +580,15 @@ public class Tienda {
 
 	public List<Notificacion> getHistorialNotificaciones() {
 		return historialNotificaciones;
+	}
+	public double getPrecioTasacion() {
+	    return precioValoracion;
+	}
+
+	public void setPrecioTasacion(double precioTasacion) {
+	    if (precioTasacion <= 5) {
+	        return;
+	    }
+	    this.precioValoracion = precioTasacion;
 	}
 }

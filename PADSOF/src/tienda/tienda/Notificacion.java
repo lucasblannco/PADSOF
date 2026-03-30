@@ -1,5 +1,6 @@
 package tienda;
 
+import java.security.PublicKey;
 import java.time.LocalDateTime;
 
 public class Notificacion {
@@ -23,6 +24,7 @@ public class Notificacion {
 	public Notificacion(String mensaje) {
 		this(mensaje, TipoNotificacion.EMPLEADOS);
 	}
+	
 
 	public void marcarComoLeida() {
 		this.leida = true;

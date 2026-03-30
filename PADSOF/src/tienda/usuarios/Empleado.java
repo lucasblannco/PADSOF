@@ -284,8 +284,8 @@ public class Empleado extends UsuarioRegistrado {
 
 		boolean ok = ped.marcarPreparado();
 		if (ok) {
-			ped.getCliente().recibirNotificacion("Tu pedido con codigo de recogida " + ped.getCodigoRecogida()
-					+ " está preparado. Puedes recogerlo.");
+			ped.getCliente().recibirNotificacionTipo("Tu pedido con codigo de recogida " + ped.getCodigoRecogida()
+					+ " está preparado. Puedes recogerlo.", TipoNotificacion.PEDIDO_LISTO);
 		}
 		return ok;
 	}
@@ -301,8 +301,9 @@ public class Empleado extends UsuarioRegistrado {
 			if (ped.getCodigoRecogida().equals(codigoRecogida) && (ped.getEstado() == EstadoPedido.LISTO_PARA_RECOGER)
 					&& ped.isRecogida_solicitada()) {
 				ped.marcarEntregado();
-				ped.getCliente().recibirNotificacion(
-						"Tu pedido con codigo de recogida " + ped.getCodigoRecogida() + " ha sido entregado con exito");
+				ped.getCliente().recibirNotificacionTipo(
+						"Tu pedido con codigo de recogida " + ped.getCodigoRecogida() + " ha sido entregado con exito",
+						TipoNotificacion.PEDIDO_ENTREGADO);
 				this.recibirNotificacion("Has entregado corrrectamente el pedido con codigo de recogida"
 						+ ped.getCodigoRecogida() + " al cliente " + ped.getCliente().getNickname() + ".");
 				return true;
@@ -333,7 +334,17 @@ public class Empleado extends UsuarioRegistrado {
 			System.out.println("No existe ninguna categoría con nombre: " + nombreCat);
 			return false;
 		}
-		return c.addProducto(p);
+
+		boolean añadido = c.addProducto(p);
+		if (añadido) {
+			for (Cliente cliente : Tienda.getInstancia().obtenerClientesTienda()) {
+
+				cliente.notificarProductoNuevoCategoria(
+						"Nuevo producto en la categoria" + c.getNombre() + ": " + p.getNombre() + ".", nombreCat);
+			}
+		}
+		return añadido;
+
 	}
 
 	public boolean eliminarProductoDeCategoria(String idProducto, String nombreCat) {
@@ -357,7 +368,16 @@ public class Empleado extends UsuarioRegistrado {
 			System.out.println("No existe ninguna categoría con nombre: " + nombreCat);
 			return false;
 		}
-		return c.deleteProducto(p);
+
+		boolean eliminado = c.deleteProducto(p);
+		if (eliminado) {
+			for (Cliente cliente : Tienda.getInstancia().obtenerClientesTienda()) {
+
+				cliente.notificarProductoNuevoCategoria(
+						"Se ha eliminado el producto " + p.getNombre() + " de la categoria " + nombreCat + ",",
+						nombreCat);
+			}
+		}
 	}
 
 	public boolean crearPack(String nombre, String descripcion, String imagen, double precioOficial, int stock,
@@ -463,9 +483,8 @@ public class Empleado extends UsuarioRegistrado {
 		return true;
 	}
 
-	private void modificarProductosPackCreado() {
 
-	}
+
 
 	public boolean modificarDescripcionProducto(String idProducto, String descripcion) {
 		if (idProducto == null || descripcion == null) {
@@ -501,6 +520,11 @@ public class Empleado extends UsuarioRegistrado {
 		return true;
 	}
 
+	
+	
+	
+	
+	
 	@Override
 	public boolean login(String nickname, String password) {
 		if (this.despedido) {

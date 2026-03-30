@@ -181,7 +181,7 @@ public class Gestor extends UsuarioRegistrado {
 		return true;
 	}
 
-	// GESTION DE LOS TIEMPOS MAXIMOS DE LA APLICACION
+	// GESTION DE LOS TIEMPOS MAXIMOS DE LA APLICACION Y PRECIO VALORACION
 	public boolean setTiemposSistema(int tOferta, int tCarrito, int tPago) {
 		if (tOferta <= 0 || tCarrito <= 0 || tPago <= 0) {
 			System.out.println("Todos los tiempos deben ser mayores que 0");
@@ -221,6 +221,16 @@ public class Gestor extends UsuarioRegistrado {
 		Tienda.getInstancia().setTiempoMaxPago(tiempo);
 		return true;
 	}
+	
+	public boolean setPrecioTasacion(double precio) {
+	    if (precio <= 5) {
+	        System.out.println("El precio de tasación debe ser mayor que 5");
+	        return false;
+	    }
+	    Tienda.getInstancia().setPrecioTasacion(precio);
+	    return true;
+	}
+
 
 	// MODIFICACION DE LOS PRECIOS
 
@@ -277,6 +287,7 @@ public class Gestor extends UsuarioRegistrado {
 
 		Descuento d = new DescuentoCantidad(nombre, inicio, fin, cantidadMinima, porcentaje);
 		Tienda.getInstancia().agregarDescuento(d);
+		Tienda.getInstancia().notificarDescuento(d);
 		System.out
 				.println("Descuento por cantidad agregado correctamente sobre el producto con id:" + idProducto + ". ");
 		return true;
@@ -298,6 +309,7 @@ public class Gestor extends UsuarioRegistrado {
 		}
 		Descuento desc = new DescuentoVolumen(nombre, inicio, fin, precioMinimo, porcentaje);
 		Tienda.getInstancia().agregarDescuento(desc);
+		Tienda.getInstancia().notificarDescuento(desc);
 		System.out.println("Se ha creado un descuento por volumen de gasto superior a " + precioMinimo);
 		return true;
 	}
@@ -322,6 +334,7 @@ public class Gestor extends UsuarioRegistrado {
 		}
 		Descuento descuento = new DescuentoCategoria(nombreCategoria, inicio, fin, cat, porcentaje);
 		Tienda.getInstancia().agregarDescuento(descuento);
+		Tienda.getInstancia().notificarDescuento(descuento);
 		System.out
 				.println("Descuento para los productos de la categoria " + cat.getNombre() + " creado correctamente.");
 		return true;
@@ -350,6 +363,7 @@ public class Gestor extends UsuarioRegistrado {
 
 		Descuento d = new Regalo(nombre, inicio, fin, gastoNecesario, productoRegalado);
 		Tienda.getInstancia().agregarDescuento(d);
+		Tienda.getInstancia().notificarDescuento(d);
 		System.out.println("Descuento regalo '" + nombre + "' creado correctamente.");
 		return true;
 	}

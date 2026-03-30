@@ -7,6 +7,7 @@ import java.security.PublicKey;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.IllegalFormatCodePointException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -63,24 +64,27 @@ public class Cliente extends UsuarioRegistrado {
 	}
 
 	public boolean solicitarTasacion(Producto2Mano p, String tarjeta, int CVV, Date caducidad) {
-		if (tieneProductoenSuCartera(p) && (p.isVisible() == false)) {// Comprobamos que ese producto este en la
-																		// cartera del usuario y
-																		// que ese producto no tenga una hecha una
-																		// valoracion. Si un producto ya esta
-																		// valorado ya estara en la cartera del
-																		// usuario.
-			p.getValoracion().setEstadoValoracion(EstadoValoracion.PENDIENTE_DE_PAGO);
-
-			if (p.getValoracion().pagar(tarjeta, CVV, caducidad) == false) {
-				this.recibirNotificacionObligatoria("Pago no aceptado");
-				return false;
-			}
-
-			Tienda.getInstancia().solicitarTasacion(p);
-			this.recibirNotificacionTipo("Pago correcto. Valoracion Solicitada. Esperando a que un empleado lo tase.",
-					TipoNotificacion.PAGO_EXITOSO);
+		if (p==null) {
+			System.out.println("El producto no puede ser null");
+	        return false;
 		}
-		return true;
+		if (!tieneProductoenSuCartera(p)) {
+			 System.out.println("El producto no está en tu cartera del cliente "+ this.getNickname());
+		        return false;
+		}
+		 if (p.isVisible()) {
+		        System.out.println("El producto ya ha sido tasado");
+		        return false;
+		    }
+		 Pago pagoValoracionPago=new Pago(tarjeta, Tienda.getInstancia().getPrecioTasacion(), caducidad, CVV);
+		if (!pagoValoracionPago.getExito()) {
+			this.recibirNotificacionTipo("Pago no aceptado, no se ha podido solicitar la valoracion del producto."+p.getNombre(), TipoNotificacion.Pago_FALLIDO);
+			return false;
+		}
+
+	    Tienda.getInstancia().solicitarTasacion(p);
+	    this.recibirNotificacionTipo("Pago correcto. Tasación solicitada. Esperando a que un empleado tase el producto",TipoNotificacion.PAGO_EXITOSO);
+	    return true;
 	}
 
 	// OFERTAS
@@ -254,7 +258,7 @@ public class Cliente extends UsuarioRegistrado {
 		}
 		if (this.notificaciones == null)
 			this.notificaciones = new ArrayList<>();
-		this.notificaciones.add(new Notificacion(mensaje));
+		this.notificaciones.add(new Notificacion(mensaje, TipoNotificacion.CATEGORIA_INTERES));
 		System.out.println("[Notificación Cliente]: " + mensaje);
 		return;
 	}
@@ -345,7 +349,7 @@ public class Cliente extends UsuarioRegistrado {
 		return true;
 	}
 
-	public boolean comprarCarrito() {
+	public boolean reservarCarrito() {
 		{
 			if (!Tienda.getInstancia().isSistemaTiemposConfigurando()) {
 				System.out
@@ -371,18 +375,18 @@ public class Cliente extends UsuarioRegistrado {
 		}
 	}
 
-	public boolean pagar(Pedido p, String numeroTarjeta, Date fechaTarjeta, int CVV) {
-		if (!this.getHistorialPedidos().contains(p)) {
-			return false;
-		}
-		if (p.getEstado() != EstadoPedido.PENDIENTE_PAGO) {
-			return false;
-		}
-		Pago pago = new Pago(numeroTarjeta, p.calcularTotal(), fechaTarjeta, CVV);
-		if (pago.getExito() == false) {
-			return false;
-		}
-		return true;
+	public boolean pagarCarrito(Pedido p, String numeroTarjeta, Date fechaTarjeta, int CVV) {
+	    if (p == null) {
+	        System.out.println("El pedido no puede ser null");
+	        return false;
+	    }
+
+	    if (!this.historialPedidos.contains(p)) {
+	        System.out.println("Este pedido no es tuyo");
+	        return false;
+	    }
+
+	    return p.pagar(numeroTarjeta, CVV, fechaTarjeta);
 	}
 
 	public boolean solicitarRecogidaPedido(String codigoRecogida) {
@@ -447,4 +451,13 @@ public class Cliente extends UsuarioRegistrado {
 	public void setDni(String dni) {
 		this.dni = dni;
 	}
+
+	public PreferenciaNotificacion getPreferencias() {
+		return preferencias;
+	}
+
+	public void setPreferencias(PreferenciaNotificacion preferencias) {
+		this.preferencias = preferencias;
+	}
+	
 }
