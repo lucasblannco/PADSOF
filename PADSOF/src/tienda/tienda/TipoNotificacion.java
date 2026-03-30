@@ -1,5 +1,6 @@
 package tienda;
 
+import intercambios.Oferta;
 import ventas.Pago;
 
 public enum TipoNotificacion {
@@ -10,6 +11,10 @@ public enum TipoNotificacion {
 	PAGO_EXITOSO,
 	Pago_FALLIDO,
 	CARRITO_CADUCADO,
+	OFERTA_RECHAZADA,
+	INTERCAMBIO_REALIZADO,
+	CONFIRMACION_RESERVA_CARRITO,
+	EMPLEADOS,
 //el cliente las puede configurar
 	DESCUENTO,
 	PEDIDO_CADUCADO,

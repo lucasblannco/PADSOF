@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.sun.org.apache.bcel.internal.generic.RETURN;
 import com.sun.org.apache.xml.internal.serializer.utils.StringToIntTable;
 
 import intercambios.*;
@@ -33,15 +34,15 @@ public class Cliente extends UsuarioRegistrado {
 	private PreferenciaNotificacion preferencias;
 
 	// Constructor//
-	public Cliente(String nickname, String password,String dni) {
+	public Cliente(String nickname, String password, String dni) {
 		super(nickname, password);
-		this.dni=dni;
+		this.dni = dni;
 		this.historialPedidos = new ArrayList<>();
 		this.carteraIntercambio = new ArrayList<>();
 		this.ofertasPendientes = new ArrayList<>();
 		this.reseñas = new ArrayList<>();
 		this.preferencias = new PreferenciaNotificacion();
-		this.notificaciones=new ArrayList<>();
+		this.notificaciones = new ArrayList<>();
 	}
 
 	@Override
@@ -51,6 +52,7 @@ public class Cliente extends UsuarioRegistrado {
 	public void subirProducto(String nombre, String descripString, String imagen) {
 		Producto2Mano product = new Producto2Mano(this, nombre, descripString, imagen);
 		carteraIntercambio.add(product);
+		System.out.println("Producto subido correctamente a tu cartera personal de objetos de sgeunda mano.");
 	}
 
 	public boolean tieneProductoenSuCartera(Producto2Mano p) {
@@ -60,7 +62,7 @@ public class Cliente extends UsuarioRegistrado {
 		return this.carteraIntercambio.contains(p);
 	}
 
-	public void solicitarTasacion(Producto2Mano p, String tarjeta, int CVV, Date caducidad) {
+	public boolean solicitarTasacion(Producto2Mano p, String tarjeta, int CVV, Date caducidad) {
 		if (tieneProductoenSuCartera(p) && (p.isVisible() == false)) {// Comprobamos que ese producto este en la
 																		// cartera del usuario y
 																		// que ese producto no tenga una hecha una
@@ -70,14 +72,15 @@ public class Cliente extends UsuarioRegistrado {
 			p.getValoracion().setEstadoValoracion(EstadoValoracion.PENDIENTE_DE_PAGO);
 
 			if (p.getValoracion().pagar(tarjeta, CVV, caducidad) == false) {
-				this.recibirNotificacion("Pago no aceptado");
-				return;
+				this.recibirNotificacionObligatoria("Pago no aceptado");
+				return false;
 			}
-			// Notificamos a la tienda que hay un nuevo producto pendiente de tasar //Esto
-			// cuidado//
+
 			Tienda.getInstancia().solicitarTasacion(p);
-			this.recibirNotificacion("Valoracion Solicitada. Esperando a que un empleado lo tase.");
+			this.recibirNotificacionTipo("Pago correcto. Valoracion Solicitada. Esperando a que un empleado lo tase.",
+					TipoNotificacion.PAGO_EXITOSO);
 		}
+		return true;
 	}
 
 	// OFERTAS
@@ -152,7 +155,8 @@ public class Cliente extends UsuarioRegistrado {
 		Oferta nuevaOferta = new Oferta(this, destinatario, misProductos, susProductos);
 		this.ofertasPendientes.add(nuevaOferta);
 		destinatario.getOfertasPendientes().add(nuevaOferta);
-		destinatario.recibirNotificacion("Has recibido una propuesta de intercambio de " + this.nickname);
+		destinatario.recibirNotificacionTipo("Has recibido una propuesta de intercambio de " + this.getNickname(),
+				TipoNotificacion.OFERTA_RECIBIDA);
 		for (Producto2Mano p : misProductos)
 			p.setBloqueado(true);
 		return true;
@@ -232,20 +236,70 @@ public class Cliente extends UsuarioRegistrado {
 		return favorita;
 	}
 
-	// REVISAR.METER A TIENDA.
-	public void recibirNotificacionTipo(String mensaje,TipoNotificacion tipo) {
-		
+	// Notificaciones de tipoq ue se envian dependiendo de si el cliente quiere que
+	// se le envien o no
+
+	public void recibirNotificacionTipo(String mensaje, TipoNotificacion tipo) {
 		if (!this.preferencias.debeRecibirNotificacion(tipo)) {
-			return ;
+			return;
 		}
-		this.notificaciones.add(null)
-		
-		
-		
-		// Si aún no has creado la clase Notificacion, puedes pasarle un String
-		// o crear el objeto aquí mismo si ya la tienes.
+		this.notificaciones.add(new Notificacion(mensaje, tipo));
+		System.out.println("[Notificación Cliente]: " + mensaje);
+
+	}
+
+	public void notificarProductoNuevoCategoria(String mensaje, String nombreCategoria) {
+		if (!this.preferencias.NotificacionesProductosNUevosCategoriasInteres(nombreCategoria)) {
+			return;
+		}
+		if (this.notificaciones == null)
+			this.notificaciones = new ArrayList<>();
 		this.notificaciones.add(new Notificacion(mensaje));
 		System.out.println("[Notificación Cliente]: " + mensaje);
+		return;
+	}
+
+	public List<Notificacion> getNotificacionesNoLeidas() {
+		List<Notificacion> resultado = new ArrayList<>();
+		for (Notificacion n : notificaciones) {
+			if (!n.isLeida())
+				resultado.add(n);
+		}
+		return resultado;
+	}
+
+	public void verNotificacion(Notificacion n) {
+		if (n == null) {
+			return;
+		}
+		if (!this.notificaciones.contains(n)) {
+			System.out.println("No se puede leer una notificacion que no es tuya");
+			return;
+		}
+		n.marcarComoLeida();
+		return;
+	}
+
+	public List<Notificacion> getNotificacionesdeTipo(TipoNotificacion tipo) {
+		List<Notificacion> notif = new ArrayList<>();
+		for (Notificacion n : notificaciones) {
+			if (n.getTipo() == tipo)
+				notif.add(n);
+		}
+		return notif;
+	}
+
+	// La borras del cliente el ya no la podra ver pero en la tienda sigue presente,
+	public boolean eliminarNotifacion(Notificacion n) {
+		if (n == null) {
+			return false;
+		}
+		if (!this.notificaciones.contains(n)) {
+			System.out.println("No se puede borrar una notificacion que no es tuya");
+			return false;
+		}
+		this.notificaciones.remove(n);
+		return true;
 	}
 
 	// Se desbloquean los productos y se quita la oferta del cliente.
@@ -309,8 +363,10 @@ public class Cliente extends UsuarioRegistrado {
 			this.getHistorialPedidos().add(pedido);
 			Tienda.getInstancia().registrarVenta(pedido);
 			this.carritoActual = null;
-			this.recibirNotificacion("Pedido creado correctamente. Tienes " + Tienda.getInstancia().getTiempoMaxPago()
-					+ " minutos para pagarlo.");
+			this.recibirNotificacionTipo(
+					"Pedido creado correctamente. Tienes " + Tienda.getInstancia().getTiempoMaxPago()
+							+ " minutos para pagarlo y completar la reserva.",
+					TipoNotificacion.CONFIRMACION_RESERVA_CARRITO);
 			return true;
 		}
 	}

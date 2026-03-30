@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 import tienda.Estadistica;
 import tienda.Tienda;
+import tienda.TipoNotificacion;
 import productos.*;
 import usuarios.*;
 
@@ -42,8 +43,8 @@ public class Oferta {
 		// mas ofertas
 		this.origen.getOfertasPendientes().remove(this);
 		this.destino.getOfertasPendientes().remove(this);
-		this.origen.recibirNotificacion("Tu oferta con ID " + this.getId() + " ha sido RECHAZADA por el cliente"
-				+ this.destino.getNickname() + ".");
+		this.origen.recibirNotificacionTipo("Tu oferta con ID " + this.getId() + " ha sido RECHAZADA por el cliente"
+				+ this.destino.getNickname() + ".", TipoNotificacion.OFERTA_RECHAZADA);
 	}
 
 	public void aceptarOferta() {
@@ -66,10 +67,10 @@ public class Oferta {
 			// AHORA SE ENVIARIAN
 		}
 		Tienda.getInstancia().registrarIntercambioFinalizado(this);
-		this.origen.recibirNotificacion("¡Intercambio ID " + this.id + " aceptado por el usuario"
-				+ this.getDestino().getNickname() + "! Preparando envío.");
-		this.destino.recibirNotificacion("Has aceptado el intercambio con el usuario" + this.origen.getNickname()
-				+ ". Los productos han salido de tu inventario.");
+		this.origen.recibirNotificacionTipo("¡Intercambio ID " + this.id + " aceptado por el usuario"
+				+ this.getDestino().getNickname() + "! Preparando envío.", TipoNotificacion.INTERCAMBIO_REALIZADO);
+		this.destino.recibirNotificacionTipo("Has aceptado el intercambio con el usuario" + this.origen.getNickname()
+				+ ". Los productos han salido de tu inventario.", TipoNotificacion.INTERCAMBIO_REALIZADO);
 		 this.estado = EstadoOferta.REALIZADA; 
 	}
 

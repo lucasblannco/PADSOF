@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import productos.Categoria;
+
 import tienda.Tienda;
 import tienda.TipoNotificacion;
 
@@ -37,8 +38,14 @@ public class PreferenciaNotificacion {
 		case PAGO_EXITOSO:
 		case Pago_FALLIDO:
 		case CARRITO_CADUCADO:
+		case OFERTA_RECHAZADA:
+		case INTERCAMBIO_REALIZADO:
+		case CONFIRMACION_RESERVA_CARRITO:
 			return true;
-		// Configurables
+	
+		case EMPLEADOS://el cliente no recibe notificaciones de empleaos
+			return false;
+			// Configurables
 		case DESCUENTO:
 			return descuentos;
 		case PEDIDO_CADUCADO:
@@ -96,6 +103,19 @@ public class PreferenciaNotificacion {
 		System.out.println("Categoría '" + nombreCategoria + "' añadida a tus intereses.");
 		return true;
 	}
+
+	public boolean NotificacionesProductosNUevosCategoriasInteres(String nombreCategoria) {
+		if (categoriasInteres.isEmpty()) {
+			return false;
+		}
+		Categoria c = Tienda.getInstancia().buscarCategoriaPorNombre(nombreCategoria);
+		if (c == null) {
+			return false;
+		}
+		return (this.categoriasInteres.contains(c));
+
+	
+}
 
 	public boolean eliminarCategoriaInteres(String nombreCategoria) {
 		if (nombreCategoria == null || nombreCategoria.isBlank()) {
@@ -174,7 +194,5 @@ public class PreferenciaNotificacion {
 	public void setCategoriasInteres(List<Categoria> categoriasInteres) {
 		this.categoriasInteres = categoriasInteres;
 	}
-	
-	
-	
+
 }

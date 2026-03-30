@@ -31,6 +31,7 @@ public class Tienda {
 	private int tiempoMaxOferta;
 	private int tiempoMaxPago;
 	private List<UsuarioRegistrado> usuariosConSesionActiva = new ArrayList<>();
+	private List<Notificacion> historialNotificaciones = new ArrayList<>();
 
 	// private List<Producto2Mano> pendientesTasacion = new ArrayList<>();
 	// esta variable estatica, el constructor privado y el segundo metodo
@@ -57,6 +58,7 @@ public class Tienda {
 		Gestor gestor = new Gestor();
 		this.usuarios.add(gestor);
 		this.usuariosConSesionActiva = new ArrayList<>();
+		this.historialNotificaciones = new ArrayList<>();
 	}
 
 	public static Tienda getInstancia() {
@@ -190,6 +192,28 @@ public class Tienda {
 		return productos;
 	}
 
+	public void registrarNotificacion(Notificacion n) {
+		historialNotificaciones.add(n);
+	}
+
+	public List<Notificacion> getNotificacionesNoLeidas() {
+		List<Notificacion> resultado = new ArrayList<>();
+		for (Notificacion n : historialNotificaciones) {
+			if (!n.isLeida())
+				resultado.add(n);
+		}
+		return resultado;
+	}
+
+	public List<Notificacion> getNotificacionesPorTipo(TipoNotificacion tipo) {
+		List<Notificacion> resultado = new ArrayList<>();
+		for (Notificacion n : historialNotificaciones) {
+			if (n.getTipo() == tipo)
+				resultado.add(n);
+		}
+		return resultado;
+	}
+
 	public List<ProductoVenta> buscarProductoPorCategoria(String nombreCategoria) {
 		Categoria cat = buscarCategoriaPorNombre(nombreCategoria);
 		if (cat == null) {
@@ -197,8 +221,10 @@ public class Tienda {
 		}
 		List<ProductoVenta> productos = new ArrayList<>();
 		for (ProductoVenta productoVenta : cat.getProductos()) {
-
+			productos.add(productoVenta);
 		}
+		return productos;
+
 	}
 
 	public Cliente registrarNuevoCliente(String nickname, String password, String dni) {
@@ -240,10 +266,28 @@ public class Tienda {
 		return listaEmpleados;
 	}
 
+	public List<Cliente> obtenerClientesTienda() {
+		List<Cliente> listaClientes = new ArrayList<>();
+		for (UsuarioRegistrado u : usuarios) {
+			if (u instanceof Cliente) {
+				listaClientes.add((Cliente) u);
+			}
+		}
+		return listaClientes;
+	}
+
 	public void añadirProducto(ProductoVenta nuevo) {
 		if (this.getStockVentas().contains(nuevo))
 			return;
 		this.getStockVentas().add(nuevo);
+
+		for (Categoria c : nuevo.getCategorias()) {
+			for (Cliente cl : obtenerClientesTienda()) {
+				cl.notificarProductoNuevoCategoria("Nuevo producto en " + c.getNombre() + ": " + nuevo.getNombre(),
+						c.getNombre());
+			}
+
+		}
 	}
 
 	public void solicitarTasacion(Producto2Mano p) {
@@ -253,7 +297,7 @@ public class Tienda {
 		listaEmpleados = this.obtenerEmpleadosTienda();
 		for (Empleado empleado : listaEmpleados) {
 			if (empleado.tienePermiso(TipoPermisos.VALORACION_PRODUCTOS)) {
-				empleado.recibirNotificacion("Hay un nuevo producto para valorar");
+				empleado.recibirNotificacion("Hay un nuevo producto para valorar. ");
 			}
 		}
 	}
@@ -465,5 +509,9 @@ public class Tienda {
 
 	public void setUsuariosConSesionActiva(List<UsuarioRegistrado> usuariosConSesionActiva) {
 		this.usuariosConSesionActiva = usuariosConSesionActiva;
+	}
+
+	public List<Notificacion> getHistorialNotificaciones() {
+		return historialNotificaciones;
 	}
 }

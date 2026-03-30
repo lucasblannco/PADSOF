@@ -29,6 +29,7 @@ public class Estadistica {
 	private int nCategorias = 1;
 	private int nCarritos = 1;
 	private int nReseñas = 1;
+	private int nNotificaciones = 1;
 
 	public int getnProductosVentas() {
 		return nProductosVentas;
@@ -36,6 +37,14 @@ public class Estadistica {
 
 	public void setnProductosVentas(int n) {
 		this.nProductosVentas = n;
+	}
+
+	public int getnNotificaciones() {
+		return nNotificaciones;
+	}
+
+	public void setnNotificaciones(int n) {
+		this.nNotificaciones = n;
 	}
 
 	public int getnUsuarioRegistrado() {
@@ -101,17 +110,15 @@ public class Estadistica {
 	public void setnCarritos(int n) {
 		this.nCarritos = n;
 	}
-	
+
 	public int getnReseñas() {
 		return this.nReseñas;
 	}
-	
+
 	public void setnReseñas(int n) {
 		this.nReseñas = n;
 	}
-	
-	
-	
+
 	// ── Métodos a implementar ──────────────────────────
 	public List<Cliente> obtenerClientesConMasCompras() {
 		return null;
@@ -120,21 +127,21 @@ public class Estadistica {
 	public List<Cliente> obtenerClientesConMasIntercambios() {
 		return null;
 	}
-	
-	public double calcularIngresosRango(LocalDate inicio , LocalDate fin ) {
-		
+
+	public double calcularIngresosRango(LocalDate inicio, LocalDate fin) {
+
 	}
-	
+
 	public List<double> calcularIngresosMeses(){
 		
 	}
-	
-	public double calcularIngresosVenta(){
-		
+
+	public double calcularIngresosVenta() {
+
 	}
-	
-	public double calcularIngresosTasacion(){
-		
+
+	public double calcularIngresosTasacion() {
+
 	}
 
 }
