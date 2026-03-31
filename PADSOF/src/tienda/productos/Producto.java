@@ -23,7 +23,7 @@ public abstract class Producto {
 
 	@Override
 	public String toString() {
-		return "Producto [id=" + id + ", nombre=" + nombre + ", imagenRuta=" + imagenRuta + "]";
+		return "[" + this.id + "] " + this.getNombre() + " | Imagen: " + this.getImagenRuta() + " |";
 	}
 
 	public String getDescripcion() {

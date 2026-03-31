@@ -15,8 +15,7 @@ public class Comic extends ProductoVenta {
 
 	@Override
 	public String toString() {
-		return "Comic [numeroPaginas=" + numeroPaginas + ", editorial=" + editorial + ", añoPublicacion="
-				+ añoPublicacion + ", toString()=" + super.toString() + "]";
+		return super.toString() + " | Paginas : " + this.numeroPaginas + " | Editorial: " + this.editorial + " AñoPublicacion: " + this.añoPublicacion + " |";
 	}
 
 }

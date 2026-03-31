@@ -52,9 +52,8 @@ public class Reseña {
 
 	@Override
 	public String toString() {
-		return "Reseña [idReseña=" + idReseña + ", autor=" + (autor != null ? autor.getId() : "null") + ", producto="
-				+ (producto != null ? producto.getId() : "null") + ", puntuacion=" + puntuacion + ", comentario="
-				+ comentario + ", fecha=" + fecha + "]";
+		return "[" + this.idReseña + "] " + (this.autor != null ? this.autor.getNickname() : "null") + " | "
+				+ this.fecha + " | " + this.puntuacion + " | " + this.comentario + " |";
 	}
 
 	public Cliente getAutor() {

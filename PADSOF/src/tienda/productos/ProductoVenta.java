@@ -132,8 +132,9 @@ public abstract class ProductoVenta extends Producto {
 
 	@Override
 	public String toString() {
-		return "ProductoVenta [precioOficial=" + precioOficial + ", stockDisponible=" + stockDisponible + ", reseñas="
-				+ reseñas + ", categorias=" + categorias + ", toString()=" + super.toString() + "]\n";
+		return super.toString() + " | Precio: " + this.precioOficial + "€ | Stock: " + this.stockDisponible
+				+ " | Valoración: " + this.getMediaPuntuacion()
+				+ " | Categorías: " + (this.categorias.isEmpty() ? "ninguna" : this.categorias) + " |";
 	}
 
 	public double getPrecioOficial() {

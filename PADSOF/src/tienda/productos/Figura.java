@@ -19,8 +19,8 @@ public class Figura extends ProductoVenta {
 
 	@Override
 	public String toString() {
-		return "Figura [altura=" + altura + ", ancho=" + ancho + ", largo=" + largo + ", material=" + material
-				+ ", marca=" + marca + ", toString()=" + super.toString() + "]";
+		return super.toString() + " | Altura: " + this.altura + " | Ancho: " + this.ancho + " | Largo: " + this.largo
+				+ " | Material: " + this.material + " | Marca: " + this.marca + " |";
 	}
 
 }
