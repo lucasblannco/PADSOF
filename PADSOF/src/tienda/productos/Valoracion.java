@@ -12,11 +12,13 @@ public class Valoracion {
 	private EstadoValoracion estadoValoracion = EstadoValoracion.PENDIENTE_DE_PAGO;
 	private Empleado empleado;
 	private Pago pago;
+	private double precioTasacion;
 
 	public Valoracion(double precioTasacion, EstadoProducto estadoProducto, Empleado empleado) {
 		this.fecha = LocalDateTime.now();
 		this.estadoProducto = estadoProducto;
 		this.empleado = empleado;
+		this.precioTasacion=precioTasacion;
 	}
 
 	public Valoracion(LocalDateTime fecha, double precioTasacion, EstadoProducto estadoProducto,
@@ -69,6 +71,14 @@ public class Valoracion {
 	public String toString() {
 		return "[" + this.estadoValoracion + "] " + (this.empleado != null ? this.empleado.getNickname() : "null")
 				+ " | " + this.fecha + " | " + this.estadoProducto + " |";
+	}
+
+	public double getPrecioTasacion() {
+		return precioTasacion;
+	}
+
+	public void setPrecioTasacion(double precioTasacion) {
+		this.precioTasacion = precioTasacion;
 	}
 
 }

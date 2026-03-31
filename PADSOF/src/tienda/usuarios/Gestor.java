@@ -385,6 +385,7 @@ public class Gestor extends UsuarioRegistrado {
 	public boolean crearCategoria(String nombre, String descripcion) {
 		if (nombre == null || nombre.isBlank()) {
 			System.out.println("El nombre no puede estar vacio");
+			return false;
 		}
 		if (descripcion == null || descripcion.isBlank()) {
 			System.out.println("La descripcion no puede estar vacia");
@@ -476,27 +477,34 @@ public class Gestor extends UsuarioRegistrado {
 	// ----------------------------------------------------------------
 
 	public List<Cliente> verClientesTopCompras() {
-		return motorEstadistico.obtenerClientesConMasCompras();
+	    return motorEstadistico.obtenerClientesConMasCompras();
 	}
 
 	public List<Cliente> verClientesTopIntercambios() {
-		return motorEstadistico.obtenerClientesConMasIntercambios();
+	    return motorEstadistico.obtenerClientesConMasIntercambios();
+	}
+
+	public List<Cliente> verClientesConMasPedidosCancelados() {
+	    return motorEstadistico.obtenerClientesConMasPedidosCaducados();
 	}
 
 	public double consultarIngresosRango(LocalDate inicio, LocalDate fin) {
-		return motorEstadistico.calcularIngresosRango(inicio, fin);
+	    return motorEstadistico.calcularIngresosRangoFechas(inicio, fin);
 	}
 
-	public double[] consultarIngresosPorMeses() {
-		return motorEstadistico.calcularIngresosMeses();
+	public double[] consultarIngresosPorMeses(int año) {
+	    return motorEstadistico.calcularIngresosMeses(año);
+	}
+
+	public double[] consultarIngresosPorMesesActual() {
+	    return motorEstadistico.calcularIngresosMeses(LocalDateTime.now().getYear());
 	}
 
 	public double consultarIngresosVenta() {
-		return motorEstadistico.calcularIngresosVenta();
+	    return motorEstadistico.calcularIngresosVenta();
 	}
 
 	public double consultarIngresosTasacion() {
-		return motorEstadistico.calcularIngresosTasacion();
+	    return motorEstadistico.calcularIngresosTasacion();
 	}
-
 }

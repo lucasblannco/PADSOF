@@ -428,7 +428,7 @@ public class Empleado extends UsuarioRegistrado {
 						double lar = Double.parseDouble(partes[17].trim());
 						String mat = partes[18].trim();
 						String marca = partes[19].trim();
-						exito = añadirProducto_nuevo("F", nombre, partes[3].trim(), "", precio, stockInicial,
+						exito = añadirProducto_nuevo("F", nombre, partes[3].trim(), "", precio, unidadesIni,
 								categorias, 0, null, 0, alt, anc, lar, mat, marca, 0, 0, 0, 0, null);
 
 						break;

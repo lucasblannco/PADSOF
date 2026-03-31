@@ -12,7 +12,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-
 import intercambios.*;
 import productos.Producto2Mano;
 
@@ -28,7 +27,7 @@ public class Cliente extends UsuarioRegistrado {
 	private List<Oferta> ofertasPendientes;
 	private List<Oferta> historialIntercambios;
 	private List<Reseña> reseñas;
-	protected List<Notificacion> notificaciones; 
+	protected List<Notificacion> notificaciones;
 	private PreferenciaNotificacion preferencias;
 
 	// Constructor//
@@ -100,7 +99,7 @@ public class Cliente extends UsuarioRegistrado {
 					TipoNotificacion.Pago_FALLIDO);
 			return false;
 		}
-
+		Estadistica.getInstancia().setnTasacionesCobradas(Estadistica.getInstancia().getnTasacionesCobradas() + 1);
 		Tienda.getInstancia().solicitarTasacion(p);
 		this.recibirNotificacionTipo("Pago correcto. Tasación solicitada. Esperando a que un empleado tase el producto",
 				TipoNotificacion.PAGO_EXITOSO);
@@ -363,7 +362,7 @@ public class Cliente extends UsuarioRegistrado {
 			return false;
 		}
 		if (this.carritoActual == null) {
-			this.carritoActual = new Carrito();
+			this.carritoActual = new Carrito(this);
 		}
 		this.getCarritoActual().añadirProducto(p, cantidad);
 		return true;
@@ -446,20 +445,18 @@ public class Cliente extends UsuarioRegistrado {
 		this.preferencias.modificarPreferencia(tipo, valor);
 		return true;
 	}
-	
-	public boolean añadirCategoriaInteresParaRecibirInfo(String nombreCategoria){
+
+	public boolean añadirCategoriaInteresParaRecibirInfo(String nombreCategoria) {
 		return this.preferencias.añadirCategoriaInteres(nombreCategoria);
 	}
+
 	public boolean eliminarCategoriaInteres(String nombreCategoria) {
-	    return this.preferencias.eliminarCategoriaInteres(nombreCategoria);
+		return this.preferencias.eliminarCategoriaInteres(nombreCategoria);
 	}
+
 	public PreferenciaNotificacion verPreferencias() {
-	    return preferencias;
+		return preferencias;
 	}
-	
-	
-	
-	
 
 	public boolean modificarPerfil(String nuevoNickname, String nuevoPass) {
 
@@ -528,8 +525,6 @@ public class Cliente extends UsuarioRegistrado {
 	public void setDni(String dni) {
 		this.dni = dni;
 	}
-
-
 
 	public void setPreferencias(PreferenciaNotificacion preferencias) {
 		this.preferencias = preferencias;
