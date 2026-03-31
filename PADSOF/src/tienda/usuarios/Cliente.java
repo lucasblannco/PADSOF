@@ -31,8 +31,7 @@ public class Cliente extends UsuarioRegistrado {
 	private List<Oferta> ofertasPendientes;
 	private List<Oferta> historialIntercambios;
 	private List<Reseña> reseñas;
-	protected List<Notificacion> notificaciones; // Posible cambio a un hashmap no? Es para organizarlas segun el tipo
-													// de notificacion
+	protected List<Notificacion> notificaciones; 
 	private PreferenciaNotificacion preferencias;
 
 	// Constructor//
@@ -45,10 +44,6 @@ public class Cliente extends UsuarioRegistrado {
 		this.reseñas = new ArrayList<>();
 		this.preferencias = new PreferenciaNotificacion();
 		this.notificaciones = new ArrayList<>();
-	}
-
-	@Override
-	public void mostrarPanelPrincipal() {
 	}
 
 	// Ver la cartera de otro usuario
@@ -444,8 +439,53 @@ public class Cliente extends UsuarioRegistrado {
 		return false;
 	}
 
-	public void establecerPreferenciasNotificaciones() {
+	// MEWTODOS DE PREFERENCIA DE NOTIFICACIONES
 
+	public boolean configurarPreferenciaNotificacion(TipoNotificacion tipo, boolean valor) {
+		if (tipo == null) {
+			System.out.println("El tipo de notificación no puede ser null.");
+			return false;
+		}
+		this.preferencias.modificarPreferencia(tipo, valor);
+		return true;
+	}
+	
+	public boolean añadirCategoriaInteresParaRecibirInfo(String nombreCategoria){
+		return this.preferencias.añadirCategoriaInteres(nombreCategoria);
+	}
+	public boolean eliminarCategoriaInteres(String nombreCategoria) {
+	    return this.preferencias.eliminarCategoriaInteres(nombreCategoria);
+	}
+	public PreferenciaNotificacion verPreferencias() {
+	    return preferencias;
+	}
+	
+	
+	
+	
+
+	public boolean modificarPerfil(String nuevoNickname, String nuevoPass) {
+
+		if (nuevoNickname == null || nuevoNickname.isBlank()) {
+			System.out.println("El nuevo nickname no puede estar vacío");
+			return false;
+		}
+		// puede cquerer cambiar solo la contraseÑa y dejarse el mismo nombre, entonces
+		// si el ya tiene ese nombre va a existir un usuario con ese nombre que es el.
+		if (!nuevoNickname.equalsIgnoreCase(this.getNickname())
+				&& Tienda.getInstancia().existeUsuarioConNickname(nuevoNickname)) {
+			System.out.println("Error: El nickname '" + nuevoNickname + "' ya está siendo usado por otro usuario.");
+			return false;
+		}
+		// Validar que la nueva contraseña cumpla la seguridad
+		if (!validarPassword(nuevoPass)) {
+			return false;
+		}
+		this.setNickname(nuevoNickname);
+		this.setPassword(nuevoPass); // Recuerda tener estos métodos en la clase padre
+
+		System.out.println("Perfil del cliente actualizado con éxito.");
+		return true;
 	}
 
 	// --- GETTERS ---
@@ -492,9 +532,7 @@ public class Cliente extends UsuarioRegistrado {
 		this.dni = dni;
 	}
 
-	public PreferenciaNotificacion getPreferencias() {
-		return preferencias;
-	}
+
 
 	public void setPreferencias(PreferenciaNotificacion preferencias) {
 		this.preferencias = preferencias;

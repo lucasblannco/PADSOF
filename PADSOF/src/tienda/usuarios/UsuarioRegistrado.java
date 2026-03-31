@@ -23,7 +23,6 @@ public abstract class UsuarioRegistrado {
 	protected boolean sesionIniciada;
 	private FiltroVenta filtroVenta;
 	private FiltroSegundaMano filtro2Mano;
-	
 
 	/*
 	 * public UsuarioRegistrado(String nickname, String password, String email) {
@@ -40,8 +39,8 @@ public abstract class UsuarioRegistrado {
 		this.password = password;
 		est.setnUsuarioRegistrado(est.getnUsuarioRegistrado() + 1);
 		this.sesionIniciada = false;
-		this.filtro2Mano=new FiltroSegundaMano();
-		this.filtroVenta=new FiltroVenta();
+		this.filtro2Mano = new FiltroSegundaMano();
+		this.filtroVenta = new FiltroVenta();
 	}
 
 	/*
@@ -51,11 +50,11 @@ public abstract class UsuarioRegistrado {
 	 * Tienda.getInstancia().getStockNuevos(); }
 	 */
 	public void logout() {
-	this.sesionIniciada=false;
-	this.filtroVenta=new FiltroVenta();
-	this.filtro2Mano=new FiltroSegundaMano();
-	Tienda.getInstancia().getUsuariosConSesionActiva().remove(this);
-	System.out.println("El usuario con id: "+ id+" ha cerrado sesion correctamente.");
+		this.sesionIniciada = false;
+		this.filtroVenta = new FiltroVenta();
+		this.filtro2Mano = new FiltroSegundaMano();
+		Tienda.getInstancia().getUsuariosConSesionActiva().remove(this);
+		System.out.println("El usuario con id: " + id + " ha cerrado sesion correctamente.");
 	}
 
 	public static boolean validarPassword(String pass) {
@@ -71,47 +70,53 @@ public abstract class UsuarioRegistrado {
 		return true;
 	}
 
-	public boolean comprobarCredenciales(String nickname, String password) {
-		return this.nickname.equals(nickname) && this.password.equals(password);
+	public boolean login(String password) {
+		if (!this.password.equals(password)) {
+			System.out.println("Contraseña Incorrecta.");
+			return false;
+		}
+		this.sesionIniciada = true;
+		Tienda.getInstancia().getUsuariosConSesionActiva().add(this);
+		return true;
 	}
 
-	//busqueda
+	// busqueda
 	public List<ProductoVenta> buscarProductos() {
-	    return Tienda.getInstancia().buscarProductoVenta();
+		return Tienda.getInstancia().buscarProductoVenta();
 	}
+
 	public List<ProductoVenta> buscarProductosPorNombre(String nombre) {
-	    return Tienda.getInstancia().buscarproductoPorNombre(nombre);
+		return Tienda.getInstancia().buscarproductoPorNombre(nombre);
 	}
-	
-	public ProductoVenta buscarProductoPorId(String id){
+
+	public ProductoVenta buscarProductoPorId(String id) {
 		return Tienda.getInstancia().buscarProductoVentaPorId(id);
 	}
-	public List<ProductoVenta>buscarProductosPorCategoria(String nombreCategoria){
+
+	public List<ProductoVenta> buscarProductosPorCategoria(String nombreCategoria) {
 		return Tienda.getInstancia().buscarProductoPorCategoria(nombreCategoria);
 	}
-	
-	public List<Producto2Mano> buscarProductosSegundaMano(){
+
+	public List<Producto2Mano> buscarProductosSegundaMano() {
 		return Tienda.getInstancia().buscarSegundaMano();
 	}
-	public List <Producto2Mano> buscarProducto2ManoNombre(String nombre){
+
+	public List<Producto2Mano> buscarProducto2ManoNombre(String nombre) {
 		return Tienda.getInstancia().buscarSegundaManoPorNombre(nombre);
 	}
-	public Producto2Mano buscarProducto2ManoPorid(String id){
+
+	public Producto2Mano buscarProducto2ManoPorid(String id) {
 		return Tienda.getInstancia().buscarSegundaManoPorId(id);
 	}
-	
-	
-	public List <ProductoVenta> buscarProductosVentaFiltrados(){
+
+	public List<ProductoVenta> buscarProductosVentaFiltrados() {
 		return Tienda.getInstancia().buscarProductosFiltrados(filtroVenta);
 	}
-	public List<Producto2Mano> buscarProductos2ManoFiltrados(){
+
+	public List<Producto2Mano> buscarProductos2ManoFiltrados() {
 		return Tienda.getInstancia().buscarSegundaManoFiltrado(filtro2Mano);
 	}
-	
-	
 
-	
-	
 //Getters públicos: Todos necesitan saber quién es quién [cite: 325]
 	public String getNickname() {
 		return nickname;
@@ -131,7 +136,7 @@ public abstract class UsuarioRegistrado {
 
 	public String getId() {
 		return this.id;
-}
+	}
 
 	public boolean isSesionIniciada() {
 		return sesionIniciada;
@@ -140,5 +145,5 @@ public abstract class UsuarioRegistrado {
 	public void setSesionIniciada(boolean sesionIniciada) {
 		this.sesionIniciada = sesionIniciada;
 	}
-	
+
 }
