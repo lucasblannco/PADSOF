@@ -22,7 +22,7 @@ public class Valoracion {
 	public Valoracion(LocalDateTime fecha, double precioTasacion, EstadoProducto estadoProducto,
 			EstadoValoracion estadoValoracion, Empleado empleado, Pago pago) {
 		this.fecha = fecha;
-		
+
 		this.estadoProducto = estadoProducto;
 		this.estadoValoracion = estadoValoracion;
 		this.empleado = empleado;
@@ -44,8 +44,6 @@ public class Valoracion {
 	public LocalDateTime getFecha() {
 		return fecha;
 	}
-
-	
 
 	public EstadoProducto getEstadoProducto() {
 		return estadoProducto;
@@ -69,9 +67,8 @@ public class Valoracion {
 
 	@Override
 	public String toString() {
-		return "Valoracion [fecha=" + fecha + ", precioTasacion=" + precioTasacion + ", estadoProducto="
-				+ estadoProducto + ", estadoValoracion=" + estadoValoracion + ", empleado=" + empleado + ", pago="
-				+ pago + "]";
+		return "[" + this.estadoValoracion + "] " + (this.empleado != null ? this.empleado.getNickname() : "null")
+				+ " | " + this.fecha + " | " + this.estadoProducto + " |";
 	}
 
 }

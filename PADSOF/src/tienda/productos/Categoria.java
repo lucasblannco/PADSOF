@@ -66,7 +66,19 @@ public class Categoria {
 
 	@Override
 	public String toString() {
-		return "Categoria [nombre=" + nombre + ", descripcion=" + descripcion + "]";
+		String textoProductos = "";
+
+		if (this.productos.isEmpty()) {
+			textoProductos = "ninguno";
+		} else {
+			for (ProductoVenta p : this.productos) {
+				textoProductos += "[" + p.getId() + " " + p.getNombre() + "], ";
+			}
+			textoProductos = textoProductos.substring(0, textoProductos.length() - 2);
+		}
+
+		return "| Nombre: " + this.nombre + " | Descripción: " + this.descripcion + " | Productos: " + textoProductos
+				+ " |";
 	}
 
 	public String getNombre() {

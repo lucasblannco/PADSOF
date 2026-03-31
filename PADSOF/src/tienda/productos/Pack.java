@@ -20,7 +20,7 @@ public class Pack extends ProductoVenta {
 		}
 	}
 
-	//AñADIR OTRO TIPO DE PRODUCTO AL PACK
+	// AñADIR OTRO TIPO DE PRODUCTO AL PACK
 	public boolean addLinea(LineaPack lp) {
 		if (lp == null) {
 			return false;
@@ -37,7 +37,7 @@ public class Pack extends ProductoVenta {
 
 		this.lineas.add(lp);
 
-		if (this.precioOficial >= calcularSumaProductos()-1) {
+		if (this.precioOficial >= calcularSumaProductos() - 1) {
 			this.lineas.remove(lp);
 			return false;
 		}
@@ -104,7 +104,7 @@ public class Pack extends ProductoVenta {
 
 		lineaActual.setUnidades(nuevasUnidades);
 
-		if (this.precioOficial >= calcularSumaProductos()-1) {
+		if (this.precioOficial >= calcularSumaProductos() - 1) {
 			lineaActual.setUnidades(unidadesActuales);
 			return false;
 		}
@@ -161,8 +161,9 @@ public class Pack extends ProductoVenta {
 	public boolean setPrecioOficial(double nuevoPrecio) {
 		if (nuevoPrecio <= 0)
 			return false;
-		if (!this.lineas.isEmpty() && nuevoPrecio >= calcularSumaProductos()-1) {
-			System.out.println("El precio del pack debe ser al menos un euro menor que la suma (" + calcularSumaProductos() + ")");
+		if (!this.lineas.isEmpty() && nuevoPrecio >= calcularSumaProductos() - 1) {
+			System.out.println(
+					"El precio del pack debe ser al menos un euro menor que la suma (" + calcularSumaProductos() + ")");
 			return false;
 		}
 		this.precioOficial = nuevoPrecio;
@@ -170,17 +171,21 @@ public class Pack extends ProductoVenta {
 	}
 
 	@Override
-	public double getPrecioVenta() {
+	public double getPrecioOficial() {
 		return calcularPrecioFinal();
 	}
 
 	@Override
 	public String toString() {
-		String s = "";
+		String textoLineas = this.lineas.isEmpty() ? "sin productos" : "";
+
 		for (LineaPack lp : this.lineas) {
-			s += lp.getProducto().getNombre() + " x" + lp.getUnidades() + " = " + lp.getSubtotal() + "€\n";
+			textoLineas += lp.getProducto().getNombre() + " x" + lp.getUnidades() + " = " + lp.getSubtotal() + "€; ";
 		}
-		return super.toString() + "\n" + s;
+
+		return super.toString() + " | Precio pack: " + this.precioOficial + "€" + " | Stock pack: "
+				+ this.stockDisponible + " | Suma productos: " + this.calcularSumaProductos() + "€" + " | Líneas: "
+				+ textoLineas + "|";
 	}
 
 	public ArrayList<LineaPack> getLineas() {

@@ -10,7 +10,6 @@ public class Producto2Mano extends Producto {
 	private boolean bloqueado = true;
 	private boolean visible = false;
 
-	
 	public Producto2Mano(String nombre, String descripcion, String imagenRuta, Valoracion valoracion,
 			Cliente propietario, boolean bloqueado, boolean visible) {
 		super(nombre, descripcion, imagenRuta);
@@ -82,8 +81,12 @@ public class Producto2Mano extends Producto {
 
 	@Override
 	public String toString() {
-		return "Producto2Mano [valoracion=" + valoracion + ", propietario=" + propietario + ", bloqueado=" + bloqueado
-				+ ", visible=" + visible + ", toString()=" + super.toString() + "]";
+		String nickPropietario = (this.propietario != null) ? this.propietario.getNickname() : "Sin propietario";
+		String estadoValoracion = (this.valoracion != null) ? this.valoracion.getEstadoProducto().toString()
+				: "Sin valorar";
+
+		return super.toString() + " | Propietario: " + nickPropietario + " | Estado: " + estadoValoracion
+				+ " | Disponible: " + (!this.bloqueado ? "Sí" : "No") + " |";
 	}
 
 }
