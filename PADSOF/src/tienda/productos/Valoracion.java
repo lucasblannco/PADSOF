@@ -8,7 +8,6 @@ import ventas.Pago;
 
 public class Valoracion {
 	private LocalDateTime fecha;
-	private double precioTasacion;
 	private EstadoProducto estadoProducto;
 	private EstadoValoracion estadoValoracion = EstadoValoracion.PENDIENTE_DE_PAGO;
 	private Empleado empleado;
@@ -16,7 +15,6 @@ public class Valoracion {
 
 	public Valoracion(double precioTasacion, EstadoProducto estadoProducto, Empleado empleado) {
 		this.fecha = LocalDateTime.now();
-		this.precioTasacion = precioTasacion;
 		this.estadoProducto = estadoProducto;
 		this.empleado = empleado;
 	}
@@ -24,7 +22,7 @@ public class Valoracion {
 	public Valoracion(LocalDateTime fecha, double precioTasacion, EstadoProducto estadoProducto,
 			EstadoValoracion estadoValoracion, Empleado empleado, Pago pago) {
 		this.fecha = fecha;
-		this.precioTasacion = precioTasacion;
+		
 		this.estadoProducto = estadoProducto;
 		this.estadoValoracion = estadoValoracion;
 		this.empleado = empleado;
@@ -47,9 +45,7 @@ public class Valoracion {
 		return fecha;
 	}
 
-	public double getPrecioTasacion() {
-		return precioTasacion;
-	}
+	
 
 	public EstadoProducto getEstadoProducto() {
 		return estadoProducto;

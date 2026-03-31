@@ -7,11 +7,14 @@ import java.security.PublicKey;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.IllegalFormatCodePointException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.sun.org.apache.bcel.internal.generic.RETURN;
 import com.sun.org.apache.xml.internal.serializer.utils.StringToIntTable;
+import com.sun.tools.javac.util.ClientCodeException;
 
 import intercambios.*;
 import productos.Producto2Mano;
@@ -33,23 +36,49 @@ public class Cliente extends UsuarioRegistrado {
 	private PreferenciaNotificacion preferencias;
 
 	// Constructor//
-	public Cliente(String nickname, String password,String dni) {
+	public Cliente(String nickname, String password, String dni) {
 		super(nickname, password);
-		this.dni=dni;
+		this.dni = dni;
 		this.historialPedidos = new ArrayList<>();
 		this.carteraIntercambio = new ArrayList<>();
 		this.ofertasPendientes = new ArrayList<>();
 		this.reseñas = new ArrayList<>();
 		this.preferencias = new PreferenciaNotificacion();
+		this.notificaciones = new ArrayList<>();
 	}
 
 	@Override
 	public void mostrarPanelPrincipal() {
 	}
 
+	// Ver la cartera de otro usuario
+	public List<Producto2Mano> verCarteraCliente(String nickname) {
+		if (nickname == null || nickname.isBlank()) {
+			System.out.println(
+					"El nickname del usuario sobre el que se quiere ver la cartera de objetos de segunda mano no puede estar vacio");
+			return null;
+		}
+		Cliente c = Tienda.getInstancia().buscarClientePorNickname(nickname);
+		if (c == null) {
+			return new ArrayList<>();
+		}
+		if (c.equals(this)) {
+			System.out.println("Para ver tu propia cartera usa getCarteraIntercambio().");
+			return new ArrayList<>();
+		}
+		List<Producto2Mano> array = new ArrayList<>();
+		for (Producto2Mano p : c.getCarteraIntercambio()) {
+			if (p.isVisible() && !p.isBloqueado()) {
+				array.add(p);
+			}
+		}
+		return array;
+	}
+
 	public void subirProducto(String nombre, String descripString, String imagen) {
 		Producto2Mano product = new Producto2Mano(this, nombre, descripString, imagen);
 		carteraIntercambio.add(product);
+		System.out.println("Producto subido correctamente a tu cartera personal de objetos de sgeunda mano.");
 	}
 
 	public boolean tieneProductoenSuCartera(Producto2Mano p) {
@@ -59,24 +88,31 @@ public class Cliente extends UsuarioRegistrado {
 		return this.carteraIntercambio.contains(p);
 	}
 
-	public void solicitarTasacion(Producto2Mano p, String tarjeta, int CVV, Date caducidad) {
-		if (tieneProductoenSuCartera(p) && (p.isVisible() == false)) {// Comprobamos que ese producto este en la
-																		// cartera del usuario y
-																		// que ese producto no tenga una hecha una
-																		// valoracion. Si un producto ya esta
-																		// valorado ya estara en la cartera del
-																		// usuario.
-			p.getValoracion().setEstadoValoracion(EstadoValoracion.PENDIENTE_DE_PAGO);
-
-			if (p.getValoracion().pagar(tarjeta, CVV, caducidad) == false) {
-				this.recibirNotificacion("Pago no aceptado");
-				return;
-			}
-			// Notificamos a la tienda que hay un nuevo producto pendiente de tasar //Esto
-			// cuidado//
-			Tienda.getInstancia().solicitarTasacion(p);
-			this.recibirNotificacion("Valoracion Solicitada. Esperando a que un empleado lo tase.");
+	public boolean solicitarTasacion(Producto2Mano p, String tarjeta, int CVV, Date caducidad) {
+		if (p == null) {
+			System.out.println("El producto no puede ser null");
+			return false;
 		}
+		if (!tieneProductoenSuCartera(p)) {
+			System.out.println("El producto no está en tu cartera del cliente " + this.getNickname());
+			return false;
+		}
+		if (p.isVisible()) {
+			System.out.println("El producto ya ha sido tasado");
+			return false;
+		}
+		Pago pagoValoracionPago = new Pago(tarjeta, Tienda.getInstancia().getPrecioTasacion(), caducidad, CVV);
+		if (!pagoValoracionPago.getExito()) {
+			this.recibirNotificacionTipo(
+					"Pago no aceptado, no se ha podido solicitar la valoracion del producto." + p.getNombre(),
+					TipoNotificacion.Pago_FALLIDO);
+			return false;
+		}
+
+		Tienda.getInstancia().solicitarTasacion(p);
+		this.recibirNotificacionTipo("Pago correcto. Tasación solicitada. Esperando a que un empleado tase el producto",
+				TipoNotificacion.PAGO_EXITOSO);
+		return true;
 	}
 
 	// OFERTAS
@@ -151,7 +187,8 @@ public class Cliente extends UsuarioRegistrado {
 		Oferta nuevaOferta = new Oferta(this, destinatario, misProductos, susProductos);
 		this.ofertasPendientes.add(nuevaOferta);
 		destinatario.getOfertasPendientes().add(nuevaOferta);
-		destinatario.recibirNotificacion("Has recibido una propuesta de intercambio de " + this.nickname);
+		destinatario.recibirNotificacionTipo("Has recibido una propuesta de intercambio de " + this.getNickname(),
+				TipoNotificacion.OFERTA_RECIBIDA);
 		for (Producto2Mano p : misProductos)
 			p.setBloqueado(true);
 		return true;
@@ -231,15 +268,70 @@ public class Cliente extends UsuarioRegistrado {
 		return favorita;
 	}
 
-	// REVISAR.METER A TIENDA.
-	public void recibirNotificacion(String mensaje) {
-		if (this.notificaciones == null) {
-			this.notificaciones = new ArrayList<>();
+	// Notificaciones de tipoq ue se envian dependiendo de si el cliente quiere que
+	// se le envien o no
+
+	public void recibirNotificacionTipo(String mensaje, TipoNotificacion tipo) {
+		if (!this.preferencias.debeRecibirNotificacion(tipo)) {
+			return;
 		}
-		// Si aún no has creado la clase Notificacion, puedes pasarle un String
-		// o crear el objeto aquí mismo si ya la tienes.
-		this.notificaciones.add(new Notificacion(mensaje));
+		this.notificaciones.add(new Notificacion(mensaje, tipo));
 		System.out.println("[Notificación Cliente]: " + mensaje);
+
+	}
+
+	public void notificarProductoNuevoCategoria(String mensaje, String nombreCategoria) {
+		if (!this.preferencias.NotificacionesProductosNUevosCategoriasInteres(nombreCategoria)) {
+			return;
+		}
+		if (this.notificaciones == null)
+			this.notificaciones = new ArrayList<>();
+		this.notificaciones.add(new Notificacion(mensaje, TipoNotificacion.CATEGORIA_INTERES));
+		System.out.println("[Notificación Cliente]: " + mensaje);
+		return;
+	}
+
+	public List<Notificacion> getNotificacionesNoLeidas() {
+		List<Notificacion> resultado = new ArrayList<>();
+		for (Notificacion n : notificaciones) {
+			if (!n.isLeida())
+				resultado.add(n);
+		}
+		return resultado;
+	}
+
+	public void verNotificacion(Notificacion n) {
+		if (n == null) {
+			return;
+		}
+		if (!this.notificaciones.contains(n)) {
+			System.out.println("No se puede leer una notificacion que no es tuya");
+			return;
+		}
+		n.marcarComoLeida();
+		return;
+	}
+
+	public List<Notificacion> getNotificacionesdeTipo(TipoNotificacion tipo) {
+		List<Notificacion> notif = new ArrayList<>();
+		for (Notificacion n : notificaciones) {
+			if (n.getTipo() == tipo)
+				notif.add(n);
+		}
+		return notif;
+	}
+
+	// La borras del cliente el ya no la podra ver pero en la tienda sigue presente,
+	public boolean eliminarNotifacion(Notificacion n) {
+		if (n == null) {
+			return false;
+		}
+		if (!this.notificaciones.contains(n)) {
+			System.out.println("No se puede borrar una notificacion que no es tuya");
+			return false;
+		}
+		this.notificaciones.remove(n);
+		return true;
 	}
 
 	// Se desbloquean los productos y se quita la oferta del cliente.
@@ -285,7 +377,7 @@ public class Cliente extends UsuarioRegistrado {
 		return true;
 	}
 
-	public boolean comprarCarrito() {
+	public boolean reservarCarrito() {
 		{
 			if (!Tienda.getInstancia().isSistemaTiemposConfigurando()) {
 				System.out
@@ -297,30 +389,44 @@ public class Cliente extends UsuarioRegistrado {
 				return false;
 			}
 			if (carritoActual.estaCaducado()) {
-
+				carritoActual.vaciarCarrito();
+				this.carritoActual = null;
+				System.out.println("El carrito ha caducado, no se puede reservar");
+				return false;
 			}
 			Pedido pedido = new Pedido(this, this.carritoActual);
 			this.getHistorialPedidos().add(pedido);
 			Tienda.getInstancia().registrarVenta(pedido);
 			this.carritoActual = null;
-			this.recibirNotificacion("Pedido creado correctamente. Tienes " + Tienda.getInstancia().getTiempoMaxPago()
-					+ " minutos para pagarlo.");
+			this.recibirNotificacionTipo(
+					"Pedido creado correctamente. Tienes " + Tienda.getInstancia().getTiempoMaxPago()
+							+ " minutos para pagarlo y completar la reserva.",
+					TipoNotificacion.CONFIRMACION_RESERVA_CARRITO);
 			return true;
 		}
 	}
 
-	public boolean pagar(Pedido p, String numeroTarjeta, Date fechaTarjeta, int CVV) {
-		if (!this.getHistorialPedidos().contains(p)) {
+	public boolean pagarCarrito(Pedido p, String numeroTarjeta, Date fechaTarjeta, int CVV) {
+		if (p == null) {
+			System.out.println("El pedido no puede ser null");
+			return false;
+		}
+
+		if (!this.historialPedidos.contains(p)) {
+			System.out.println("Este pedido no es tuyo");
+			return false;
+		}
+		if (p.isCaducado()) {
+			p.cancelarPedido();
+			System.out.println(
+					"El tiempo maximo para pagar el pedido ya expiro. Se han devuelto los productos del pedido al stock de la tienda. Disculpe las molestias.");
 			return false;
 		}
 		if (p.getEstado() != EstadoPedido.PENDIENTE_PAGO) {
+			System.out.println("Este pedido no está pendiente de pago");
 			return false;
 		}
-		Pago pago = new Pago(numeroTarjeta, p.calcularTotal(), fechaTarjeta, CVV);
-		if (pago.getExito() == false) {
-			return false;
-		}
-		return true;
+		return p.pagar(numeroTarjeta, CVV, fechaTarjeta);
 	}
 
 	public boolean solicitarRecogidaPedido(String codigoRecogida) {
@@ -385,4 +491,13 @@ public class Cliente extends UsuarioRegistrado {
 	public void setDni(String dni) {
 		this.dni = dni;
 	}
+
+	public PreferenciaNotificacion getPreferencias() {
+		return preferencias;
+	}
+
+	public void setPreferencias(PreferenciaNotificacion preferencias) {
+		this.preferencias = preferencias;
+	}
+
 }

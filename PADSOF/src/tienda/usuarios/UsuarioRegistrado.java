@@ -2,12 +2,17 @@ package usuarios;
 
 import java.util.List;
 
+import productos.Producto2Mano;
 import productos.ProductoVenta;
 
+import java.io.FileReader;
+import java.security.PublicKey;
 import java.util.ArrayList;
 
 import tienda.Tienda;
 import tienda.Estadistica;
+import tienda.FiltroSegundaMano;
+import tienda.FiltroVenta;
 import tienda.Productos.*;
 
 public abstract class UsuarioRegistrado {
@@ -16,6 +21,9 @@ public abstract class UsuarioRegistrado {
 	protected String nickname;
 	protected String password;
 	protected boolean sesionIniciada;
+	private FiltroVenta filtroVenta;
+	private FiltroSegundaMano filtro2Mano;
+	
 
 	/*
 	 * public UsuarioRegistrado(String nickname, String password, String email) {
@@ -32,6 +40,8 @@ public abstract class UsuarioRegistrado {
 		this.password = password;
 		est.setnUsuarioRegistrado(est.getnUsuarioRegistrado() + 1);
 		this.sesionIniciada = false;
+		this.filtro2Mano=new FiltroSegundaMano();
+		this.filtroVenta=new FiltroVenta();
 	}
 
 	/*
@@ -42,7 +52,9 @@ public abstract class UsuarioRegistrado {
 	 */
 	public void logout() {
 	this.sesionIniciada=false;
-	Tienda.getInstancia()getUsuariosConSesionActiva().remove(this);
+	this.filtroVenta=new FiltroVenta();
+	this.filtro2Mano=new FiltroSegundaMano();
+	Tienda.getInstancia().getUsuariosConSesionActiva().remove(this);
 	System.out.println("El usuario con id: "+ id+" ha cerrado sesion correctamente.");
 	}
 
@@ -63,6 +75,43 @@ public abstract class UsuarioRegistrado {
 		return this.nickname.equals(nickname) && this.password.equals(password);
 	}
 
+	//busqueda
+	public List<ProductoVenta> buscarProductos() {
+	    return Tienda.getInstancia().buscarProductoVenta();
+	}
+	public List<ProductoVenta> buscarProductosPorNombre(String nombre) {
+	    return Tienda.getInstancia().buscarproductoPorNombre(nombre);
+	}
+	
+	public ProductoVenta buscarProductoPorId(String id){
+		return Tienda.getInstancia().buscarProductoVentaPorId(id);
+	}
+	public List<ProductoVenta>buscarProductosPorCategoria(String nombreCategoria){
+		return Tienda.getInstancia().buscarProductoPorCategoria(nombreCategoria);
+	}
+	
+	public List<Producto2Mano> buscarProductosSegundaMano(){
+		return Tienda.getInstancia().buscarSegundaMano();
+	}
+	public List <Producto2Mano> buscarProducto2ManoNombre(String nombre){
+		return Tienda.getInstancia().buscarSegundaManoPorNombre(nombre);
+	}
+	public Producto2Mano buscarProducto2ManoPorid(String id){
+		return Tienda.getInstancia().buscarSegundaManoPorId(id);
+	}
+	
+	
+	public List <ProductoVenta> buscarProductosVentaFiltrados(){
+		return Tienda.getInstancia().buscarProductosFiltrados(filtroVenta);
+	}
+	public List<Producto2Mano> buscarProductos2ManoFiltrados(){
+		return Tienda.getInstancia().buscarSegundaManoFiltrado(filtro2Mano);
+	}
+	
+	
+
+	
+	
 //Getters públicos: Todos necesitan saber quién es quién [cite: 325]
 	public String getNickname() {
 		return nickname;

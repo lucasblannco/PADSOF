@@ -130,9 +130,7 @@ public abstract class ProductoVenta extends Producto {
 		return true;
 	}
 
-	public double getPrecioVenta() {
-		return this.precioOficial;
-	}
+	
 
 	@Override
 	public String toString() {

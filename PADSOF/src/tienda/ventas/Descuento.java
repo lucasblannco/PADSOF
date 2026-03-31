@@ -46,4 +46,12 @@ public abstract class Descuento {
 	public String getId() {
 		return this.id;
 	}
+
+	public String getNombre() {
+		return nombre;
+	}
+
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
+	}
 }
