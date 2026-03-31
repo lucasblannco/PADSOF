@@ -4,6 +4,8 @@ import java.lang.invoke.StringConcatFactory;
 import java.security.PublicKey;
 import java.util.*;
 
+import com.sun.tools.javac.util.ClientCodeException;
+
 import intercambios.Oferta;
 import usuarios.Cliente;
 import usuarios.Empleado;
@@ -84,19 +86,39 @@ public class Tienda {
 		}
 		return false;
 	}
-	public Cliente buscarClientePorNickname(String nickname) {
-	    if (nickname == null || nickname.isBlank()) {
-	    	
-	    	return null;}
-	    for (UsuarioRegistrado u : usuarios) {
-	        if (u instanceof Cliente && u.getNickname().equalsIgnoreCase(nickname)) {
-	            return (Cliente) u;
-	        }
-	    }
-	    System.out.println("No existe ningún cliente con nickname: " + nickname);
-	    return null;
+
+	
+	public Cliente buscarCLientePorId(String id) {
+		if (id==null||id.isBlank()) {
+			System.out.println("El id no puede estar vacio");
+			return null;
+		}
+		for (UsuarioRegistrado u : usuarios) {
+			if (u instanceof Cliente && u.getId().equals(id)) {
+				return (Cliente)u;
+			}
+		}
+		System.out.println("No existe ningún cliente con id: " + id);
+		return null;
 	}
 	
+	
+	
+	
+	public Cliente buscarClientePorNickname(String nickname) {
+		if (nickname == null || nickname.isBlank()) {
+
+			return null;
+		}
+		for (UsuarioRegistrado u : usuarios) {
+			if (u instanceof Cliente && u.getNickname().equalsIgnoreCase(nickname)) {
+				return (Cliente) u;
+			}
+		}
+		System.out.println("No existe ningún cliente con nickname: " + nickname);
+		return null;
+	}
+
 	public boolean existeUsuarioConDNI(String dni) {
 		if (dni == null || dni.isBlank())
 			return false;
@@ -198,20 +220,24 @@ public class Tienda {
 		}
 		return resultado;
 	}
+
 	public Producto2Mano buscarSegundaManoPorId(String id) {
-	    if (id == null || id.isBlank()) return null;
-	    try {
-	        // Los ids de segunda mano empiezan por "P2M" 
-	        int numero = Integer.parseInt(id.substring(3)); // Cogemos lo que va a partir de la tewrcera letra que ya sera el numero
-	        int indice = numero - 1; // ids empiezan en 1, índices en 0
-	        if (indice >= 0 && indice < catalogoIntercambio.size()) {
-	            return catalogoIntercambio.get(indice);
-	        }
-	    } catch (NumberFormatException e) {
-	        System.out.println("Formato de id incorrecto: " + id);
-	    }
-	    return null;
+		if (id == null || id.isBlank())
+			return null;
+		try {
+			// Los ids de segunda mano empiezan por "P2M"
+			int numero = Integer.parseInt(id.substring(3)); // Cogemos lo que va a partir de la tewrcera letra que ya
+															// sera el numero
+			int indice = numero - 1; // ids empiezan en 1, índices en 0
+			if (indice >= 0 && indice < catalogoIntercambio.size()) {
+				return catalogoIntercambio.get(indice);
+			}
+		} catch (NumberFormatException e) {
+			System.out.println("Formato de id incorrecto: " + id);
+		}
+		return null;
 	}
+
 	// BuscarConFiltros
 	public List<ProductoVenta> buscarProductosFiltrados(FiltroVenta filtro) {
 		List<ProductoVenta> productos = new ArrayList<>();
@@ -237,35 +263,25 @@ public class Tienda {
 
 	public UsuarioRegistrado login(String nickname, String password, String tipo) {
 		for (UsuarioRegistrado u : usuarios) {
-			if (u.comprobarCredenciales(nickname, password)) {
+			if (u.getNickname().equals(nickname)) {
 				switch (tipo.toUpperCase()) {
-				case "GESTOR":
-					if (u instanceof Gestor) {
-						u.setSesionIniciada(true);
-						usuariosConSesionActiva.add(u);
-						System.out.println("Gestor " + nickname + " ha iniciado sesión.");
-						return u;
-					}
-					break;
 				case "EMPLEADO":
 					if (u instanceof Empleado) {
-						Empleado e = (Empleado) u;
-						if (e.isDespedido()) {
+						if (((Empleado) u).isDespedido()) {
 							System.out.println("Este empleado está dado de baja.");
 							return null;
 						}
-						u.setSesionIniciada(true);
-						usuariosConSesionActiva.add(u);
-						System.out.println("Empleado " + nickname + " ha iniciado sesión.");
-						return u;
+						return u.login(password) ? u : null;
 					}
 					break;
 				case "CLIENTE":
 					if (u instanceof Cliente) {
-						u.setSesionIniciada(true);
-						usuariosConSesionActiva.add(u);
-						System.out.println("Cliente " + nickname + " ha iniciado sesión.");
-						return u;
+						return u.login(password) ? u : null;
+					}
+					break;
+				case "GESTOR":
+					if (u instanceof Gestor) {
+						return u.login(password) ? u : null;
 					}
 					break;
 				default:
@@ -274,7 +290,32 @@ public class Tienda {
 				}
 			}
 		}
-		System.out.println("Credenciales incorrectas o tipo de usuario incorrecto.");
+		System.out.println("Usuario no encontrado o tipo incorrecto.");
+		return null;
+	}
+
+	// metodos para evitar casteos en el main
+	public Gestor loginGestor(String nickname, String password) {
+		UsuarioRegistrado u = login(nickname, password, "GESTOR");
+		if (u instanceof Gestor) {
+			return (Gestor) u;
+		}
+		return null;
+	}
+
+	public Empleado loginEmpleado(String nickname, String password) {
+		UsuarioRegistrado u = login(nickname, password, "EMPLEADO");
+		if (u instanceof Empleado) {
+			return (Empleado) u;
+		}
+		return null;
+	}
+
+	public Cliente loginCliente(String nickname, String password) {
+		UsuarioRegistrado u = login(nickname, password, "CLIENTE");
+		if (u instanceof Cliente) {
+			return (Cliente) u;
+		}
 		return null;
 	}
 

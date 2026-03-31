@@ -195,5 +195,18 @@ public class PreferenciaNotificacion {
 	public void setCategoriasInteres(List<Categoria> categoriasInteres) {
 		this.categoriasInteres = categoriasInteres;
 	}
+	 @Override
+	    public String toString() {
+	        String cats = "";
+	        for (Categoria c : categoriasInteres) cats += c.getNombre() + " ";
+	        return "=== PREFERENCIAS DE NOTIFICACIONES ===\n"
+	            + "Descuentos: " + (descuentos ? "Activado" : "Desactivado") + "\n"
+	            + "Pedidos caducados: " + (pedidosCaducados ? "Activado" : "Desactivado") + "\n"
+	            + "Nuevos intercambios: " + (nuevos_Intercambios ? "Activado" : "Desactivado") + "\n"
+	            + "Pedido entregado: " + (pedido_entregado ? "Activado" : "Desactivado") + "\n"
+	            + "Valoración completada: " + (valoracion_completada ? "Activado" : "Desactivado") + "\n"
+	            + "Oferta caducada: " + (oferta_caducada ? "Activado" : "Desactivado") + "\n"
+	            + "Categorías de interés sobre las que recibir informacion respecto a los productos: " + (cats.isBlank() ? "ninguna" : cats);
+	    }
 
 }

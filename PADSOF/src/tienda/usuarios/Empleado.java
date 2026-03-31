@@ -97,8 +97,7 @@ public class Empleado extends UsuarioRegistrado {
 		Tienda.getInstancia().getPendientes_Tasacion().remove(p);
 
 		if (estado == EstadoProducto.NO_ACEPTADO) {
-			p.getPropietario().recibirNotificacion(
-					"El producto " + p.getNombre() + " ha sido rechazado al no cumplir las expectativas suficientes.");
+			p.getPropietario().recibirNotificacionTipo("El producto " + p.getNombre() + " ha sido rechazado al no cumplir las expectativas suficientes.", TipoNotificacion.VALORACION_COMPLETADA);
 			return;
 		}
 
@@ -108,7 +107,7 @@ public class Empleado extends UsuarioRegistrado {
 		this.valoraciones.add(nuevaVal);
 		Tienda.getInstancia().publicarParaIntercambio(p);
 		p.getPropietario()
-				.recibirNotificacion("El producto " + p.getNombre() + " ha sido tasado y publicado con éxito.");
+				.recibirNotificacionTipo("El producto " + p.getNombre() + " ha sido tasado y publicado con éxito.", TipoNotificacion.VALORACION_COMPLETADA);
 		this.recibirNotificacion("Has completado la valoración del producto " + p.getNombre() + " con éxito.");
 	}
 
@@ -219,11 +218,11 @@ public class Empleado extends UsuarioRegistrado {
 			}
 			if (material == null) {
 				System.out.println("Las figuras deben tener material");
-				return false; // <-- faltaba el return
+				return false; 
 			}
 			if (marca == null) {
 				System.out.println("Las figuras deben tener marca");
-				return false; // <-- faltaba el return
+				return false; 
 			}
 			ProductoVenta figura = new Figura(nombre, descripcion, imagen, precioOficial, Stock, altura, ancho, largo,
 					material, marca);
@@ -239,7 +238,7 @@ public class Empleado extends UsuarioRegistrado {
 		default:
 			this.recibirNotificacion(
 					"El tipo de producto que has intentado crear no es correcta. Deben ser Comics(C), Figuras(F) o Juegos(J)");
-			return false; // <-- cambiado de throw a return false, más consistente con el resto
+			return false; 
 		}
 	}
 
@@ -374,10 +373,11 @@ public class Empleado extends UsuarioRegistrado {
 			for (Cliente cliente : Tienda.getInstancia().obtenerClientesTienda()) {
 
 				cliente.notificarProductoNuevoCategoria(
-						"Se ha eliminado el producto " + p.getNombre() + " de la categoria " + nombreCat + ",",
+						"Se ha eliminado el producto " + p.getNombre() + " de la categoria " + nombreCat + ".",
 						nombreCat);
 			}
 		}
+		return eliminado;
 	}
 
 	public boolean crearPack(String nombre, String descripcion, String imagen, double precioOficial, int stock,
@@ -523,16 +523,6 @@ public class Empleado extends UsuarioRegistrado {
 	
 	
 	
-	
-	
-	@Override
-	public boolean login(String nickname, String password) {
-		if (this.despedido) {
-			System.out.println("Este empleado está dado de baja y no puede iniciar sesión.");
-			return false;
-		}
-		return super.login(nickname, password);
-	}
 
 	public void asignarPermiso(TipoPermisos p) {
 		this.permisos.add(p);
