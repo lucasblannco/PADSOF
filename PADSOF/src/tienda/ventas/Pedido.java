@@ -287,13 +287,6 @@ public class Pedido {
 		return this.descuentoAplicado;
 	}
 
-	public static void setTiempoMaximo(Duration tiempo) {
-		if (tiempo == null || tiempo.isZero() || tiempo.isNegative()) {
-			throw new IllegalArgumentException("El tiempo máximo del pedido debe ser positivo");
-		}
-		Pedido.tiempoMaximo = tiempo;
-	}
-
 	public boolean isRecogida_solicitada() {
 		return recogidaSolicitada;
 	}
