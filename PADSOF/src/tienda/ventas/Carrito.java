@@ -11,31 +11,30 @@ public class Carrito {
 	private final List<LineaCarrito> lineas;
 	private final LocalDateTime fechaCreacion;
 	private Descuento descuentoAplicado;
-		
 
 	public Carrito() {
 		Estadistica est = Estadistica.getInstancia();
-		this.idCarrito = "CARRITO" + String.valueOf(est.getnCarritos());
+		this.idCarrito = "CARRITO-" + String.valueOf(est.getnCarritos());
 		est.setnCarritos(est.getnCarritos() + 1);
 		this.lineas = new ArrayList<>();
 		this.fechaCreacion = LocalDateTime.now();
 		this.descuentoAplicado = null;
 	}
+
 //No tiene mucho sentido crear un carrito ya con descuento aplicado. El descuento se aplica cuando se va a pagar, no al crear el carrito.???????
 	public Carrito(Descuento descuentoAplicado) {
 		Estadistica est = Estadistica.getInstancia();
-		this.idCarrito = "CARRITO" + String.valueOf(est.getnCarritos());
+		this.idCarrito = "CARRITO-" + String.valueOf(est.getnCarritos());
 		est.setnCarritos(est.getnCarritos() + 1);
 		this.lineas = new ArrayList<>();
 		this.fechaCreacion = LocalDateTime.now();
 		this.descuentoAplicado = descuentoAplicado;
-		
+
 	}
 
 	public boolean añadirProducto(ProductoVenta p, int cantidad) {
 		if (this.estaCaducado() == true) {
-			this.vaciarCarrito();
-			return false;
+			caducar();
 		}
 
 		if (p == null || cantidad < 1 || p.getStockDisponible() < cantidad) {
@@ -58,8 +57,7 @@ public class Carrito {
 
 	public boolean eliminarProducto(ProductoVenta p) {
 		if (this.estaCaducado() == true) {
-			this.vaciarCarrito();
-			return false;
+			caducar();
 		}
 
 		if (p == null) {
@@ -86,8 +84,7 @@ public class Carrito {
 
 	public boolean cambiarCantidadProducto(ProductoVenta p, int nuevaCantidad) {
 		if (this.estaCaducado() == true) {
-			this.vaciarCarrito();
-			return false;
+			caducar();
 		}
 
 		if (p == null || nuevaCantidad < 0) {
@@ -135,21 +132,21 @@ public class Carrito {
 	}
 
 	public double getTotal() {
-	    // Primero aplicamos el descuento prioritario de la tienda
-	    Tienda.getInstancia().aplicarDescuentoPrioritario(this);
-	    
-	    if (this.descuentoAplicado != null) {
-	        return this.descuentoAplicado.aplicarDescuento(this);
-	    }
-	    return calcularSubtotal();
+		// Primero aplicamos el descuento prioritario de la tienda
+		Tienda.getInstancia().aplicarDescuentoPrioritario(this);
+
+		if (this.descuentoAplicado != null) {
+			return this.descuentoAplicado.aplicarDescuento(this);
+		}
+		return calcularSubtotal();
 	}
 
 	public boolean estaCaducado() {
-	    int tiempoMax = Tienda.getInstancia().getTiempoMaxCarrito();
-	    if (tiempoMax == 0) return false;
-	    return LocalDateTime.now().isAfter(this.fechaCreacion.plusMinutes(tiempoMax));
+		int tiempoMax = Tienda.getInstancia().getTiempoMaxCarrito();
+		if (tiempoMax == 0)
+			return false;
+		return LocalDateTime.now().isAfter(this.fechaCreacion.plusMinutes(tiempoMax));
 	}
-	
 
 	public String getIdCarrito() {
 		return this.idCarrito;
@@ -175,9 +172,8 @@ public class Carrito {
 		return this.lineas.isEmpty();
 	}
 
-
-	public boolean caducar() {
+	public void caducar() {
 		vaciarCarrito();
-		return true;
+		return;
 	}
 }

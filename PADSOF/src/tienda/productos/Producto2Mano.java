@@ -15,7 +15,7 @@ public class Producto2Mano extends Producto {
 			Cliente propietario, boolean bloqueado, boolean visible) {
 		super(nombre, descripcion, imagenRuta);
 		Estadistica est = Estadistica.getInstancia();
-		this.id = "P2M" + String.valueOf(est.getnProducto2Mano());
+		this.id = "P2M-" + String.valueOf(est.getnProducto2Mano());
 		this.valoracion = valoracion;
 		this.propietario = propietario;
 		this.bloqueado = bloqueado;

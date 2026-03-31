@@ -54,12 +54,12 @@ public class Pedido {
 		this.pago = null;
 		this.estado = EstadoPedido.PENDIENTE_PAGO;
 		this.codigoRecogida = null;
-		this.descuentoAplicado = null;
+		this.descuentoAplicado = carrito.getDescuentoAplicado();
 
 		for (LineaCarrito linea : carrito.getLineas()) {
 			ProductoVenta producto = linea.getProducto();
 			int cantidad = linea.getCantidad();
-			double precioUnitarioFijado = producto.getPrecioVenta();
+			double precioUnitarioFijado = producto.getPrecioOficial();
 
 			this.lineas.add(new LineaPedido(producto, cantidad, precioUnitarioFijado));
 		}

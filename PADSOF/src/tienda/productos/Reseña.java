@@ -14,7 +14,7 @@ public class Reseña {
 
 	public Reseña(Cliente autor, ProductoVenta productoV, double puntuacion, String comentario) {
 		Estadistica est = Estadistica.getInstancia();
-		this.idReseña = "RESEÑA" + String.valueOf(est.getnReseñas());
+		this.idReseña = "RESEÑA-" + String.valueOf(est.getnReseñas());
 		est.setnReseñas(est.getnReseñas() + 1);
 		this.autor = autor;
 		this.producto = null;

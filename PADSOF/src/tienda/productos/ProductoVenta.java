@@ -17,7 +17,7 @@ public abstract class ProductoVenta extends Producto {
 
 		super(nombre, descripcion, imagenRuta);
 		Estadistica est = Estadistica.getInstancia();
-		this.id = "PV" + est.getnProductosVentas();
+		this.id = "PV-" + est.getnProductosVentas();
 		est.setnProductosVentas(est.getnProductosVentas() + 1);
 		this.precioOficial = precioOficial;
 		this.stockDisponible = stockDisponible;
@@ -129,8 +129,6 @@ public abstract class ProductoVenta extends Producto {
 		this.reseñas.remove(r);
 		return true;
 	}
-
-	
 
 	@Override
 	public String toString() {
