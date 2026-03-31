@@ -26,9 +26,9 @@ public class DescuentoCantidad extends Descuento {
 		for (LineaCarrito linea : carrito.getLineas()) {
 			double subtotalLinea = linea.getSubtotal();
 
-			if (linea.getCantidad() > cantidadMinima) {
+			if (linea.getCantidad() >= cantidadMinima) {
 				int unidadesConDescuento = linea.getCantidad() - cantidadMinima;
-				double precioUnitario = linea.getProducto().getPrecioVenta();
+				double precioUnitario = linea.getProducto().getPrecioOficial();
 				double descuento = unidadesConDescuento * precioUnitario * porcentaje;
 				subtotalLinea -= descuento;
 			}

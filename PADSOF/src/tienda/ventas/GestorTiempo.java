@@ -9,6 +9,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import tienda.Tienda;
 import usuarios.Cliente;
 
 public class GestorTiempo {
@@ -26,37 +27,46 @@ public class GestorTiempo {
 	}
 
 	private void iniciarRevisionPeriodica() {
+		Tienda tienda = Tienda.getInstancia();
+
+		int tiempoRevision = (tienda.getTiempoMaxCarrito() <= tienda.getTiempoMaxOferta() ? tienda.getTiempoMaxCarrito()
+				: tienda.getTiempoMaxOferta());
+		if (tiempoRevision == 0) {
+			tiempoRevision = 5;
+		}
+
 		this.scheduler.scheduleAtFixedRate(() -> {
 			revisarCarritosCaducados();
 			revisarPedidosPendientesCaducados();
-		}, 5, 5, TimeUnit.MINUTES);
+		}, tiempoRevision, tiempoRevision, TimeUnit.MINUTES);
 	}
 
 	private void revisarCarritosCaducados() {
-		for (Map.Entry<String, Carrito> entry : carritosPorUsuario.entrySet()) {
-			String idUsuario = entry.getKey();
-			Carrito carrito1 = entry.getValue();
-
-			if (carrito1 != null && carrito1.estaCaducado()) {
-				carrito1.caducar();
-				carritosPorUsuario.remove(idUsuario, carrito1);
+		Iterator<Map.Entry<String, Carrito>> it = carritosPorUsuario.entrySet().iterator();
+		while (it.hasNext()) {
+			Map.Entry<String, Carrito> entry = it.next();
+			Carrito carrito = entry.getValue();
+			if (carrito != null && carrito.estaCaducado()) {
+				carrito.caducar();
+				it.remove();
 			}
 		}
 	}
 
 	private void revisarPedidosPendientesCaducados() {
-		for (Map.Entry<String, List<Pedido>> entry : pedidosPendientesPorUsuario.entrySet()) {
-			String idUsuario = entry.getKey();
+		Iterator<Map.Entry<String, List<Pedido>>> itMapa = pedidosPendientesPorUsuario.entrySet().iterator();
+		while (itMapa.hasNext()) {
+			Map.Entry<String, List<Pedido>> entry = itMapa.next();
 			List<Pedido> pedidos = entry.getValue();
 
 			if (pedidos == null) {
+				itMapa.remove();
 				continue;
 			}
 
 			Iterator<Pedido> it = pedidos.iterator();
 			while (it.hasNext()) {
 				Pedido pedido = it.next();
-
 				if (pedido != null && pedido.isCaducado()) {
 					pedido.cancelarPedido();
 					it.remove();
@@ -64,21 +74,16 @@ public class GestorTiempo {
 			}
 
 			if (pedidos.isEmpty()) {
-				pedidosPendientesPorUsuario.remove(idUsuario);
+				itMapa.remove();
 			}
 		}
 	}
 
-	public Carrito obtenerOCrearCarrito(String idUsuario) {
-		Carrito carrito = carritosPorUsuario.get(idUsuario);
-
-		if (carrito != null) {
-			return carrito;
+	public Carrito obtenerCarrito(Cliente cliente) {
+		if (cliente == null) {
+			return null;
 		}
-
-		Carrito nuevoCarrito = new Carrito();
-		carritosPorUsuario.put(idUsuario, nuevoCarrito);
-		return nuevoCarrito;
+		return carritosPorUsuario.get(cliente.getId());
 	}
 
 	public Carrito getCarrito(String idUsuario) {
@@ -97,15 +102,15 @@ public class GestorTiempo {
 		Carrito carrito = carritosPorUsuario.remove(idUsuario);
 
 		if (carrito != null) {
-			carrito.vaciarCarrito();
+			carrito.caducar();
 		}
 	}
 
-	public Pedido crearPedidoDesdeCarrito(String idUsuario, Cliente cliente) {
-		if (idUsuario == null || cliente == null) {
-			throw new IllegalArgumentException("idUsuario y cliente no pueden ser null");
-		}
+	public Pedido crearPedidoDesdeCarrito(Cliente cliente) {
+		if (cliente == null)
+			throw new IllegalArgumentException("cliente no puede ser null");
 
+		String idUsuario = cliente.getId();
 		Carrito carrito = carritosPorUsuario.get(idUsuario);
 
 		if (carrito == null) {
@@ -120,7 +125,7 @@ public class GestorTiempo {
 
 		if (carrito.estaVacio()) {
 			throw new IllegalStateException("El carrito está vacío");
-		}1
+		}
 
 		Pedido pedido = new Pedido(cliente, carrito);
 		carritosPorUsuario.remove(idUsuario, carrito);

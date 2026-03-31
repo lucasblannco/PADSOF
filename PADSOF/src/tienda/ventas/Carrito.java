@@ -4,6 +4,8 @@ import java.time.*;
 import java.util.*;
 import tienda.Estadistica;
 import tienda.Tienda;
+import tienda.TipoNotificacion;
+import usuarios.Cliente;
 import productos.ProductoVenta;
 
 public class Carrito {
@@ -11,30 +13,22 @@ public class Carrito {
 	private final List<LineaCarrito> lineas;
 	private final LocalDateTime fechaCreacion;
 	private Descuento descuentoAplicado;
+	private final Cliente propietario;
 
-	public Carrito() {
+	public Carrito(Cliente propietario) {
 		Estadistica est = Estadistica.getInstancia();
 		this.idCarrito = "CARRITO-" + String.valueOf(est.getnCarritos());
 		est.setnCarritos(est.getnCarritos() + 1);
 		this.lineas = new ArrayList<>();
 		this.fechaCreacion = LocalDateTime.now();
 		this.descuentoAplicado = null;
-	}
-
-//No tiene mucho sentido crear un carrito ya con descuento aplicado. El descuento se aplica cuando se va a pagar, no al crear el carrito.???????
-	public Carrito(Descuento descuentoAplicado) {
-		Estadistica est = Estadistica.getInstancia();
-		this.idCarrito = "CARRITO-" + String.valueOf(est.getnCarritos());
-		est.setnCarritos(est.getnCarritos() + 1);
-		this.lineas = new ArrayList<>();
-		this.fechaCreacion = LocalDateTime.now();
-		this.descuentoAplicado = descuentoAplicado;
-
+		this.propietario = propietario;
 	}
 
 	public boolean añadirProducto(ProductoVenta p, int cantidad) {
 		if (this.estaCaducado() == true) {
 			caducar();
+			return false;
 		}
 
 		if (p == null || cantidad < 1 || p.getStockDisponible() < cantidad) {
@@ -58,6 +52,7 @@ public class Carrito {
 	public boolean eliminarProducto(ProductoVenta p) {
 		if (this.estaCaducado() == true) {
 			caducar();
+			return false;
 		}
 
 		if (p == null) {
@@ -85,6 +80,7 @@ public class Carrito {
 	public boolean cambiarCantidadProducto(ProductoVenta p, int nuevaCantidad) {
 		if (this.estaCaducado() == true) {
 			caducar();
+			return false;
 		}
 
 		if (p == null || nuevaCantidad < 0) {
@@ -148,6 +144,15 @@ public class Carrito {
 		return LocalDateTime.now().isAfter(this.fechaCreacion.plusMinutes(tiempoMax));
 	}
 
+	public void caducar() {
+		vaciarCarrito();
+		if (this.propietario != null) {
+			this.propietario.recibirNotificacionTipo("Tu carrito ha caducado y los productos han sido liberados.",
+					TipoNotificacion.CARRITO_CADUCADO);
+			this.propietario.setCarritoActual(null);
+		}
+	}
+
 	public String getIdCarrito() {
 		return this.idCarrito;
 	}
@@ -172,8 +177,7 @@ public class Carrito {
 		return this.lineas.isEmpty();
 	}
 
-	public void caducar() {
-		vaciarCarrito();
-		return;
+	public Cliente getPropietario() {
+		return propietario;
 	}
 }
