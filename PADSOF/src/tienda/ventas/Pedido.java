@@ -90,6 +90,9 @@ public class Pedido {
 	}
 
 	public boolean pagar(String tarjeta, int cvv, Date caducidad) {
+		if (isCaducado()) {
+			return false;
+		}
 		if (this.estado != EstadoPedido.PENDIENTE_PAGO) {
 			return false;
 		}
@@ -195,7 +198,7 @@ public class Pedido {
 
 	public double getPrecioDeProducto(String idProductoBuscado) {
 		if (idProductoBuscado == null) {
-			return 0.0;
+			return -1.0;
 		}
 
 		for (LineaPedido linea : this.lineas) {
@@ -203,7 +206,7 @@ public class Pedido {
 				if (linea.getCantidad() == 0) {
 					return 0.0;
 				}
-				return linea.getSubtotal() / linea.getCantidad();
+				return linea.getPrecioVenta();
 			}
 		}
 
