@@ -12,9 +12,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import com.sun.org.apache.bcel.internal.generic.RETURN;
-import com.sun.org.apache.xml.internal.serializer.utils.StringToIntTable;
-import com.sun.tools.javac.util.ClientCodeException;
 
 import intercambios.*;
 import productos.Producto2Mano;

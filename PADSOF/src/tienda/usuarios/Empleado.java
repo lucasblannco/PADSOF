@@ -3,6 +3,9 @@ package usuarios;
 import tienda.*;
 import productos.*;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.lang.invoke.StringConcatFactory;
 import java.sql.Date;
 import java.util.ArrayList;
@@ -45,7 +48,7 @@ public class Empleado extends UsuarioRegistrado {
 
 	private boolean puedeRealizarTarea(TipoPermisos permiso) {
 		if (this.despedido) {
-			System.out.println("Este empleado está dado de baja y no puede realizar acciones.");
+			System.out.println("El empleado" + this.getNickname() + " dado de baja y no puede realizar acciones.");
 			return false;
 		}
 		if (!this.tienePermiso(permiso)) {
@@ -97,7 +100,9 @@ public class Empleado extends UsuarioRegistrado {
 		Tienda.getInstancia().getPendientes_Tasacion().remove(p);
 
 		if (estado == EstadoProducto.NO_ACEPTADO) {
-			p.getPropietario().recibirNotificacionTipo("El producto " + p.getNombre() + " ha sido rechazado al no cumplir las expectativas suficientes.", TipoNotificacion.VALORACION_COMPLETADA);
+			p.getPropietario().recibirNotificacionTipo(
+					"El producto " + p.getNombre() + " ha sido rechazado al no cumplir las expectativas suficientes.",
+					TipoNotificacion.VALORACION_COMPLETADA);
 			return;
 		}
 
@@ -106,8 +111,9 @@ public class Empleado extends UsuarioRegistrado {
 		p.setVisible(true);
 		this.valoraciones.add(nuevaVal);
 		Tienda.getInstancia().publicarParaIntercambio(p);
-		p.getPropietario()
-				.recibirNotificacionTipo("El producto " + p.getNombre() + " ha sido tasado y publicado con éxito.", TipoNotificacion.VALORACION_COMPLETADA);
+		p.getPropietario().recibirNotificacionTipo(
+				"El producto " + p.getNombre() + " ha sido tasado y publicado con éxito.",
+				TipoNotificacion.VALORACION_COMPLETADA);
 		this.recibirNotificacion("Has completado la valoración del producto " + p.getNombre() + " con éxito.");
 	}
 
@@ -218,11 +224,11 @@ public class Empleado extends UsuarioRegistrado {
 			}
 			if (material == null) {
 				System.out.println("Las figuras deben tener material");
-				return false; 
+				return false;
 			}
 			if (marca == null) {
 				System.out.println("Las figuras deben tener marca");
-				return false; 
+				return false;
 			}
 			ProductoVenta figura = new Figura(nombre, descripcion, imagen, precioOficial, Stock, altura, ancho, largo,
 					material, marca);
@@ -238,11 +244,11 @@ public class Empleado extends UsuarioRegistrado {
 		default:
 			this.recibirNotificacion(
 					"El tipo de producto que has intentado crear no es correcta. Deben ser Comics(C), Figuras(F) o Juegos(J)");
-			return false; 
+			return false;
 		}
 	}
 
-	public boolean añadirUnidadesProductoExistente(String id, int cantidad) {
+	public boolean reponerStocProducto(String id, int cantidad) {
 		if (!puedeRealizarTarea(TipoPermisos.GESTION_STOCK)) {
 			System.out.println("No tienes permiso para trabajar con productos");
 			return false;
@@ -266,6 +272,186 @@ public class Empleado extends UsuarioRegistrado {
 		}
 		System.out.println("Este producto no existe en la lista de productos de venta de la tienda");
 		return false;
+	}
+
+	public boolean cargarProductosFicheroTexto(String path) {
+		if (!puedeRealizarTarea(TipoPermisos.GESTION_STOCK)) {
+			return false;
+		}
+		if (path == null || path.isBlank()) {
+			System.out.println("La ruta no puede estar vacia");
+			return false;
+		}
+		int productos_nuevos_creados = 0;
+		int productos_actualizados_stock = 0;
+		int numLinea = 0; // 1. Creamos el contador de líneas
+
+		try (BufferedReader br = new BufferedReader(new FileReader(path))) {
+			String linea;
+			boolean primeraLiena = true;
+
+			while ((linea = br.readLine()) != null) {// leemos el archivo linea por linea. Hasta el final
+				numLinea++;
+				// Nos olvidamos de la primera linea. Esa sera el cabecero informativo
+				if (primeraLiena) {
+					primeraLiena = false;
+					continue;
+				}
+				// ignoramos lineas vacias
+				if (linea.isBlank()) {
+					continue;
+				}
+				// Divide la línea en trozos cada vez que encuentra un ";".
+				// El -1 permite que si al final hay campos vacíos, no se ignoren.
+				String[] partes = linea.split(";", -1);
+
+				// El caso en el que menos necesitaremos sera en el que el producto ya exista y
+				// estemos rellenando stock. Necesitaremos tipo de producto id nombre y unidades
+				if (partes.length < 4) {// OMITIMOS ESTA LINEA
+					continue;
+				}
+				String tipo = partes[0].trim().toUpperCase();// Limpiamos los espacios en blanco de despues antes del
+																// separador
+				String id = partes[1].trim();
+				String nombre = partes[2].trim();
+				if (nombre.isBlank()) {
+					// El nombre no puede estar vacio en ningun caso luego se omite la linea
+					continue;
+				}
+
+				// Reponer Stock(Id NO vacio) FORMATO Tipo;id;nombre;unidades
+				if (!id.isEmpty()) {
+
+					// Necesitamos 4 campos: TIPO;ID;NOMBRE;UNIDADES
+					if (partes.length < 4) {
+						// ignoramos linea
+						continue;
+					}
+					// comprobamos que existe:
+					ProductoVenta existente = this.buscarProductoPorId(id);
+					if (existente == null) {
+						// Ignoramos la linea
+						continue;
+					}
+					int unidades;
+					try {
+						unidades = Integer.parseInt(partes[3].trim());
+					} catch (NumberFormatException e) {
+						// Saltamos linea
+						continue;
+					}
+					if (unidades <= 0) {
+						// saltamos linea
+						continue;
+					}
+					existente.setStockDisponible(existente.getStockDisponible() + unidades);
+					System.out.println("Stock actualizado: " + existente.getNombre() + ": +" + unidades + " unidades.");
+					productos_actualizados_stock++;
+					continue;
+				}
+
+				// Para crear cualquier producto, necesitamos los 7 campos base comunes
+				if (partes.length < 7) {
+					System.out.println("Faltan datos base (precio/unidades/cat) para crear: " + nombre);
+					continue;
+				}
+				try {
+					double precio;
+					int unidadesIni;
+					try {
+						precio = Double.parseDouble(partes[4].trim());
+						unidadesIni = Integer.parseInt(partes[5].trim());
+						if (precio <= 0 || unidadesIni < 0)
+							throw new NumberFormatException();
+					} catch (NumberFormatException e) {
+						System.out.println("Precio o unidades inválidos en producto nuevo: " + nombre);
+						continue;
+					}
+					ArrayList<Categoria> categorias = new ArrayList<>();
+					if (!partes[6].isBlank()) {
+						// si hay mas de una las separamos por ,
+						for (String catNombre : partes[6].split(",")) {
+							Categoria c = Tienda.getInstancia().buscarCategoriaPorNombre(catNombre.trim());
+							if (c != null)
+								categorias.add(c);
+						}
+					}
+					try {
+
+					} catch (Exception e) {
+						// TODO: handle exception
+					}
+					ProductoVenta nuevo = null;
+					boolean exito = false;
+					switch (tipo) {
+					case "C": // COMIC
+						// Validamos que la línea llegue al menos hasta la columna 9 (Año)
+						if (partes.length < 10) {
+							// Faltan campos obligatorios para Comic (Págs/Ed/Año)
+							continue;
+						}
+
+						int pags = Integer.parseInt(partes[7].trim());
+						String ed = partes[8].trim();
+						int año = Integer.parseInt(partes[9].trim());
+
+						exito = añadirProducto_nuevo("C", nombre, partes[3].trim(), "", precio, unidadesIni, categorias,
+								pags, ed, año, 0, 0, 0, null, null, 0, 0, 0, 0, null);
+
+						break;
+
+					case "J": // JUEGO DE MESA
+						// Validamos que llegue hasta la columna 14 (Tipo Juego)
+						if (partes.length < 15) {
+							// Faltan campos obligatorios para Juego de Mesa
+							continue;
+						}
+
+						int minJ = Integer.parseInt(partes[10].trim());
+						int maxJ = Integer.parseInt(partes[11].trim());
+						int minE = Integer.parseInt(partes[12].trim());
+						int maxE = Integer.parseInt(partes[13].trim());
+						String tJuego = partes[14].trim();
+						exito = añadirProducto_nuevo("J", nombre, partes[3].trim(), "", precio, unidadesIni, categorias,
+								0, null, 0, 0, 0, 0, null, null, minJ, maxJ, minE, maxE, tJuego);
+						break;
+
+					case "F": // FIGURA
+						// Validamos que llegue hasta la columna 19 (Marca)
+						if (partes.length < 20) {
+							// Faltan campos obligatorios para Figura (Dim/Mat/Marca)
+							continue;
+						}
+
+						double alt = Double.parseDouble(partes[15].trim());
+						double anc = Double.parseDouble(partes[16].trim());
+						double lar = Double.parseDouble(partes[17].trim());
+						String mat = partes[18].trim();
+						String marca = partes[19].trim();
+						exito = añadirProducto_nuevo("F", nombre, partes[3].trim(), "", precio, stockInicial,
+								categorias, 0, null, 0, alt, anc, lar, mat, marca, 0, 0, 0, 0, null);
+
+						break;
+
+					default:
+						System.out.println("Tipo de producto desconocido: " + tipo);
+					}
+					if (exito) {
+						productos_nuevos_creados++;
+					}
+				} catch (NumberFormatException e) {
+					System.out.println("Error de formato numérico en la línea: " + numLinea);
+				}
+
+			}
+			this.recibirNotificacion("Fichero procesado. Creados: " + productos_nuevos_creados + ", Actualizados: "
+					+ productos_actualizados_stock);
+			return true;
+		} catch (IOException e) {
+			System.out.println("Error al leer el fichero: " + e.getMessage());
+			return false;
+		}
+
 	}
 
 	public boolean prepararPedido(String idPedido) {
@@ -483,9 +669,6 @@ public class Empleado extends UsuarioRegistrado {
 		return true;
 	}
 
-
-
-
 	public boolean modificarDescripcionProducto(String idProducto, String descripcion) {
 		if (idProducto == null || descripcion == null) {
 			System.out.println("El id del producto o la descripción no pueden ser null.");
@@ -519,10 +702,6 @@ public class Empleado extends UsuarioRegistrado {
 		System.out.println("Imagen del producto " + idProducto + " modificada correctamente.");
 		return true;
 	}
-
-	
-	
-	
 
 	public void asignarPermiso(TipoPermisos p) {
 		this.permisos.add(p);
