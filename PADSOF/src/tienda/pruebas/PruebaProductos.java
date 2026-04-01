@@ -1,5 +1,12 @@
-package productos;
+package pruebas;
 
+import productos.Categoria;
+import productos.Comic;
+import productos.EstadoProducto;
+import productos.JuegoMesa;
+import productos.Pack;
+import productos.Producto2Mano;
+import productos.Reseña;
 import usuarios.Cliente;
 import usuarios.Empleado;
 

@@ -1,6 +1,9 @@
-package productos;
+package pruebas;
 
 import java.util.ArrayList;
+
+import productos.Categoria;
+import productos.ProductoVenta;
 import tienda.Tienda;
 import usuarios.Empleado;
 import usuarios.TipoPermisos;

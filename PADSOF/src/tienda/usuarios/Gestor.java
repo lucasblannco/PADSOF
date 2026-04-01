@@ -496,11 +496,11 @@ public class Gestor extends UsuarioRegistrado {
 	}
 
 	public double[] consultarIngresosPorMeses(int año) {
-		return motorEstadistico.calcularIngresosMeses(año);
+		return motorEstadistico.calcularIngresosMesesAño(año);
 	}
 
 	public double[] consultarIngresosPorMesesActual() {
-		return motorEstadistico.calcularIngresosMeses(LocalDateTime.now().getYear());
+		return motorEstadistico.calcularIngresosMesesAñoActual();
 	}
 
 	public double consultarIngresosVenta() {

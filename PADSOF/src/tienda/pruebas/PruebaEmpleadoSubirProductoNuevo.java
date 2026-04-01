@@ -1,10 +1,12 @@
-package productos;
+package pruebas;
 
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import productos.Categoria;
+import productos.ProductoVenta;
 import tienda.*;
 import tienda.Tienda;
 import usuarios.*;

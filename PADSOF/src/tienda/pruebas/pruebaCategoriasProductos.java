@@ -1,4 +1,4 @@
-package productos; 
+package pruebas; 
 import tienda.Tienda;
 
 import usuarios.Empleado;
