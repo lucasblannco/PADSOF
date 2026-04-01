@@ -17,6 +17,7 @@ import java.util.Map;
 
 import javax.print.DocFlavor.STRING;
 
+
 import Excepcion.FicheroFormatoInvalidoException;
 import Excepcion.TipoProductoDesconocidoException;
 import intercambios.*;
@@ -120,7 +121,7 @@ public class Empleado extends UsuarioRegistrado {
 					if (categoria != null) {
 						categorias.add(categoria);
 					}
-				}
+				}}
 				boolean creado;
 				switch (tipo) {
 
@@ -157,12 +158,13 @@ public class Empleado extends UsuarioRegistrado {
 					throw new TipoProductoDesconocidoException(numLinea, linea, tipo);
 				}
 				if (!creado) {
-					throw new FicheroFormatoInvalidoException("Error interno al crear producto", numLinea, linea);
+					throw new FicheroFormatoInvalidoException(numLinea, linea, "Error interno al crear producto");
 				}
+				return true;
 
-			}
-		} catch (Exception e) {
-			// TODO: handle exception
+			
+		} catch (NumberFormatException e) {
+			throw new FicheroFormatoInvalidoException( numLinea, linea,"Error en formato numérico");
 		}
 	}
 
@@ -357,183 +359,84 @@ public class Empleado extends UsuarioRegistrado {
 	}
 
 	public boolean cargarProductosFicheroTexto(String path) {
+
 		if (!puedeRealizarTarea(TipoPermisos.GESTION_STOCK)) {
 			return false;
 		}
+
 		if (path == null || path.isBlank()) {
-			System.out.println("La ruta no puede estar vacia");
+			System.err.println("La ruta no puede estar vacía");
 			return false;
 		}
-		int productos_nuevos_creados = 0;
-		int productos_actualizados_stock = 0;
-		int numLinea = 0; // 1. Creamos el contador de líneas
+
+		int productosNuevos = 0;
+		int stockActualizado = 0;
+		int numLinea = 0;
 
 		try (BufferedReader br = new BufferedReader(new FileReader(path))) {
+
 			String linea;
-			boolean primeraLiena = true;
+			boolean esCabecera = true;
 
-			while ((linea = br.readLine()) != null) {// leemos el archivo linea por linea. Hasta el final
+			while ((linea = br.readLine()) != null) {
 				numLinea++;
-				// Nos olvidamos de la primera linea. Esa sera el cabecero informativo
-				if (primeraLiena) {
-					primeraLiena = false;
-					continue;
-				}
-				// ignoramos lineas vacias
-				if (linea.isBlank()) {
-					continue;
-				}
-				// Divide la línea en trozos cada vez que encuentra un ";".
-				// El -1 permite que si al final hay campos vacíos, no se ignoren.
-				String[] partes = linea.split(";", -1);
 
-				// El caso en el que menos necesitaremos sera en el que el producto ya exista y
-				// estemos rellenando stock. Necesitaremos tipo de producto id nombre y unidades
-				if (partes.length < 4) {// OMITIMOS ESTA LINEA
-					continue;
-				}
-				String tipo = partes[0].trim().toUpperCase();// Limpiamos los espacios en blanco de despues antes del
-																// separador
-				String id = partes[1].trim();
-				String nombre = partes[2].trim();
-				if (nombre.isBlank()) {
-					// El nombre no puede estar vacio en ningun caso luego se omite la linea
+				if (esCabecera) {
+					esCabecera = false;
 					continue;
 				}
 
-				// Reponer Stock(Id NO vacio) FORMATO Tipo;id;nombre;unidades
-				if (!id.isEmpty()) {
-
-					// Necesitamos 4 campos: TIPO;ID;NOMBRE;UNIDADES
-					if (partes.length < 4) {
-						// ignoramos linea
-						continue;
-					}
-					// comprobamos que existe:
-					ProductoVenta existente = this.buscarProductoPorId(id);
-					if (existente == null) {
-						// Ignoramos la linea
-						continue;
-					}
-					int unidades;
-					try {
-						unidades = Integer.parseInt(partes[3].trim());
-					} catch (NumberFormatException e) {
-						// Saltamos linea
-						continue;
-					}
-					if (unidades <= 0) {
-						// saltamos linea
-						continue;
-					}
-					existente.setStockDisponible(existente.getStockDisponible() + unidades);
-					System.out.println("Stock actualizado: " + existente.getNombre() + ": +" + unidades + " unidades.");
-					productos_actualizados_stock++;
+				if (linea.isBlank())
 					continue;
-				}
 
-				// Para crear cualquier producto, necesitamos los 7 campos base comunes
-				if (partes.length < 7) {
-					System.out.println("Faltan datos base (precio/unidades/cat) para crear: " + nombre);
-					continue;
-				}
 				try {
-					double precio;
-					int unidadesIni;
-					try {
-						precio = Double.parseDouble(partes[4].trim());
-						unidadesIni = Integer.parseInt(partes[5].trim());
-						if (precio <= 0 || unidadesIni < 0)
-							throw new NumberFormatException();
-					} catch (NumberFormatException e) {
-						System.out.println("Precio o unidades inválidos en producto nuevo: " + nombre);
+					String[] partes = linea.split(";", -1);
+
+					if (partes.length < 4) {
+						throw new FicheroFormatoInvalidoException(numLinea, linea, "Columnas insuficientes");
+					}
+
+					String tipo = partes[0].trim().toUpperCase();
+					String id = partes[1].trim();
+					String nombre = partes[2].trim();
+
+					if (nombre.isBlank()) {
+						throw new FicheroFormatoInvalidoException(numLinea, linea, "Nombre vacío");
+					}
+
+					// Caso en el que el id aparece.El producto ya existe luegop actualizamos el
+					// stock
+					if (!id.isEmpty()) {
+						actualizarStockDesdeLinea(id, partes, numLinea, linea);
+						stockActualizado++;
 						continue;
 					}
-					ArrayList<Categoria> categorias = new ArrayList<>();
-					if (!partes[6].isBlank()) {
-						// si hay mas de una las separamos por ,
-						for (String catNombre : partes[6].split(",")) {
-							Categoria c = Tienda.getInstancia().buscarCategoriaPorNombre(catNombre.trim());
-							if (c != null)
-								categorias.add(c);
-						}
+
+					// cuando no aparece el id creamos el producto
+					// Comprobamos que tenga los atributos comunes de todos los productos venta
+					if (partes.length < 7) {
+						throw new FicheroFormatoInvalidoException(numLinea, linea,
+								"Faltan comunes para crear los productos");
 					}
-					try {
 
-					} catch (Exception e) {
-						// TODO: handle exception
+					if (procesarNuevoProducto(tipo, nombre, partes, numLinea, linea)) {
+						productosNuevos++;
 					}
-					ProductoVenta nuevo = null;
-					boolean exito = false;
-					switch (tipo) {
-					case "C": // COMIC
-						// Validamos que la línea llegue al menos hasta la columna 9 (Año)
-						if (partes.length < 10) {
-							// Faltan campos obligatorios para Comic (Págs/Ed/Año)
-							continue;
-						}
 
-						int pags = Integer.parseInt(partes[7].trim());
-						String ed = partes[8].trim();
-						int año = Integer.parseInt(partes[9].trim());
-
-						exito = añadirProducto_nuevo("C", nombre, partes[3].trim(), "", precio, unidadesIni, categorias,
-								pags, ed, año, 0, 0, 0, null, null, 0, 0, 0, 0, null);
-
-						break;
-
-					case "J": // JUEGO DE MESA
-						// Validamos que llegue hasta la columna 14 (Tipo Juego)
-						if (partes.length < 15) {
-							// Faltan campos obligatorios para Juego de Mesa
-							continue;
-						}
-
-						int minJ = Integer.parseInt(partes[10].trim());
-						int maxJ = Integer.parseInt(partes[11].trim());
-						int minE = Integer.parseInt(partes[12].trim());
-						int maxE = Integer.parseInt(partes[13].trim());
-						String tJuego = partes[14].trim();
-						exito = añadirProducto_nuevo("J", nombre, partes[3].trim(), "", precio, unidadesIni, categorias,
-								0, null, 0, 0, 0, 0, null, null, minJ, maxJ, minE, maxE, tJuego);
-						break;
-
-					case "F": // FIGURA
-						// Validamos que llegue hasta la columna 19 (Marca)
-						if (partes.length < 20) {
-							// Faltan campos obligatorios para Figura (Dim/Mat/Marca)
-							continue;
-						}
-
-						double alt = Double.parseDouble(partes[15].trim());
-						double anc = Double.parseDouble(partes[16].trim());
-						double lar = Double.parseDouble(partes[17].trim());
-						String mat = partes[18].trim();
-						String marca = partes[19].trim();
-						exito = añadirProducto_nuevo("F", nombre, partes[3].trim(), "", precio, unidadesIni, categorias,
-								0, null, 0, alt, anc, lar, mat, marca, 0, 0, 0, 0, null);
-
-						break;
-
-					default:
-						System.out.println("Tipo de producto desconocido: " + tipo);
-					}
-					if (exito) {
-						productos_nuevos_creados++;
-					}
-				} catch (NumberFormatException e) {
-					System.out.println("Error de formato numérico en la línea: " + numLinea);
+				} catch (FicheroFormatoInvalidoException e) {
+					System.err.println(e.getMessage());
 				}
-
 			}
-			this.recibirNotificacion("Fichero procesado. Creados: " + productos_nuevos_creados + ", Actualizados: "
-					+ productos_actualizados_stock);
+
+			this.recibirNotificacion("Has añadido productos al sistema desde un fichero de texto. Creados: "
+					+ productosNuevos + ", Actualizados: " + stockActualizado);
+
 			return true;
+
 		} catch (IOException e) {
-			System.out.println("Error al leer el fichero: " + e.getMessage());
+			System.err.println("Error al leer fichero: " + e.getMessage());
 			return false;
 		}
-
 	}
 
 	public boolean prepararPedido(String idPedido) {
