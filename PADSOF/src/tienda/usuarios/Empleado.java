@@ -17,7 +17,6 @@ import java.util.Map;
 
 import javax.print.DocFlavor.STRING;
 
-
 import Excepcion.FicheroFormatoInvalidoException;
 import Excepcion.TipoProductoDesconocidoException;
 import intercambios.*;
@@ -88,11 +87,23 @@ public class Empleado extends UsuarioRegistrado {
 		return null;
 	}
 
-	private void actualizarStockDesdeLinea(String id, String[] partes, int numLinea, String linea)
+	private void actualizarStockDesdeLinea(String tipoProducto, String id, String[] partes, int numLinea, String linea)
 			throws FicheroFormatoInvalidoException {
 		ProductoVenta existente = this.buscarProductoPorId(id);
 		if (existente == null) {
 			throw new FicheroFormatoInvalidoException(numLinea, linea, "No existe ningún producto con ID: " + id);
+		}
+		boolean errorTipo = false;
+		if (tipoProducto.equals("C") && !(existente instanceof Comic))
+			errorTipo = true;
+		else if (tipoProducto.equals("J") && !(existente instanceof JuegoMesa))
+			errorTipo = true;
+		else if (tipoProducto.equals("F") && !(existente instanceof Figura))
+			errorTipo = true;
+
+		if (errorTipo) {
+			throw new FicheroFormatoInvalidoException(numLinea, linea, "ERROR: El producto " + id + " no es de tipo "
+					+ tipoProducto + " (es un " + existente.getClass().getSimpleName() + ")");
 		}
 		try {
 			int unidades = Integer.parseInt(partes[3].trim());
@@ -108,63 +119,81 @@ public class Empleado extends UsuarioRegistrado {
 
 	private boolean procesarNuevoProducto(String tipo, String nombre, String[] partes, int numLinea, String linea)
 			throws FicheroFormatoInvalidoException {
+		// Verificación de longitud total (las 21 columnas)
+		if (partes.length < 21) {
+			throw new FicheroFormatoInvalidoException(numLinea, linea, "Faltan columnas. Deben ser 21.");
+		}
 		try {
-			double precio = Double.parseDouble(partes[4].trim());
-			int unidadesIniciales = Integer.parseInt(partes[5].trim());
+			int unidadesIniciales = Integer.parseInt(partes[3].trim());
+
+			String descripcion = partes[4].trim();
+			String rutaImagen = partes[5].trim();
+			if (rutaImagen.isEmpty())
+				rutaImagen = "default.png";
+
+			double precio = Double.parseDouble(partes[6].trim());
+
 			if (precio <= 0 || unidadesIniciales < 0) {
 				throw new NumberFormatException();
 			}
 			ArrayList<Categoria> categorias = new ArrayList<>();
-			if (!partes[6].isBlank()) {
-				for (String nombreCat : partes[6].split(",")) {
+			if (!partes[7].isBlank()) {
+				for (String nombreCat : partes[7].split(",")) {
 					Categoria categoria = Tienda.getInstancia().buscarCategoriaPorNombre(nombreCat);
 					if (categoria != null) {
 						categorias.add(categoria);
 					}
-				}}
-				boolean creado;
-				switch (tipo) {
-
-				case "C":
-					if (partes.length < 10)
-						throw new FicheroFormatoInvalidoException(numLinea, linea, "Faltan campos Comic");
-
-					creado = añadirProducto_nuevo("C", nombre, partes[3].trim(), "", precio, unidadesIniciales,
-							categorias, Integer.parseInt(partes[7].trim()), partes[8].trim(),
-							Integer.parseInt(partes[9].trim()), 0, 0, 0, null, null, 0, 0, 0, 0, null);
-					break;
-
-				case "J":
-					if (partes.length < 15)
-						throw new FicheroFormatoInvalidoException(numLinea, linea, "Faltan campos Juego");
-
-					creado = añadirProducto_nuevo("J", nombre, partes[3].trim(), "", precio, unidadesIniciales,
-							categorias, 0, null, 0, 0, 0, 0, null, null, Integer.parseInt(partes[10].trim()),
-							Integer.parseInt(partes[11].trim()), Integer.parseInt(partes[12].trim()),
-							Integer.parseInt(partes[13].trim()), partes[14].trim());
-					break;
-
-				case "F":
-					if (partes.length < 20)
-						throw new FicheroFormatoInvalidoException(numLinea, linea, "Faltan campos Figura");
-
-					creado = añadirProducto_nuevo("F", nombre, partes[3].trim(), "", precio, unidadesIniciales,
-							categorias, 0, null, 0, Double.parseDouble(partes[15].trim()),
-							Double.parseDouble(partes[16].trim()), Double.parseDouble(partes[17].trim()),
-							partes[18].trim(), partes[19].trim(), 0, 0, 0, 0, null);
-					break;
-
-				default:
-					throw new TipoProductoDesconocidoException(numLinea, linea, tipo);
 				}
-				if (!creado) {
-					throw new FicheroFormatoInvalidoException(numLinea, linea, "Error interno al crear producto");
-				}
-				return true;
+			}
+			boolean creado;
+			switch (tipo) {
 
-			
+			case "C":
+				if (partes[8].isBlank() || partes[9].isBlank() || partes[10].isBlank()) {
+					throw new FicheroFormatoInvalidoException(numLinea, linea,
+							"Faltan datos obligatorios del Cómic (Páginas, Editorial o Año)");
+				}
+
+				creado = añadirProducto_nuevo("C", nombre, descripcion, rutaImagen, precio, unidadesIniciales,
+						categorias, Integer.parseInt(partes[8].trim()), // numpaginas
+						partes[9].trim(), // editorial
+						Integer.parseInt(partes[10].trim()), // añoPublicacion
+						0, 0, 0, null, null, 0, 0, 0, 0, null);
+				break;
+
+			case "J":
+				if (partes.length < 15)
+					throw new FicheroFormatoInvalidoException(numLinea, linea, "Faltan campos Juego");
+
+				creado = añadirProducto_nuevo("J", nombre, descripcion, rutaImagen, precio, unidadesIniciales,
+						categorias, 0, null, 0, 0, 0, 0, null, null, Integer.parseInt(partes[11].trim()),
+						Integer.parseInt(partes[12].trim()), Integer.parseInt(partes[13].trim()),
+						Integer.parseInt(partes[14].trim()), partes[15].trim());
+				break;
+
+			case "F":
+				if (partes[16].isBlank() || partes[17].isBlank() || partes[18].isBlank() || partes[19].isBlank()
+						|| partes[20].isBlank()) {
+					throw new FicheroFormatoInvalidoException(numLinea, linea,
+							"Faltan datos obligatorios de la Figura (Dimensiones, Material o Marca)");
+				}
+
+				creado = añadirProducto_nuevo("F", nombre, descripcion, rutaImagen, precio, unidadesIniciales,
+						categorias, 0, null, 0, Double.parseDouble(partes[16].trim()),
+						Double.parseDouble(partes[17].trim()), Double.parseDouble(partes[18].trim()), partes[19].trim(),
+						partes[20].trim(), 0, 0, 0, 0, null);
+				break;
+
+			default:
+				throw new TipoProductoDesconocidoException(numLinea, linea, tipo);
+			}
+			if (!creado) {
+				throw new FicheroFormatoInvalidoException(numLinea, linea, "Error interno al crear producto");
+			}
+			return true;
+
 		} catch (NumberFormatException e) {
-			throw new FicheroFormatoInvalidoException( numLinea, linea,"Error en formato numérico");
+			throw new FicheroFormatoInvalidoException(numLinea, linea, "Error en formato numérico");
 		}
 	}
 
@@ -407,7 +436,7 @@ public class Empleado extends UsuarioRegistrado {
 					// Caso en el que el id aparece.El producto ya existe luegop actualizamos el
 					// stock
 					if (!id.isEmpty()) {
-						actualizarStockDesdeLinea(id, partes, numLinea, linea);
+						actualizarStockDesdeLinea(tipo, id, partes, numLinea, linea);
 						stockActualizado++;
 						continue;
 					}

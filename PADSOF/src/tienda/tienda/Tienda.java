@@ -59,7 +59,7 @@ public class Tienda {
 		this.tiempoMaxPago = 0;
 		this.precioValoracion = 10;
 		// El gestor es el primer usuario del sistema, siempre tendrá id USR-1
-		Gestor gestor = new Gestor();
+		Gestor gestor = new Gestor("admin_Gestor", "Admin@1234");
 		this.usuarios.add(gestor);
 		this.usuariosConSesionActiva = new ArrayList<>();
 		this.historialNotificaciones = new ArrayList<>();

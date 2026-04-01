@@ -1,0 +1,7 @@
+TIPO;ID;NOMBRE;UNIDADES;DESCRIPCION;IMAGEN;PRECIO;CATEGORIAS;PAGS;ED;AÑO;MIN_J;MAX_J;MIN_E;MAX_E;ESTILO;ALT;ANC;LAR;MAT;MARCA
+C;;Dragon Ball Vol 1;250;Aventuras de Goku;img/db1.jpg;13.00;manga,aventuras;192;Viz Media;2008;;;;;;;;;;
+J;;Monopoly;30;Juego de mesa clasico;img/monopoly.png;33.50;estrategia,familiar;;;;2;6;8;99;Tablero;;;;;
+F;;Funko Darth Vader;20;Figura de Darth Vader;img/vader.jpg;15.00;funko,cine;;;;;;;;;15.0;15.0;10.0;Vinilo;Funko
+C;PV-1;Dragon Ball Vol 1;50;;;;;;;;;;;;;;;;;
+J;PV-2;Monopoly;10;;;;;;;;;;;;;;;;;
+C;PV-2;Error de Tipo;20;;;;;;;;;;;;;;;;;
