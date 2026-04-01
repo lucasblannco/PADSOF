@@ -17,15 +17,16 @@ import tienda.*;
 
 public class Gestor extends UsuarioRegistrado {
 
-	public Gestor(String nickname, String password) {
-		super(nickname, password);
-
-	}
-
 	private static final String NICKNAME_INICIAL = "admin_Gestor";
 	private static final String PASSWORD_INICIAL = "Admin@1234";
 
 	private MotorEstadistico motorEstadistico;
+
+	public Gestor() {
+		super(NICKNAME_INICIAL, PASSWORD_INICIAL);
+		this.motorEstadistico = new MotorEstadistico();
+		this.sesionIniciada = true;
+	}
 
 	// @Override
 	public void mostrarPanelPrincipal() {

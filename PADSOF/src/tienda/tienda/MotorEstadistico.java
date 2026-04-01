@@ -159,7 +159,7 @@ public class MotorEstadistico {
 	public double calcularIngresosVenta() {
 
 		return calcularIngresosVentaRango(LocalDate.MIN, LocalDate.MAX);
-		;
+		
 	}
 
 	public double calcularIngresosTasacion() {

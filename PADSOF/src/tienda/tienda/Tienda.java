@@ -59,9 +59,10 @@ public class Tienda {
 		this.tiempoMaxPago = 0;
 		this.precioValoracion = 10;
 		// El gestor es el primer usuario del sistema, siempre tendrá id USR-1
-		Gestor gestor = new Gestor("admin_Gestor", "Admin@1234");
+		Gestor gestor = new Gestor();
 		this.usuarios.add(gestor);
 		this.usuariosConSesionActiva = new ArrayList<>();
+		this.usuariosConSesionActiva.add(gestor);
 		this.historialNotificaciones = new ArrayList<>();
 	}
 
@@ -73,6 +74,17 @@ public class Tienda {
 
 	// METODOS GLOBALES
 	// --- añadir cosas
+
+	public Gestor getGestor() {
+		if (usuarios != null && !usuarios.isEmpty()) {
+			UsuarioRegistrado u = usuarios.get(0);
+			if (u instanceof Gestor) {
+				return (Gestor) u;
+			}
+		}
+		System.err.println("Error: No se ha encontrado al Gestor en el sistema.");
+		return null;
+	}
 
 	public boolean existeUsuarioConNickname(String nickname) {
 		if (nickname == null || nickname.isBlank()) {
@@ -87,24 +99,20 @@ public class Tienda {
 		return false;
 	}
 
-	
 	public Cliente buscarCLientePorId(String id) {
-		if (id==null||id.isBlank()) {
+		if (id == null || id.isBlank()) {
 			System.out.println("El id no puede estar vacio");
 			return null;
 		}
 		for (UsuarioRegistrado u : usuarios) {
 			if (u instanceof Cliente && u.getId().equals(id)) {
-				return (Cliente)u;
+				return (Cliente) u;
 			}
 		}
 		System.out.println("No existe ningún cliente con id: " + id);
 		return null;
 	}
-	
-	
-	
-	
+
 	public Cliente buscarClientePorNickname(String nickname) {
 		if (nickname == null || nickname.isBlank()) {
 
@@ -149,14 +157,14 @@ public class Tienda {
 		if (idProducto == null || idProducto.isBlank())
 			return null;
 		try {
-			int numero = Integer.parseInt(idProducto.substring(2)); // "PV5" → 5
+			int numero = Integer.parseInt(idProducto.substring(3)); // "PV-5" → 5
 			int indice = numero - 1; // ids empiezan en 1, luego hay que restar 1 para que los indices empiecen en
 										// 0índices en 0
 			if (indice >= 0 && indice < this.stockVentas.size()) {
 				return stockVentas.get(indice);
 			}
 		} catch (NumberFormatException e) {
-			System.out.println("Formato de id incorrecto: " + idProducto);
+			System.err.println("Formato de id incorrecto: " + idProducto);
 		}
 		return null;
 	}

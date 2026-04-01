@@ -145,6 +145,21 @@ public class Empleado extends UsuarioRegistrado {
 					}
 				}
 			}
+			for (ProductoVenta p : Tienda.getInstancia().getStockVentas()) {
+				// Comprobamos los campos "tontorrones" que harían que sea el mismo producto
+				if (p.getNombre().equalsIgnoreCase(nombre) && p.getPrecioOficial() == precio
+						&& p.getDescripcion().equalsIgnoreCase(descripcion)) {
+
+					// Si además el tipo coincide (Comic, Juego, etc.)
+					if ((tipo.equals("C") && p instanceof Comic) || (tipo.equals("J") && p instanceof JuegoMesa)
+							|| (tipo.equals("F") && p instanceof Figura)) {
+
+						System.err.println("[INFO] Detectado producto idéntico: " + nombre + ". Sumando stock.");
+						p.setStockDisponible(p.getStockDisponible() + unidadesIniciales);
+						return true; // Terminamos aquí, no creamos un nuevo PV-X
+					}
+				}
+			}
 			boolean creado;
 			switch (tipo) {
 
