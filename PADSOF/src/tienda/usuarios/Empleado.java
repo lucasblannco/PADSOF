@@ -7,6 +7,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.lang.invoke.StringConcatFactory;
+import java.rmi.server.UnicastRemoteObject;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,6 +17,8 @@ import java.util.Map;
 
 import javax.print.DocFlavor.STRING;
 
+import Excepcion.FicheroFormatoInvalidoException;
+import Excepcion.TipoProductoDesconocidoException;
 import intercambios.*;
 
 import ventas.*;
@@ -82,6 +85,85 @@ public class Empleado extends UsuarioRegistrado {
 		}
 		System.out.println("No existe ningún pedido con id: " + idPedido);
 		return null;
+	}
+
+	private void actualizarStockDesdeLinea(String id, String[] partes, int numLinea, String linea)
+			throws FicheroFormatoInvalidoException {
+		ProductoVenta existente = this.buscarProductoPorId(id);
+		if (existente == null) {
+			throw new FicheroFormatoInvalidoException(numLinea, linea, "No existe ningún producto con ID: " + id);
+		}
+		try {
+			int unidades = Integer.parseInt(partes[3].trim());
+			if (unidades <= 0) {
+				throw new NumberFormatException();
+			}
+			existente.setStockDisponible(existente.getStockDisponible() + unidades);
+
+		} catch (NumberFormatException e) {
+			throw new FicheroFormatoInvalidoException(numLinea, linea, "Unidades inválidas");
+		}
+	}
+
+	private boolean procesarNuevoProducto(String tipo, String nombre, String[] partes, int numLinea, String linea)
+			throws FicheroFormatoInvalidoException {
+		try {
+			double precio = Double.parseDouble(partes[4].trim());
+			int unidadesIniciales = Integer.parseInt(partes[5].trim());
+			if (precio <= 0 || unidadesIniciales < 0) {
+				throw new NumberFormatException();
+			}
+			ArrayList<Categoria> categorias = new ArrayList<>();
+			if (!partes[6].isBlank()) {
+				for (String nombreCat : partes[6].split(",")) {
+					Categoria categoria = Tienda.getInstancia().buscarCategoriaPorNombre(nombreCat);
+					if (categoria != null) {
+						categorias.add(categoria);
+					}
+				}
+				boolean creado;
+				switch (tipo) {
+
+				case "C":
+					if (partes.length < 10)
+						throw new FicheroFormatoInvalidoException(numLinea, linea, "Faltan campos Comic");
+
+					creado = añadirProducto_nuevo("C", nombre, partes[3].trim(), "", precio, unidadesIniciales,
+							categorias, Integer.parseInt(partes[7].trim()), partes[8].trim(),
+							Integer.parseInt(partes[9].trim()), 0, 0, 0, null, null, 0, 0, 0, 0, null);
+					break;
+
+				case "J":
+					if (partes.length < 15)
+						throw new FicheroFormatoInvalidoException(numLinea, linea, "Faltan campos Juego");
+
+					creado = añadirProducto_nuevo("J", nombre, partes[3].trim(), "", precio, unidadesIniciales,
+							categorias, 0, null, 0, 0, 0, 0, null, null, Integer.parseInt(partes[10].trim()),
+							Integer.parseInt(partes[11].trim()), Integer.parseInt(partes[12].trim()),
+							Integer.parseInt(partes[13].trim()), partes[14].trim());
+					break;
+
+				case "F":
+					if (partes.length < 20)
+						throw new FicheroFormatoInvalidoException(numLinea, linea, "Faltan campos Figura");
+
+					creado = añadirProducto_nuevo("F", nombre, partes[3].trim(), "", precio, unidadesIniciales,
+							categorias, 0, null, 0, Double.parseDouble(partes[15].trim()),
+							Double.parseDouble(partes[16].trim()), Double.parseDouble(partes[17].trim()),
+							partes[18].trim(), partes[19].trim(), 0, 0, 0, 0, null);
+					break;
+
+				default:
+					throw new TipoProductoDesconocidoException(numLinea, linea, tipo);
+				}
+				if (!creado) {
+					throw new FicheroFormatoInvalidoException("Error interno al crear producto", numLinea, linea);
+				}
+
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
 	}
 
 	// si un producto no es aceptado, como borramos ese producto? habria que hacer
@@ -248,7 +330,7 @@ public class Empleado extends UsuarioRegistrado {
 		}
 	}
 
-	public boolean reponerStocProducto(String id, int cantidad) {
+	public boolean reponerStockProducto(String id, int cantidad) {
 		if (!puedeRealizarTarea(TipoPermisos.GESTION_STOCK)) {
 			System.out.println("No tienes permiso para trabajar con productos");
 			return false;
@@ -428,8 +510,8 @@ public class Empleado extends UsuarioRegistrado {
 						double lar = Double.parseDouble(partes[17].trim());
 						String mat = partes[18].trim();
 						String marca = partes[19].trim();
-						exito = añadirProducto_nuevo("F", nombre, partes[3].trim(), "", precio, unidadesIni,
-								categorias, 0, null, 0, alt, anc, lar, mat, marca, 0, 0, 0, 0, null);
+						exito = añadirProducto_nuevo("F", nombre, partes[3].trim(), "", precio, unidadesIni, categorias,
+								0, null, 0, alt, anc, lar, mat, marca, 0, 0, 0, 0, null);
 
 						break;
 

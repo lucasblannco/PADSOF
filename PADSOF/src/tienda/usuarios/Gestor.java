@@ -15,12 +15,11 @@ import productos.Pack;
 import productos.ProductoVenta;
 import tienda.*;
 
-
 public class Gestor extends UsuarioRegistrado {
-	
+
 	public Gestor(String nickname, String password) {
 		super(nickname, password);
-		
+
 	}
 
 	private static final String NICKNAME_INICIAL = "admin_Gestor";
@@ -28,9 +27,7 @@ public class Gestor extends UsuarioRegistrado {
 
 	private MotorEstadistico motorEstadistico;
 
-	
-
-	//@Override
+	// @Override
 	public void mostrarPanelPrincipal() {
 		System.out.println("--- PANEL DE CONTROL DEL GESTOR ---");
 		System.out.println("1. Gestionar Empleados y Permisos");
@@ -145,6 +142,10 @@ public class Gestor extends UsuarioRegistrado {
 		}
 		e.getPermisos().clear();
 		e.setDespedido(true);
+		if (Tienda.getInstancia().getUsuariosConSesionActiva().contains(e)) {
+			e.logout();
+			System.out.println("Se cierra la sesion del empleado " + e.getNickname() + ".");
+		}
 		System.out.println("El empleado " + e.getNickname() + "ha sido despedido de la tienda.");
 		return true;
 	}
@@ -479,34 +480,34 @@ public class Gestor extends UsuarioRegistrado {
 	// ----------------------------------------------------------------
 
 	public List<Cliente> verClientesTopCompras() {
-	    return motorEstadistico.obtenerClientesConMasCompras();
+		return motorEstadistico.obtenerClientesConMasCompras();
 	}
 
 	public List<Cliente> verClientesTopIntercambios() {
-	    return motorEstadistico.obtenerClientesConMasIntercambios();
+		return motorEstadistico.obtenerClientesConMasIntercambios();
 	}
 
 	public List<Cliente> verClientesConMasPedidosCancelados() {
-	    return motorEstadistico.obtenerClientesConMasPedidosCaducados();
+		return motorEstadistico.obtenerClientesConMasPedidosCaducados();
 	}
 
 	public double consultarIngresosRango(LocalDate inicio, LocalDate fin) {
-	    return motorEstadistico.calcularIngresosRangoFechas(inicio, fin);
+		return motorEstadistico.calcularIngresosRangoFechas(inicio, fin);
 	}
 
 	public double[] consultarIngresosPorMeses(int año) {
-	    return motorEstadistico.calcularIngresosMeses(año);
+		return motorEstadistico.calcularIngresosMeses(año);
 	}
 
 	public double[] consultarIngresosPorMesesActual() {
-	    return motorEstadistico.calcularIngresosMeses(LocalDateTime.now().getYear());
+		return motorEstadistico.calcularIngresosMeses(LocalDateTime.now().getYear());
 	}
 
 	public double consultarIngresosVenta() {
-	    return motorEstadistico.calcularIngresosVenta();
+		return motorEstadistico.calcularIngresosVenta();
 	}
 
 	public double consultarIngresosTasacion() {
-	    return motorEstadistico.calcularIngresosTasacion();
+		return motorEstadistico.calcularIngresosTasacion();
 	}
 }
