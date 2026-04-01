@@ -8,27 +8,29 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale.Category;
 
-import com.sun.xml.internal.stream.events.AttributeImpl;
+//import com.sun.xml.internal.stream.events.AttributeImpl;
 import ventas.*;
 import productos.Categoria;
 import productos.Pack;
 import productos.ProductoVenta;
 import tienda.*;
-import tienda.Ventas.Descuento;
+
 
 public class Gestor extends UsuarioRegistrado {
+	
+	public Gestor(String nickname, String password) {
+		super(nickname, password);
+		
+	}
+
 	private static final String NICKNAME_INICIAL = "admin_Gestor";
 	private static final String PASSWORD_INICIAL = "Admin@1234";
 
-	private Estadistica motorEstadistico;
+	private MotorEstadistico motorEstadistico;
 
-	// Lo instancia Tienda al arrancar, nadie más
-	public Gestor() {
-		super(NICKNAME_INICIAL, PASSWORD_INICIAL);
-		this.motorEstadistico = Estadistica.getInstancia();
-	}
+	
 
-	@Override
+	//@Override
 	public void mostrarPanelPrincipal() {
 		System.out.println("--- PANEL DE CONTROL DEL GESTOR ---");
 		System.out.println("1. Gestionar Empleados y Permisos");
