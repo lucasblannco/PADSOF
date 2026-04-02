@@ -130,11 +130,28 @@ public abstract class ProductoVenta extends Producto {
 		return true;
 	}
 
+	
 	@Override
 	public String toString() {
-		return super.toString() + " | Precio: " + this.precioOficial + "€ | Stock: " + this.stockDisponible
-				+ " | Valoración: " + this.getMediaPuntuacion() + " | Categorías: "
-				+ (this.categorias.isEmpty() ? "ninguna" : this.categorias) + " |";
+		String tipo = "Producto";
+	    if (this instanceof Comic) tipo = "CÓMIC";
+	    else if (this instanceof Figura) tipo = "FIGURA";
+	    else if (this instanceof JuegoMesa) tipo = "JUEGO";
+	    else if (this instanceof Pack) tipo = "PACK"; // Por si tienes packs creados
+
+	    String cats = "";
+	    for (Categoria c : categorias) cats += c.getNombre() + " ";
+	    
+	    String valoracion = reseñas.isEmpty() 
+	        ? "Sin reseñas" 
+	        : String.format("%.1f", getMediaPuntuacion()) + "/5";
+	    
+	  
+	    return "[" + tipo + "][" + id + "] " + nombre 
+	        + " | Precio: " + precioOficial + "€"
+	        + " | Stock: " + stockDisponible
+	        + " | Puntuación: " + valoracion
+	        + " | Categorías: " + (cats.isBlank() ? "ninguna" : cats);
 	}
 
 	public double getPrecioOficial() {

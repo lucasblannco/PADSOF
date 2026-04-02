@@ -55,7 +55,7 @@ public class PruebaRecomendador {
 		gestor.darDeAltaEmpleados_Permisos("tasador", "Tasador@1", permisosT);
 		Empleado tasador = tienda.loginEmpleado("tasador", "Tasador@1");
 
-		// ctegorias
+		// categorias
 		Categoria catComics = new Categoria("Comics", "desc");
 		Categoria catFiguras = new Categoria("Figuras", "desc");
 		Categoria catJuegos = new Categoria("Juegos", "desc");
@@ -68,7 +68,7 @@ public class PruebaRecomendador {
 		ArrayList<Categoria> catsFiguras = new ArrayList<>(Arrays.asList(catFiguras));
 		ArrayList<Categoria> catsJuegos = new ArrayList<>(Arrays.asList(catJuegos));
 
-		tasador.añadirProducto_nuevo("C", "Saga Vol.1", "desc", "img", 12.50, 20, catsComics, 200, "Image", 2012, 0, 0,
+		tasador.añadirProducto_nuevo("C", "Saga Vol.1", "desc", "img", 12.50, 20, catsComics, 200, "ANAYA", 2012, 0, 0,
 				0, null, null, 0, 0, 0, 0, null);
 		tasador.añadirProducto_nuevo("C", "Watchmen", "desc", "img", 15.00, 10, catsComics, 400, "DC", 1987, 0, 0, 0,
 				null, null, 0, 0, 0, 0, null);
@@ -79,12 +79,21 @@ public class PruebaRecomendador {
 		tasador.añadirProducto_nuevo("J", "Catan", "desc", "img", 45.00, 12, catsJuegos, 0, null, 0, 0, 0, 0, null,
 				null, 2, 4, 8, 99, "Eurogame");
 
+		
+		
+		
+		//Igual aqui tenemos que meter un to string en el get stockventas?
 		ProductoVenta comic1 = tienda.getStockVentas().get(0);
 		ProductoVenta comic2 = tienda.getStockVentas().get(1);
 		ProductoVenta figura1 = tienda.getStockVentas().get(2);
 		ProductoVenta figura2 = tienda.getStockVentas().get(3);
 		ProductoVenta jm1 = tienda.getStockVentas().get(4);
 
+		System.out.println("COMPROBACION DE QUE LOS PRODUCTOS SE HAN AÑADIDO CORRECTAMENTE A LA TIENDA:");
+		System.out.println("\n=== PRODUCTOS EN LA TIENDA ===");
+		for (ProductoVenta p : tienda.getStockVentas()) {
+		    System.out.println(p);
+		}
 		// clientes se registran y hacen login
 		tienda.registrarNuevoCliente("alice", "Alice@1234", "11111111A");
 		tienda.registrarNuevoCliente("bob", "Bob@1234", "22222222B");

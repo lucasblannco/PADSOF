@@ -8,6 +8,7 @@ import usuarios.Empleado;
 import usuarios.Gestor;
 import usuarios.TipoPermisos;
 import usuarios.UsuarioRegistrado;
+import ventas.Carrito;
 import ventas.Descuento;
 import ventas.Pedido;
 import ventas.Regalo;
