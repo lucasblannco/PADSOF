@@ -37,7 +37,7 @@ public class PruebaRecomendador {
 		Tienda tienda = Tienda.getInstancia();
 		Recomendador rec = tienda.getRecomendador();
 
-		//recordar q el gestor se crea solo, lo buscamos
+		// recordar q el gestor se crea solo, lo buscamos
 		Gestor gestor = null;
 		for (UsuarioRegistrado u : tienda.getUsuarios()) {
 			if (u instanceof Gestor) {
@@ -66,7 +66,7 @@ public class PruebaRecomendador {
 		Figura figura1 = new Figura("Goku SSJ", "desc", "img", 35.00, 15, 20, 15, 12, "PVC", "Bandai");
 		Figura figura2 = new Figura("Link", "desc", "img", 40.00, 8, 18, 12, 10, "PVC", "Nintendo");
 		JuegoMesa jm1 = new JuegoMesa("Catan", "desc", "img", 45.00, 12, 2, 4, 8, 99, "Eurogame");
-		//damos categorias
+		// damos categorias
 		comic1.addCategoria(catComics);
 		comic2.addCategoria(catComics);
 		figura1.addCategoria(catFiguras);
@@ -112,12 +112,12 @@ public class PruebaRecomendador {
 		bob.getHistorialPedidos().add(pb2);
 		tienda.registrarVenta(pb2);
 
-		// carlos sin historial
+		// carlos no hace nada
 
 		/*
-		 * Comprobamos el recomendador por valoracion. Activamos solo ese criterio con
-		 * setPesos(1,0,0). comic1 esta excluido (alice ya lo compro). El primero debe
-		 * ser figura1 con puntuacion 8.0.
+		 * Comprobamos el recomendador por valoracion. setPesos(1,0,0). comic1 esta
+		 * excluido (alice ya lo compro). El primero debe ser figura1 con puntuacion
+		 * 8.0.
 		 */
 		System.out.println("\n============= recomendarPorValoracion =============");
 
@@ -125,8 +125,15 @@ public class PruebaRecomendador {
 		List<ProductoVenta> sugerencias = rec.generarSugerencias(alice);
 
 		check("Devuelve sugerencias no vacias", sugerencias != null && !sugerencias.isEmpty());
-		check("No incluye comic1 (ya comprado por alice)",
-				sugerencias.stream().noneMatch(p -> p.getNombre().equals("Saga Vol.1")));
+		boolean resultado = true;
+
+		for (Producto p : sugerencias) {
+			if (p.getNombre().equals("Saga Vol.1")) {
+				resultado = false;
+				break;
+			}
+		}
+		check("No incluye comic1 (ya comprado por alice)", resultado);
 		check("El primero es figura1 (puntuacion 8.0, la mas alta disponible)",
 				sugerencias.get(0).getNombre().equals("Goku SSJ"));
 		check("No supera el limite maximo", sugerencias.size() <= rec.getLimiteMaximo());
@@ -141,10 +148,25 @@ public class PruebaRecomendador {
 		sugerencias = rec.generarSugerencias(alice);
 
 		check("Devuelve sugerencias no vacias", sugerencias != null && !sugerencias.isEmpty());
-		check("No incluye comic1 (ya comprado por alice)",
-				sugerencias.stream().noneMatch(p -> p.getNombre().equals("Saga Vol.1")));
-		check("Incluye figura1 (bob la compro y tiene comic1 en comun con alice)",
-				sugerencias.stream().anyMatch(p -> p.getNombre().equals("Goku SSJ")));
+		resultado = true;
+
+		for (Producto p : sugerencias) {
+			if (p.getNombre().equals("Saga Vol.1")) {
+				resultado = false;
+				break;
+			}
+		}
+		check("No incluye comic1 (ya comprado por alice)", resultado);
+
+		resultado = false;
+
+		for (Producto p : sugerencias) {
+			if (p.getNombre().equals("Goku SSJ")) {
+				resultado = true;
+				break;
+			}
+		}
+		check("Incluye figura1 (bob la compro y tiene comic1 en comun con alice)", resultado);
 
 		/*
 		 * Comprobamos el recomendador por categorias. Categoria favorita de alice es
@@ -157,20 +179,30 @@ public class PruebaRecomendador {
 		sugerencias = rec.generarSugerencias(alice);
 
 		check("Devuelve sugerencias no vacias", sugerencias != null && !sugerencias.isEmpty());
-		check("Incluye comic2 (misma categoria favorita, no comprado)",
-				sugerencias.stream().anyMatch(p -> p.getNombre().equals("Watchmen")));
-		check("No incluye comic1 (ya comprado)",
-				sugerencias.stream().noneMatch(p -> p.getNombre().equals("Saga Vol.1")));
-		// Reforzamos el peso antes del check por si quedaron restos de la seccion
-		// anterior
-		rec.setPesos(0, 0, 1);
-		sugerencias = rec.generarSugerencias(alice);
-		check("Solo recomienda productos de la categoria Comics",
-				sugerencias.stream().allMatch(p -> p.getCategorias().contains(catComics)));
+		resultado = false;
+
+		for (Producto p : sugerencias) {
+			if (p.getNombre().equals("Watchmen")) {
+				resultado = true;
+				break;
+			}
+		}
+		check("Incluye comic2 (misma categoria favorita, no comprado)", resultado);
+
+		resultado = true;
+
+		for (Producto p : sugerencias) {
+			if (p.getNombre().equals("Saga Vol.1")) {
+				resultado = false;
+				break;
+			}
+		}
+		check("No incluye comic1 (ya comprado)", resultado);
+
+		check("Solo incluye un elemento, comic2", sugerencias.size() == 1);
 
 		/*
-		 * Comprobamos el recomendador ponderado con los tres criterios activos. No debe
-		 * incluir comprados y debe respetar el limite.
+		 * Comprobamos el recomendador con los tres criterios activos.
 		 */
 		System.out.println("\n============= recomendador ponderado =============");
 
@@ -178,17 +210,24 @@ public class PruebaRecomendador {
 		sugerencias = rec.generarSugerencias(alice);
 
 		check("Devuelve sugerencias no vacias", sugerencias != null && !sugerencias.isEmpty());
+		resultado = true;
+
+		for (Producto p : sugerencias) {
+			if (p.getNombre().equals("Saga Vol.1")) {
+				resultado = false;
+				break;
+			}
+		}
 		check("No incluye comic1 (ya comprado)",
-				sugerencias.stream().noneMatch(p -> p.getNombre().equals("Saga Vol.1")));
+				resultado);
 		check("No supera el limite maximo", sugerencias.size() <= rec.getLimiteMaximo());
 
 		/*
-		 * Caso borde: carlos sin historial. El de categorias devuelve vacio (sin
-		 * categoria favorita). El de valoracion devuelve productos normalmente.
+		 * Caso extremo: carlos sin historial.
 		 */
-		System.out.println("\n============= carlos sin historial (caso borde) =============");
+		System.out.println("\n============= carlos sin historial (caso extremo) =============");
 
-		rec.setConfiguracion(rec.getLimiteMaximo(), true); // nos aseguramos de que esta activo
+		rec.setConfiguracion(rec.getLimiteMaximo(), true); 
 		rec.setPesos(0, 0, 1);
 		sugerencias = rec.generarSugerencias(carlos);
 		check("Sin historial, recomendador por categorias devuelve lista vacia", sugerencias.isEmpty());
@@ -197,10 +236,13 @@ public class PruebaRecomendador {
 		sugerencias = rec.generarSugerencias(carlos);
 		check("Sin historial, recomendador por valoracion devuelve productos", !sugerencias.isEmpty());
 		check("Sin historial no hay excluidos, devuelve hasta el limite", sugerencias.size() <= rec.getLimiteMaximo());
+		
+		rec.setPesos(0,1,0);
+		sugerencias = rec.generarSugerencias(carlos);
+		check("Sin historial, recomendador por compras comun devuelve lista vacia",sugerencias.isEmpty());
 
 		/*
-		 * Comprobamos que los productos en el carrito tambien se excluyen. Metemos
-		 * comic2 en el carrito de alice y verificamos que no aparece.
+		 * Comprobamos que los productos en el carrito tambien se excluyen.
 		 */
 		System.out.println("\n============= exclusion por carrito =============");
 
@@ -210,8 +252,16 @@ public class PruebaRecomendador {
 
 		rec.setPesos(1, 0, 0);
 		sugerencias = rec.generarSugerencias(alice);
+		resultado = true;
+
+		for (Producto p : sugerencias) {
+			if (p.getNombre().equals("Watchmen")) {
+				resultado = false;
+				break;
+			}
+		}
 		check("comic2 en carrito no aparece en sugerencias",
-				sugerencias.stream().noneMatch(p -> p.getNombre().equals("Watchmen")));
+				resultado);
 
 		alice.setCarritoActual(null);
 
