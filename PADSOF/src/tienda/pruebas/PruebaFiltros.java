@@ -1,10 +1,10 @@
 package pruebas;
 
-import java.util.*;
+
 import productos.*;
 import tienda.*;
 import usuarios.*;
-import ventas.*;
+
 
 public class PruebaFiltros {
 

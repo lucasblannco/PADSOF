@@ -22,7 +22,7 @@ public class Recomendador {
 			return new ArrayList<>();
 		}
 
-		int candidatos = limiteMaximo * 3; //piede ser q las 3 listas esten llenas, por lo q hay 1 q tener en cuenta 3n candidatos
+		
 		Set<String> excluidos = obtenerIdsExcluidos(cliente);
 		//cogemos toda la informacion
 		List<ProductoVenta> porValoracion = recomendarPorValoracion(cliente, limiteMaximo, excluidos);

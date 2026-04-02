@@ -1,19 +1,9 @@
 package tienda;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
 
-import intercambios.EstadoOferta;
-import intercambios.Oferta;
-import usuarios.Cliente;
-import usuarios.UsuarioRegistrado;
-import ventas.EstadoPedido;
-import ventas.Pedido;
+
+
+
 
 public class Estadistica {
 

@@ -1,4 +1,4 @@
-package Excepcion; // Asegúrate de que el paquete sea el correcto
+package Excepcion;
 
 public class FicheroFormatoInvalidoException extends Exception { 
     private final int numeroLinea;

@@ -120,8 +120,8 @@ public class PruebaProductos {
 		System.out.println("\n RESEÑAS ");
 		Cliente cli = new Cliente("danisaa", "Dani@1234", "11111111D");
 		Cliente cli2 = new Cliente("antoal", "Anto@1234", "22222222A");
-		Reseña r1 = new Reseña(cli, c2, 8.5, "Muy bueno");
-		Reseña r2 = new Reseña(cli2, c2, 6.0, "Regular");
+		 new Reseña(cli, c2, 8.5, "Muy bueno");
+		 new Reseña(cli2, c2, 6.0, "Regular");
 
 		check("c2 tiene 2 reseñas", c2.getReseñas().size() == 2);
 		check("Media puntuación correcta", c2.getMediaPuntuacion() == 7.25);

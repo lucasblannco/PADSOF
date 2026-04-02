@@ -1,7 +1,6 @@
 package pruebas;
 
 import java.util.*;
-import intercambios.*;
 import productos.*;
 import tienda.*;
 import usuarios.*;
@@ -46,11 +45,15 @@ public class PruebaRecomendador {
 			}
 		}
 
+		// el gestor configura los tiempos del sistema (necesario para el carrito)
+		gestor.setTiemposSistema(60, 60, 60);
+
 		// el gestor crea un empleado q pueda tasar
 		List<TipoPermisos> permisosT = new ArrayList<>();
 		permisosT.add(TipoPermisos.VALORACION_PRODUCTOS);
+		permisosT.add(TipoPermisos.GESTION_STOCK);
 		gestor.darDeAltaEmpleados_Permisos("tasador", "Tasador@1", permisosT);
-		Empleado tasador = tienda.obtenerEmpleadosTienda().get(0);
+		Empleado tasador = tienda.loginEmpleado("tasador", "Tasador@1");
 
 		// ctegorias
 		Categoria catComics = new Categoria("Comics", "desc");
@@ -60,31 +63,30 @@ public class PruebaRecomendador {
 		tienda.getCategorias().add(catFiguras);
 		tienda.getCategorias().add(catJuegos);
 
-		// productos
-		Comic comic1 = new Comic("Saga Vol.1", "desc", "img", 12.50, 20, 200, "Image", 2012);
-		Comic comic2 = new Comic("Watchmen", "desc", "img", 15.00, 10, 400, "DC", 1987);
-		Figura figura1 = new Figura("Goku SSJ", "desc", "img", 35.00, 15, 20, 15, 12, "PVC", "Bandai");
-		Figura figura2 = new Figura("Link", "desc", "img", 40.00, 8, 18, 12, 10, "PVC", "Nintendo");
-		JuegoMesa jm1 = new JuegoMesa("Catan", "desc", "img", 45.00, 12, 2, 4, 8, 99, "Eurogame");
-		// damos categorias
-		comic1.addCategoria(catComics);
-		comic2.addCategoria(catComics);
-		figura1.addCategoria(catFiguras);
-		figura2.addCategoria(catFiguras);
-		jm1.addCategoria(catJuegos);
-		tienda.añadirProducto(comic1);
-		tienda.añadirProducto(comic2);
-		tienda.añadirProducto(figura1);
-		tienda.añadirProducto(figura2);
-		tienda.añadirProducto(jm1);
+		// el empleado sube los productos
+		ArrayList<Categoria> catsComics  = new ArrayList<>(Arrays.asList(catComics));
+		ArrayList<Categoria> catsFiguras = new ArrayList<>(Arrays.asList(catFiguras));
+		ArrayList<Categoria> catsJuegos  = new ArrayList<>(Arrays.asList(catJuegos));
 
-		// clientes
-		Cliente alice = new Cliente("alice", "Alice@1234", "11111111A");
-		Cliente bob = new Cliente("bob", "Bob@1234", "22222222B");
-		Cliente carlos = new Cliente("carlos", "Carlos@123", "33333333C");
-		tienda.getUsuarios().add(alice);
-		tienda.getUsuarios().add(bob);
-		tienda.getUsuarios().add(carlos);
+		tasador.añadirProducto_nuevo("C", "Saga Vol.1", "desc", "img", 12.50, 20, catsComics,  200, "Image",   2012, 0, 0, 0, null, null, 0, 0, 0, 0, null);
+		tasador.añadirProducto_nuevo("C", "Watchmen",   "desc", "img", 15.00, 10, catsComics,  400, "DC",      1987, 0, 0, 0, null, null, 0, 0, 0, 0, null);
+		tasador.añadirProducto_nuevo("F", "Goku SSJ",   "desc", "img", 35.00, 15, catsFiguras, 0,   null,      0,    20, 15, 12, "PVC", "Bandai",   0, 0, 0, 0, null);
+		tasador.añadirProducto_nuevo("F", "Link",       "desc", "img", 40.00,  8, catsFiguras, 0,   null,      0,    18, 12, 10, "PVC", "Nintendo", 0, 0, 0, 0, null);
+		tasador.añadirProducto_nuevo("J", "Catan",      "desc", "img", 45.00, 12, catsJuegos,  0,   null,      0,    0,  0,  0,  null,  null,       2, 4, 8, 99, "Eurogame");
+
+		ProductoVenta comic1  = tienda.getStockVentas().get(0);
+		ProductoVenta comic2  = tienda.getStockVentas().get(1);
+		ProductoVenta figura1 = tienda.getStockVentas().get(2);
+		ProductoVenta figura2 = tienda.getStockVentas().get(3);
+		ProductoVenta jm1     = tienda.getStockVentas().get(4);
+
+		// clientes se registran y hacen login
+		tienda.registrarNuevoCliente("alice",  "Alice@1234", "11111111A");
+		tienda.registrarNuevoCliente("bob",    "Bob@1234",   "22222222B");
+		tienda.registrarNuevoCliente("carlos", "Carlos@123", "33333333C");
+		Cliente alice  = tienda.loginCliente("alice",  "Alice@1234");
+		Cliente bob    = tienda.loginCliente("bob",    "Bob@1234");
+		Cliente carlos = tienda.loginCliente("carlos", "Carlos@123");
 
 		// Resenas: comic1=9, comic2=7, figura1=8, figura2=6, jm1=5
 		new Reseña(alice, comic1, 9.0, "Genial");
@@ -94,23 +96,21 @@ public class PruebaRecomendador {
 		new Reseña(carlos, jm1, 5.0, "Pasable");
 
 		// alice compro comic1 -> categoria favorita Comics
-		Carrito ca = new Carrito(alice);
-		ca.añadirProducto(comic1, 1);
-		Pedido pa = new Pedido(alice, ca);
-		alice.getHistorialPedidos().add(pa);
-		tienda.registrarVenta(pa);
+		alice.añadirProductoCarrito(comic1, 1);
+		alice.reservarCarrito();
+		Pedido pa = alice.getHistorialPedidos().get(0);
+		alice.pagarCarrito(pa, "1234567890123456", new java.sql.Date(System.currentTimeMillis() + 100000000L), 123);
 
 		// bob compro comic1 (en comun con alice) y figura1
-		Carrito cb1 = new Carrito(bob);
-		cb1.añadirProducto(comic1, 1);
-		Pedido pb1 = new Pedido(bob, cb1);
-		bob.getHistorialPedidos().add(pb1);
-		tienda.registrarVenta(pb1);
-		Carrito cb2 = new Carrito(bob);
-		cb2.añadirProducto(figura1, 1);
-		Pedido pb2 = new Pedido(bob, cb2);
-		bob.getHistorialPedidos().add(pb2);
-		tienda.registrarVenta(pb2);
+		bob.añadirProductoCarrito(comic1, 1);
+		bob.reservarCarrito();
+		Pedido pb1 = bob.getHistorialPedidos().get(0);
+		bob.pagarCarrito(pb1, "1234567890123456", new java.sql.Date(System.currentTimeMillis() + 100000000L), 123);
+
+		bob.añadirProductoCarrito(figura1, 1);
+		bob.reservarCarrito();
+		Pedido pb2 = bob.getHistorialPedidos().get(1);
+		bob.pagarCarrito(pb2, "1234567890123456", new java.sql.Date(System.currentTimeMillis() + 100000000L), 123);
 
 		// carlos no hace nada
 
@@ -246,9 +246,7 @@ public class PruebaRecomendador {
 		 */
 		System.out.println("\n============= exclusion por carrito =============");
 
-		Carrito carritoAlice = new Carrito(alice);
-		carritoAlice.añadirProducto(comic2, 1);
-		alice.setCarritoActual(carritoAlice);
+		alice.añadirProductoCarrito(comic2, 1);
 
 		rec.setPesos(1, 0, 0);
 		sugerencias = rec.generarSugerencias(alice);

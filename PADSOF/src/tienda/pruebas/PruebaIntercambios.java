@@ -5,7 +5,7 @@ import intercambios.*;
 import productos.*;
 import tienda.*;
 import usuarios.*;
-import ventas.*;
+
 
 public class PruebaIntercambios {
 
@@ -112,8 +112,8 @@ public class PruebaIntercambios {
 
 		// El tasador valora los productos
 		boolean valoradoAlice = p_alice.valorar(20.0, EstadoProducto.MUY_BUENO, tasador);
-		boolean valoradoBob1  = p_bob1.valorar(15.0, EstadoProducto.PERFECTO,   tasador);
-		boolean valoradoBob2  = p_bob2.valorar(12.0, EstadoProducto.USO_LIGERO, tasador);
+		 p_bob1.valorar(15.0, EstadoProducto.PERFECTO,   tasador);
+		 p_bob2.valorar(12.0, EstadoProducto.USO_LIGERO, tasador);
 
 		check("valorar devuelve true si el estado es valido", valoradoAlice);
 		check("tras valorar, el producto tiene valoracion",   p_alice.getValoracion() != null);

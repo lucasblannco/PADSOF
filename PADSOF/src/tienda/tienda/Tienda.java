@@ -1,10 +1,6 @@
 package tienda;
 
-import java.lang.invoke.StringConcatFactory;
-import java.security.PublicKey;
 import java.util.*;
-
-//import com.sun.tools.javac.util.ClientCodeException;
 
 import intercambios.Oferta;
 import usuarios.Cliente;
@@ -12,7 +8,6 @@ import usuarios.Empleado;
 import usuarios.Gestor;
 import usuarios.TipoPermisos;
 import usuarios.UsuarioRegistrado;
-import ventas.Carrito;
 import ventas.Descuento;
 import ventas.Pedido;
 import productos.*;
@@ -36,10 +31,8 @@ public class Tienda {
 	private List<UsuarioRegistrado> usuariosConSesionActiva = new ArrayList<>();
 	private List<Notificacion> historialNotificaciones = new ArrayList<>();
 
-	// private List<Producto2Mano> pendientesTasacion = new ArrayList<>();
 	// esta variable estatica, el constructor privado y el segundo metodo
 	// sirven para asegurar la existencia de una tienda unica y comun.
-
 	private static Tienda instancia;
 
 	private Tienda() {
@@ -115,7 +108,6 @@ public class Tienda {
 
 	public Cliente buscarClientePorNickname(String nickname) {
 		if (nickname == null || nickname.isBlank()) {
-
 			return null;
 		}
 		for (UsuarioRegistrado u : usuarios) {
@@ -130,12 +122,11 @@ public class Tienda {
 	public boolean existeUsuarioConDNI(String dni) {
 		if (dni == null || dni.isBlank())
 			return false;
-
 		for (UsuarioRegistrado u : usuarios) {
 			if (u instanceof Cliente) {
 				Cliente c = (Cliente) u;
 				if (c.getDni().equalsIgnoreCase(dni)) {
-					return true; // DNI ya registrado
+					return true;
 				}
 			}
 		}
@@ -153,18 +144,13 @@ public class Tienda {
 		return productos;
 	}
 
+	// Busca por id iterando la lista — robusto aunque haya huecos en los indices
 	public ProductoVenta buscarProductoVentaPorId(String idProducto) {
 		if (idProducto == null || idProducto.isBlank())
 			return null;
-		try {
-			int numero = Integer.parseInt(idProducto.substring(3)); // "PV-5" → 5
-			int indice = numero - 1; // ids empiezan en 1, luego hay que restar 1 para que los indices empiecen en
-										// 0índices en 0
-			if (indice >= 0 && indice < this.stockVentas.size()) {
-				return stockVentas.get(indice);
-			}
-		} catch (NumberFormatException e) {
-			System.err.println("Formato de id incorrecto: " + idProducto);
+		for (ProductoVenta p : stockVentas) {
+			if (p.getId().equals(idProducto))
+				return p;
 		}
 		return null;
 	}
@@ -204,7 +190,6 @@ public class Tienda {
 			productos.add(productoVenta);
 		}
 		return productos;
-
 	}
 
 	// BuscarSegundaMano
@@ -229,19 +214,13 @@ public class Tienda {
 		return resultado;
 	}
 
+	// Busca por id iterando la lista — robusto aunque haya huecos en los indices
 	public Producto2Mano buscarSegundaManoPorId(String id) {
 		if (id == null || id.isBlank())
 			return null;
-		try {
-			// Los ids de segunda mano empiezan por "P2M"
-			int numero = Integer.parseInt(id.substring(3)); // Cogemos lo que va a partir de la tewrcera letra que ya
-															// sera el numero
-			int indice = numero - 1; // ids empiezan en 1, índices en 0
-			if (indice >= 0 && indice < catalogoIntercambio.size()) {
-				return catalogoIntercambio.get(indice);
-			}
-		} catch (NumberFormatException e) {
-			System.out.println("Formato de id incorrecto: " + id);
+		for (Producto2Mano p : catalogoIntercambio) {
+			if (p.getId().equals(id))
+				return p;
 		}
 		return null;
 	}
@@ -256,8 +235,6 @@ public class Tienda {
 		}
 		return productos;
 	}
-
-	// ver esto porque no se yo si debe ir ahi.
 
 	public List<Producto2Mano> buscarSegundaManoFiltrado(FiltroSegundaMano filtro) {
 		List<Producto2Mano> resultado = new ArrayList<>();
@@ -350,17 +327,19 @@ public class Tienda {
 		return resultado;
 	}
 
+	// Bug corregido: getPreferencias() -> verPreferencias()
 	public void notificarDescuento(Descuento d) {
 		for (Cliente c : obtenerClientesTienda()) {
 			if (c.getPreferencias().debeRecibirNotificacion(TipoNotificacion.DESCUENTO)) {
 				c.recibirNotificacionTipo("Nuevo descuento disponible " + d.getNombre(), TipoNotificacion.DESCUENTO);
 			}
-
 		}
 	}
 
+	// Bug corregido: recibirNotificacion() no existe en Cliente ->
+	// usar recibirNotificacionTipo con tipo obligatorio CONFIRMACION_RESERVA_CARRITO
 	public Cliente registrarNuevoCliente(String nickname, String password, String dni) {
-		if (!dni.matches("\\d{8}[A-Za-z]")) {// Comprobamos que el dni tenga 8 numeros seguidos de una letra
+		if (!dni.matches("\\d{8}[A-Za-z]")) {
 			System.out.println("El DNI no tiene el formato correcto (8 dígitos y 1 letra).");
 			return null;
 		}
@@ -378,8 +357,8 @@ public class Tienda {
 		Cliente nuevo = new Cliente(nickname, password, dni);
 		this.usuarios.add(nuevo);
 		nuevo.recibirNotificacionTipo("¡Bienvenido a CheckPoint, " + nickname
-				+ "!. Te has registrado correctamente, ahora podras consultar nuestra tienda.", TipoNotificacion.SISTEMA);
-		
+				+ "! Te has registrado correctamente, ahora podrás consultar nuestra tienda.",
+				TipoNotificacion.CONFIRMACION_RESERVA_CARRITO);
 		return nuevo;
 	}
 
@@ -419,23 +398,19 @@ public class Tienda {
 				cl.notificarProductoNuevoCategoria("Nuevo producto en " + c.getNombre() + ": " + nuevo.getNombre(),
 						c.getNombre());
 			}
-
 		}
 	}
 
 	public void solicitarTasacion(Producto2Mano p) {
 		this.pendientes_Tasacion.add(p);
-
-		List<Empleado> listaEmpleados = new ArrayList<>();
-		listaEmpleados = this.obtenerEmpleadosTienda();
-		for (Empleado empleado : listaEmpleados) {
+		for (Empleado empleado : this.obtenerEmpleadosTienda()) {
 			if (empleado.tienePermiso(TipoPermisos.VALORACION_PRODUCTOS)) {
 				empleado.recibirNotificacion("Hay un nuevo producto para valorar: " + p.getNombre());
 			}
 		}
 	}
-	// - DESCUENTOS
 
+	// - DESCUENTOS
 	public void agregarDescuento(Descuento d) {
 		this.descuentosActivos.add(d);
 		this.historialDescuentos.add(d);
@@ -451,77 +426,44 @@ public class Tienda {
 		this.descuentosActivos.removeAll(descuentos_finalizados);
 	}
 
-	/*
-	 * public double buscarDescuentoParaProducto(String idProducto) { for (Descuento
-	 * d : descuentosActivos) { if (d.getIdProducto().equals(idProducto) &&
-	 * d.estaActivo()) { return d.getPorcentaje(); } } return 0.0; // Sin descuento
-	 * }
-	 */
-
 	// --- LÓGICA DE INTERCAMBIO
-
-	// añadir producto de segunda mano a la red global
-
-	// Añadimos un producto ya valorado al catalogo de productos de segunda mano.
 	public void publicarParaIntercambio(Producto2Mano p) {
 		if (p.getValoracion() != null && !this.getCatalogoIntercambio().contains(p)) {
 			p.setBloqueado(false);
-			this.catalogoIntercambio.add(p);// Lo añadimos al catalogo de productos de segunda mano
+			this.catalogoIntercambio.add(p);
 		}
 	}
 
-	// buscar productos de segunda mano, pero que no esten bloqueados
-	/*
-	 * public List<Producto2Mano> buscarSegundaMano(String query) {
-	 * List<Producto2Mano> -ultados = new ArrayList<>(); for (Producto2Mano p :
-	 * catalogoIntercambio) { // AHORA FILTRAMOS TAMBIÉN POR VISIBLE if
-	 * (p.isVisible() && !p.isBloqueado() &&
-	 * p.getNombre().toLowerCase().contains(query.toLowerCase())) {
-	 * resultados.add(p); } } return resultados; }
-	 */
-
-	// suponemos que el orden de prioridad es segun se meten a la array
-	/*
-	 * public void aplicarDescuentoPrioritario(Carrito carrito) {
-	 * 
-	 * List<Descuento> listaD = Tienda.getInstancia().getDescuentos() ; for
-	 * (Descuento d : listaD) {
-	 * 
-	 * if (d.estaActivo()) {
-	 * 
-	 * 
-	 * double ahorro = d.calcularDescuento(carrito);
-	 * 
-	 * if (ahorro > 0) {
-	 * 
-	 * carrito.setDescuento(d); carrito.setTotal(ahorro);
-	 * 
-	 * System.out.println("Aplicado descuento: " + d.getNombre()); return; // Este
-	 * 'return' es el que cumple la regla de "No acumulable" } } } }
-	 */
 	// --- GESTIÓN DE VENTAS NUEVAS
-
-	private List<Descuento> getDescuentos() {
-		// TODO Auto-generated method stub
-		return this.descuentosActivos;
-	}
-
 	public void registrarVenta(Pedido pedido) {
 		this.historialVentas.add(pedido);
 	}
 
-	// GETTERS
+	// GETTERS Y SETTERS
 
 	public List<UsuarioRegistrado> getUsuarios() {
 		return usuarios;
 	}
 
+	public void setUsuarios(List<UsuarioRegistrado> usuarios) {
+		this.usuarios = usuarios;
+	}
+
+	// getPendientesTasacion eliminado por ser duplicado de getPendientes_Tasacion
 	public List<Producto2Mano> getPendientesTasacion() {
 		return pendientes_Tasacion;
 	}
 
+	public void setPendientes_Tasacion(List<Producto2Mano> pendientes_Tasacion) {
+		this.pendientes_Tasacion = pendientes_Tasacion;
+	}
+
 	public Recomendador getRecomendador() {
 		return this.recomendador;
+	}
+
+	public void setRecomendador(Recomendador recomendador) {
+		this.recomendador = recomendador;
 	}
 
 	public String getNombre() {
@@ -548,14 +490,6 @@ public class Tienda {
 		this.historialVentas = historialVentas;
 	}
 
-	public List<Producto2Mano> getPendientes_Tasacion() {
-		return pendientes_Tasacion;
-	}
-
-	public void setPendientes_Tasacion(List<Producto2Mano> pendientes_Tasacion) {
-		this.pendientes_Tasacion = pendientes_Tasacion;
-	}
-
 	public List<Descuento> getDescuentosActivos() {
 		return descuentosActivos;
 	}
@@ -578,14 +512,6 @@ public class Tienda {
 
 	public void setCategorias(List<Categoria> categorias) {
 		this.categorias = categorias;
-	}
-
-	public void setUsuarios(List<UsuarioRegistrado> usuarios) {
-		this.usuarios = usuarios;
-	}
-
-	public void setRecomendador(Recomendador recomendador) {
-		this.recomendador = recomendador;
 	}
 
 	public static void setInstancia(Tienda instancia) {

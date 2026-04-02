@@ -1,7 +1,6 @@
 package tienda;
 
-import intercambios.Oferta;
-import ventas.Pago;
+
 
 public enum TipoNotificacion {
 //Obligatorias
