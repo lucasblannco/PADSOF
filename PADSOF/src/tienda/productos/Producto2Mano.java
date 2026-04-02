@@ -89,4 +89,9 @@ public class Producto2Mano extends Producto {
 				+ " | Disponible: " + (!this.bloqueado ? "Sí" : "No") + " |";
 	}
 
+	public Object getEstado() {
+		// TODO Auto-generated method stub
+		return this.valoracion.getEstadoValoracion();
+	}
+
 }
