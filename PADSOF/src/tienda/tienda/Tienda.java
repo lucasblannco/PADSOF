@@ -15,6 +15,7 @@ import usuarios.UsuarioRegistrado;
 import ventas.Carrito;
 import ventas.Descuento;
 import ventas.Pedido;
+import ventas.Regalo;
 import productos.*;
 
 public class Tienda {
@@ -377,8 +378,10 @@ public class Tienda {
 
 		Cliente nuevo = new Cliente(nickname, password, dni);
 		this.usuarios.add(nuevo);
-		nuevo.recibirNotificacion("¡Bienvenido a CheckPoint, " + nickname
-				+ "!. Te has registrado correctamente, ahora podras consultar nuestra tienda.");
+		nuevo.recibirNotificacionTipo(
+				"¡Bienvenido a CheckPoint, " + nickname
+						+ "!. Te has registrado correctamente, ahora podras consultar nuestra tienda.",
+				TipoNotificacion.BIENVENIDA);
 		return nuevo;
 	}
 
@@ -479,25 +482,29 @@ public class Tienda {
 	 * resultados.add(p); } } return resultados; }
 	 */
 
-	// suponemos que el orden de prioridad es segun se meten a la array
-	/*
-	 * public void aplicarDescuentoPrioritario(Carrito carrito) {
-	 * 
-	 * List<Descuento> listaD = Tienda.getInstancia().getDescuentos() ; for
-	 * (Descuento d : listaD) {
-	 * 
-	 * if (d.estaActivo()) {
-	 * 
-	 * 
-	 * double ahorro = d.calcularDescuento(carrito);
-	 * 
-	 * if (ahorro > 0) {
-	 * 
-	 * carrito.setDescuento(d); carrito.setTotal(ahorro);
-	 * 
-	 * System.out.println("Aplicado descuento: " + d.getNombre()); return; // Este
-	 * 'return' es el que cumple la regla de "No acumulable" } } } }
-	 */
+	public void aplicarDescuentoPrioritario(Carrito carrito) {
+		for (Descuento descuento : this.descuentosActivos) {
+			if (!descuento.estaActivo()) {
+				continue;
+			}
+
+			if (descuento instanceof Regalo) {
+				Regalo regalo = (Regalo) descuento;
+				if (regalo.aplicaRegalo(carrito)) {
+					carrito.setDescuentoAplicado(descuento);
+					return;
+				}
+			} else {
+				double totalConDescuento = descuento.aplicarDescuento(carrito);
+				if (totalConDescuento < carrito.calcularSubtotal()) {
+					carrito.setDescuentoAplicado(descuento);
+					return;
+				}
+			}
+		}
+		carrito.setDescuentoAplicado(null);
+	}
+
 	// --- GESTIÓN DE VENTAS NUEVAS
 
 	private List<Descuento> getDescuentos() {

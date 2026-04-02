@@ -26,4 +26,12 @@ public class DescuentoVolumen extends Descuento {
 			return subtotal;
 		return subtotal * (1 - porcentaje);
 	}
+
+	public double getUmbralMinimo() {
+		return umbralMinimo;
+	}
+
+	public double getPorcentaje() {
+		return porcentaje;
+	}
 }

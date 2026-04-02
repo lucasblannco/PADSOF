@@ -39,6 +39,7 @@ public class Carrito {
 			if (l.productoPertence(p)) {
 				l.setCantidad(l.getCantidad() + cantidad);
 				p.setStockDisponible(p.getStockDisponible() - cantidad);
+				Tienda.getInstancia().aplicarDescuentoPrioritario(this);
 				return true;
 			}
 		}
@@ -46,7 +47,20 @@ public class Carrito {
 		LineaCarrito nuevaLinea = new LineaCarrito(p, cantidad);
 		this.lineas.add(nuevaLinea);
 		p.setStockDisponible(p.getStockDisponible() - cantidad);
+		Tienda.getInstancia().aplicarDescuentoPrioritario(this);
 		return true;
+	}
+
+	public double getTotal() {
+		if (this.descuentoAplicado == null) {
+			return calcularSubtotal();
+		}
+
+		if (this.descuentoAplicado instanceof Regalo) {
+			return calcularSubtotal();
+		}
+
+		return this.descuentoAplicado.aplicarDescuento(this);
 	}
 
 	public boolean eliminarProducto(ProductoVenta p) {
@@ -71,6 +85,7 @@ public class Carrito {
 
 		if (lineaAEliminar != null) {
 			this.lineas.remove(lineaAEliminar);
+			Tienda.getInstancia().aplicarDescuentoPrioritario(this);
 			return true;
 		}
 
@@ -102,6 +117,7 @@ public class Carrito {
 
 				p.setStockDisponible(p.getStockDisponible() - diferencia);
 				l.setCantidad(nuevaCantidad);
+				Tienda.getInstancia().aplicarDescuentoPrioritario(this);
 				return true;
 			}
 		}
@@ -115,6 +131,7 @@ public class Carrito {
 			p.setStockDisponible(p.getStockDisponible() + l.getCantidad());
 		}
 		this.lineas.clear();
+		this.descuentoAplicado = null;
 	}
 
 	public double calcularSubtotal() {
@@ -125,16 +142,6 @@ public class Carrito {
 		}
 
 		return suma;
-	}
-
-	public double getTotal() {
-		// Primero aplicamos el descuento prioritario de la tienda
-		Tienda.getInstancia().aplicarDescuentoPrioritario(this);
-
-		if (this.descuentoAplicado != null) {
-			return this.descuentoAplicado.aplicarDescuento(this);
-		}
-		return calcularSubtotal();
 	}
 
 	public boolean estaCaducado() {
@@ -169,8 +176,8 @@ public class Carrito {
 		return this.descuentoAplicado;
 	}
 
-	public void setDescuentoAplicado(Descuento descuentoAplicado) {
-		this.descuentoAplicado = descuentoAplicado;
+	public void setDescuentoAplicado(Descuento descuento) {
+		this.descuentoAplicado = descuento;
 	}
 
 	public boolean estaVacio() {

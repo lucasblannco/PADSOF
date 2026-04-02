@@ -43,6 +43,7 @@ public abstract class Descuento {
 	public void setFechaFin(LocalDateTime fechaFin) {
 		this.fechaFin = fechaFin;
 	}
+
 	public String getId() {
 		return this.id;
 	}
