@@ -9,11 +9,8 @@ import java.io.FileReader;
 import java.security.PublicKey;
 import java.util.ArrayList;
 
-import tienda.Tienda;
-import tienda.Estadistica;
-import tienda.FiltroSegundaMano;
-import tienda.FiltroVenta;
-import tienda.Productos.*;
+import tienda.*;
+
 
 public abstract class UsuarioRegistrado {
 
@@ -144,6 +141,11 @@ public abstract class UsuarioRegistrado {
 
 	public void setSesionIniciada(boolean sesionIniciada) {
 		this.sesionIniciada = sesionIniciada;
+	}
+
+	public void mostrarPanelPrincipal() {
+		return;
+		
 	}
 
 }

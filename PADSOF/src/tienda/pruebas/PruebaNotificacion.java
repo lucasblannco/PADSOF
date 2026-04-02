@@ -116,7 +116,7 @@ public class PruebaNotificacion {
 		 */
 		System.out.println("\n============= PreferenciaNotificacion =============");
 
-		PreferenciaNotificacion pref = alice.verPreferencias();
+		PreferenciaNotificacion pref = alice.getPreferencias();
 
 		// Obligatorias siempre devuelven true
 		check("CODIGO_RECOGIDA es obligatoria",    pref.debeRecibirNotificacion(TipoNotificacion.CODIGO_RECOGIDA));
