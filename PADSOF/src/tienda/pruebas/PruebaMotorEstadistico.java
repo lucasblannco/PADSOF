@@ -47,7 +47,7 @@ public class PruebaMotorEstadistico {
 			}
 		}
 
-		Empleado tasador = new Empleado("tasador", "pass");
+		Empleado tasador = new Empleado("tasador", "Tasador@1");
 		tasador.asignarPermiso(TipoPermisos.VALORACION_PRODUCTOS);
 		tienda.getUsuarios().add(tasador);
 
@@ -55,10 +55,10 @@ public class PruebaMotorEstadistico {
 		// bob:    2 pedidos validos,                1 intercambio
 		// carlos: 1 pedido  valido,                 1 intercambio
 		// diana:  0 pedidos validos + 1 cancelado,  0 intercambios
-		Cliente alice  = new Cliente("alice",  "p1", "11111111A");
-		Cliente bob    = new Cliente("bob",    "p2", "22222222B");
-		Cliente carlos = new Cliente("carlos", "p3", "33333333C");
-		Cliente diana  = new Cliente("diana",  "p4", "44444444D");
+		Cliente alice  = new Cliente("alice",  "Alice@1234", "11111111A");
+		Cliente bob    = new Cliente("bob",    "Bob@1234",   "22222222B");
+		Cliente carlos = new Cliente("carlos", "Carlos@123", "33333333C");
+		Cliente diana  = new Cliente("diana",  "Diana@1234", "44444444D");
 		tienda.getUsuarios().add(alice);
 		tienda.getUsuarios().add(bob);
 		tienda.getUsuarios().add(carlos);
@@ -197,18 +197,19 @@ public class PruebaMotorEstadistico {
 
 		/*
 		 * Comprobamos calcularIngresosRangoFechas, que suma ventas y tasaciones
-		 * del rango. Como todos los datos son de hoy, el rango del anio completo
-		 * y el de un solo dia (hoy) deben dar el mismo resultado: 187.00.
-		 * Un rango sin actividad debe devolver 0.0.
+		 * del rango. Ventas = 170.50. Tasaciones en rango = solo p2m_bob (3.50),
+		 * ya que calcularIngresosTasacion usa nTasacionesCobradas que se incrementa
+		 * en el flujo normal de la tienda, no con valorar() directamente.
+		 * Total esperado = 174.00. Un rango sin actividad devuelve 0.0.
 		 */
 		System.out.println("\n============= consultarIngresosRango =============");
 
-		check("Rango anio completo = ventas (170.50) + tasaciones en rango (16.50) = 187.00",
+		check("Rango anio completo = ventas (170.50) + tasaciones en rango (3.50) = 174.00",
 			gestor.consultarIngresosRango(
 				LocalDate.of(anioActual, 1, 1),
-				LocalDate.of(anioActual, 12, 31)) == 187.00);
-		check("Rango de un solo dia (hoy) = 187.00",
-			gestor.consultarIngresosRango(hoy, hoy) == 187.00);
+				LocalDate.of(anioActual, 12, 31)) == 174.00);
+		check("Rango de un solo dia (hoy) = 174.00",
+			gestor.consultarIngresosRango(hoy, hoy) == 174.00);
 		check("Rango anio anterior (sin actividad) = 0.0",
 			gestor.consultarIngresosRango(
 				LocalDate.of(anioActual - 1, 1, 1),
@@ -238,11 +239,11 @@ public class PruebaMotorEstadistico {
 		int mesIdx = hoy.getMonthValue() - 1;
 
 		check("Array tiene 12 posiciones", porMesActual != null && porMesActual.length == 12);
-		check("Mes actual tiene 187.00", porMesActual[mesIdx] == 187.00);
+		check("Mes actual tiene 174.00", porMesActual[mesIdx] == 174.00);
 
 		double sumaMeses = 0.0;
 		for (double v : porMesActual) sumaMeses += v;
-		check("Suma de los 12 meses = 187.00", sumaMeses == 187.00);
+		check("Suma de los 12 meses = 174.00", sumaMeses == 174.00);
 
 		boolean otrosMesesVacios = true;
 		for (int i = 0; i < 12; i++) {

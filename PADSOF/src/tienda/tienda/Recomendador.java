@@ -168,6 +168,7 @@ public class Recomendador {
 	// peso * (n-i)
 	private void acumularPuntuaciones(List<ProductoVenta> lista, double peso, Map<String, Double> puntuaciones,
 			Map<String, ProductoVenta> porId) {
+		if(peso==0) return; //si no tiene peso, ni lo tneeeeeeeenemos en cuenta
 		int n = lista.size();
 		for (int i = 0; i < n; i++) {
 			ProductoVenta p = lista.get(i);

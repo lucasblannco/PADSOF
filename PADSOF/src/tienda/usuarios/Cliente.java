@@ -37,6 +37,7 @@ public class Cliente extends UsuarioRegistrado {
 		this.historialPedidos = new ArrayList<>();
 		this.carteraIntercambio = new ArrayList<>();
 		this.ofertasPendientes = new ArrayList<>();
+		this.historialIntercambios = new ArrayList<>();
 		this.reseñas = new ArrayList<>();
 		this.preferencias = new PreferenciaNotificacion();
 		this.notificaciones = new ArrayList<>();

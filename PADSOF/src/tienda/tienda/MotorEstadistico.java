@@ -148,10 +148,11 @@ public class MotorEstadistico {
 
 		double total = 0.0;
 		for (Pedido p : tienda.getHistorialVentas()) {
-			LocalDate fechaPedido = p.getFechaCreacion().toLocalDate();
-			if (!fechaPedido.isBefore(inicio) && !fechaPedido.isAfter(fin)) {
-				total += p.getTotal();
-			}
+		    if (p.getEstado() == EstadoPedido.CANCELADO) continue;//confirmamos q el pedido se realizo
+		    LocalDate fechaPedido = p.getFechaCreacion().toLocalDate();
+		    if (!fechaPedido.isBefore(inicio) && !fechaPedido.isAfter(fin)) {
+		        total += p.getTotal();
+		    }
 		}
 		return total;
 	}

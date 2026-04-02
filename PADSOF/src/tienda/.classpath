@@ -6,6 +6,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry excluding="Ventas/" kind="src" path=""/>
-	<classpathentry kind="lib" path="/home/dani/Descargas/TeleChargeAndPaySystem8.jar"/>
+	<classpathentry kind="lib" path="/home/antonino/eclipse-workspace/PADSOF/PADSOF/src/TeleChargeAndPaySystem8.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

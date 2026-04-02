@@ -64,7 +64,7 @@ public class Pedido {
 			this.lineas.add(new LineaPedido(producto, cantidad, precioUnitarioFijado));
 		}
 
-		this.total = recalcularTotal();
+		this.total = recalcularTotal(carrito);
 
 		if (carrito.getDescuentoAplicado() instanceof Regalo) {
 			Regalo regalo = (Regalo) carrito.getDescuentoAplicado();
@@ -76,15 +76,15 @@ public class Pedido {
 		}
 	}
 
-	private double recalcularTotal() {
+	private double recalcularTotal(Carrito carrito) {
 		double suma = 0.0;
 
 		for (LineaPedido linea : this.lineas) {
 			suma += linea.getSubtotal();
 		}
 
-		if (this.descuentoAplicado != null) {
-			suma = this.descuentoAplicado.aplicarDescuento(suma);
+		if (this.descuentoAplicado != null && carrito !=null) {
+			suma = this.descuentoAplicado.aplicarDescuento(carrito);
 		}
 
 		return suma;
@@ -232,7 +232,7 @@ public class Pedido {
 		}
 
 		this.descuentoAplicado = descuentoAplicado;
-		this.total = recalcularTotal();
+		this.total = recalcularTotal(null);
 		return true;
 	}
 

@@ -1,10 +1,11 @@
-package tienda;
+package pruebas;
 
 import java.util.List;
 
 import productos.Producto;
 import productos.ProductoVenta;
-
+import tienda.Notificacion;
+import tienda.Tienda;
 import usuarios.*;
 
 public class pruebaFinalFicheros {
