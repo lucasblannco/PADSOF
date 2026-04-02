@@ -27,7 +27,7 @@ public class PruebaEmpleadoSubirProductoNuevo {
 		tienda.getCategorias().add(catFantasia);
 
 		
-		Empleado e1 = new Empleado("paco", "1234", "paco@gmail.com");
+		Empleado e1 = new Empleado("paco", "1234");
 		tienda.getUsuarios().add(e1);
 		e1.asignarPermiso(TipoPermisos.GESTION_STOCK);
 

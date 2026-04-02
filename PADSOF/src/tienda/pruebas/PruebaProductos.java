@@ -32,7 +32,7 @@ public class PruebaProductos {
 		 * producto venta y producto segunda mano.
 		 */
 		System.out.println("\n PRUEBA IDS UNICOS");
-		Cliente usuario = new Cliente("lucasblannco", "1234");
+		Cliente usuario = new Cliente("lucasblannco", "Lucas@1234", "00000000L");
 		Comic c1 = new Comic("ObjetpVenta1", "descripcion1", "imagen1", 20, 10, 200, "Alfaguara", 2020);
 		Comic c2 = new Comic("ObjetoVenta2", "descripcion2", "imagen2", 10, 5, 150, "Santillana", 2016);
 		Comic c3 = new Comic("ObjetoVenta3", "descripcion3", "imagen3", 15, 8, 180, "Santillana", 2018);
@@ -77,16 +77,16 @@ public class PruebaProductos {
 		c1.setStockDisponible(-5);
 		check("Stock negativo de c1 ignorado", c1.getStockDisponible() == 10);
 
-		pk.addProducto(c1);
-		pk.addProducto(c3);
-		check("Añadir null al pack falla", !pk.addProducto(null));
-		check("Añadir duplicado falla", !pk.addProducto(c1));
+		pk.addProducto_conunaUnidad(c1);
+		pk.addProducto_conunaUnidad(c3);
+		check("Añadir null al pack falla", !pk.addProducto_conunaUnidad(null));
+		check("Añadir duplicado falla", !pk.addProducto_conunaUnidad(c1));
 
 		check("El pack pequeño contiene c1", pk.contieneProducto(c1));
 
 		check("Stock de c1 baja de 10 a 7", c1.getStockDisponible() == 7);
 
-		check("Precio c1 es 20€", c1.getPrecioVenta() == 20);
+		check("Precio c1 es 20€", c1.getPrecioOficial() == 20);
 		check("Suma productos del pack pequeño = 35", pk.calcularSumaProductos() == 35);
 		check("Precio final del pack pequeño = 0", pk.calcularPrecioFinal() == 0);
 
@@ -94,14 +94,14 @@ public class PruebaProductos {
 		check("Permite cambiar precio del pack pequeño a 25", pk.setPrecioOficial(25));
 		check("Precio final del pack pequeño = 25", pk.calcularPrecioFinal() == 25);
 
-		pack.addProducto(c2);
-		pack.addProducto(j1);
+		pack.addProducto_conunaUnidad(c2);
+		pack.addProducto_conunaUnidad(j1);
 		check("Suma productos del pack interior = 50", pack.calcularSumaProductos() == 50);
 		check("Permite cambiar precio del pack interior a 45", pack.setPrecioOficial(45));
 		check("Precio final del pack interior = 45", pack.calcularPrecioFinal() == 45);
 		check("Stock de j1 baja de 3 a 1", j1.getStockDisponible() == 1);
 
-		pk.addProducto(pack);
+		pk.addProducto_conunaUnidad(pack);
 		check("Precio final del pack pequeño sigue siendo 25", pk.calcularPrecioFinal() == 25);
 
 		/*
@@ -118,8 +118,8 @@ public class PruebaProductos {
 		 * cliente no puede reseñar el mismo objeto más de una vez.
 		 */
 		System.out.println("\n RESEÑAS ");
-		Cliente cli = new Cliente("danisaa", "1234");
-		Cliente cli2 = new Cliente("antoal", "1234");
+		Cliente cli = new Cliente("danisaa", "Dani@1234", "11111111D");
+		Cliente cli2 = new Cliente("antoal", "Anto@1234", "22222222A");
 		Reseña r1 = new Reseña(cli, c2, 8.5, "Muy bueno");
 		Reseña r2 = new Reseña(cli2, c2, 6.0, "Regular");
 
@@ -136,7 +136,7 @@ public class PruebaProductos {
 		/* Miramos si los estados de segunda mano funciona el paso de uno a otro o no */
 		System.out.println("\n============= SEGUNDA MANO =============");
 
-		Empleado emp = new Empleado("ana", "pass");
+		Empleado emp = new Empleado("ana", "Ana@1234");
 		Producto2Mano p2m = new Producto2Mano("ProductoSegunda1", "desc", "", null, cli, true, false);
 
 		check("Producto bloqueado al principio", p2m.isBloqueado());

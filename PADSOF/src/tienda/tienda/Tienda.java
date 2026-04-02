@@ -377,8 +377,9 @@ public class Tienda {
 
 		Cliente nuevo = new Cliente(nickname, password, dni);
 		this.usuarios.add(nuevo);
-		nuevo.recibirNotificacion("¡Bienvenido a CheckPoint, " + nickname
-				+ "!. Te has registrado correctamente, ahora podras consultar nuestra tienda.");
+		nuevo.recibirNotificacionTipo("¡Bienvenido a CheckPoint, " + nickname
+				+ "!. Te has registrado correctamente, ahora podras consultar nuestra tienda.", TipoNotificacion.SISTEMA);
+		
 		return nuevo;
 	}
 

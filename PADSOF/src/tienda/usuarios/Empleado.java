@@ -47,6 +47,31 @@ public class Empleado extends UsuarioRegistrado {
 
 	@Override
 	public void mostrarPanelPrincipal() {
+		int i = 5;
+	    System.out.println("--- PANEL DE CONTROL: EMPLEADO ---");
+	
+	    System.out.println("1. Gestionar Inventario (Añadir/Modificar productos)");
+	    System.out.println("2. Tramitar Pedidos Pendientes");
+	    
+	    System.out.println("3. Marcar Pedido como Entregado (Recogida en tienda)");
+	    
+	   
+	    System.out.println("4. Generar Informe de Ventas Mensual");
+	    if (this.permisos.contains(TipoPermisos.VALORACION_PRODUCTOS)) {
+	        System.out.println(i+". Tasación de Productos (Peticiones de clientes)");
+	        	i++;
+	    }
+	    
+	   
+	    if (this.permisos.contains(TipoPermisos.CONFIRMACION_INTERCAMBIO)) {
+	        System.out.println(i+". Confirmar Intercambios Acordados");
+	        i++;
+	    }
+	    
+	
+	    
+	    System.out.println(i+". Cerrar Sesión");
+	   
 	}
 
 	private boolean puedeRealizarTarea(TipoPermisos permiso) {

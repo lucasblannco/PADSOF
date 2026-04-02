@@ -15,7 +15,7 @@ public class pruebaCategoriasProductos {
         Tienda tienda = Tienda.getInstancia();
 
         // Crear empleado con permisos
-        Empleado emp = new Empleado("juan", "1234", "juan@checkpoint.es");
+        Empleado emp = new Empleado("juan", "1234");
         emp.asignarPermiso(TipoPermisos.GESTION_STOCK);
         emp.asignarPermiso(TipoPermisos.GESTION_CATEGORIAS);
 
@@ -52,26 +52,26 @@ public class pruebaCategoriasProductos {
 
         // Añadir a categoría
         System.out.println("\n=== AÑADIR PRODUCTO A CATEGORÍA YA ASIGNADA (debe fallar) ");
-        System.out.println("Añadir Spiderman a Comics (ya está): " + emp.añadirProductoACategoria(spiderman, catComics)); // false
+        System.out.println("Añadir Spiderman a Comics (ya está): " + emp.añadirProductoACategoria(spiderman.getId(), catComics.getNombre())); // false
 
         System.out.println("\n=== AÑADIR PRODUCTO A OTRA CATEGORÍA (debe funcionar) ===");
         System.out.println("Añadir Spiderman a Juegos: "); // true
-        if (emp.añadirProductoACategoria(spiderman, catJuegos)) {
+        if (emp.añadirProductoACategoria(spiderman.getId(), catJuegos.getNombre())) {
 			System.out.println("Se ha añadido correctamente");
 		}
         System.out.println("\n CASOS DE ERROR(nulls)");
-        System.out.println("Añadir null a Comics: " + emp.añadirProductoACategoria(null, catComics)); // false, null
+        System.out.println("Añadir null a Comics: " + emp.añadirProductoACategoria(null, catComics.getNombre())); // false, null
         System.out.println("creamos una categoria pero no la añadimos a la tienda");
         Categoria catFalsa = new Categoria("Falsa", "No existe en tienda");
-        System.out.println("Añadir Catan a categoría que no existe: " + emp.añadirProductoACategoria(catan, catFalsa)); // false
+        System.out.println("Añadir Catan a categoría que no existe: " + emp.añadirProductoACategoria(catan.getId(), catFalsa.getNombre())); // false
 
-        Empleado empSinPermiso = new Empleado("pedro", "5678", "pedro@checkpoint.es");
-        System.out.println("Empleado sin permiso añade producto: " + empSinPermiso.añadirProductoACategoria(catan, catJuegos)); // false
+        Empleado empSinPermiso = new Empleado("pedro", "5678");
+        System.out.println("Empleado sin permiso añade producto: " + empSinPermiso.añadirProductoACategoria(catan.getId(), catJuegos.getNombre())); // false
 
       
         System.out.println("\n ELIMINAR PRODUCTO DE CATEGORÍA ");
-        System.out.println("Eliminar Spiderman de Juegos: " + emp.eliminarProductoDeCategoria(spiderman, catJuegos)); // true
-        System.out.println("Eliminar Spiderman de Juegos otra vez (ya no está): " + emp.eliminarProductoDeCategoria(spiderman, catJuegos)); // false
+        System.out.println("Eliminar Spiderman de Juegos: " + emp.eliminarProductoDeCategoria(spiderman.getId(), catJuegos.getNombre())); // true
+        System.out.println("Eliminar Spiderman de Juegos otra vez (ya no está): " + emp.eliminarProductoDeCategoria(spiderman.getId(), catJuegos.getNombre())); // false
   
     }
 }

@@ -21,7 +21,7 @@ public class LineaPack {
 	}
 
 	public double getSubtotal() {
-		return producto.getPrecioVenta() * unidades;
+		return producto.getPrecioOficial() * unidades;
 	}
 
 	public void setUnidades(int nuevasUnidades) {

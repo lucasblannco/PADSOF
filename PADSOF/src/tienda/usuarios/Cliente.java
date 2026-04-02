@@ -455,7 +455,7 @@ public class Cliente extends UsuarioRegistrado {
 		return this.preferencias.eliminarCategoriaInteres(nombreCategoria);
 	}
 
-	public PreferenciaNotificacion verPreferencias() {
+	public PreferenciaNotificacion getPreferencias() {
 		return preferencias;
 	}
 

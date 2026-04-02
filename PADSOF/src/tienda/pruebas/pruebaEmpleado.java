@@ -15,7 +15,7 @@ public class pruebaEmpleado {
 
         Tienda tienda = Tienda.getInstancia();
 
-        Empleado emp = new Empleado("juan", "1234", "juan@checkpoint.es");
+        Empleado emp = new Empleado("juan", "Juan@1234");
         emp.asignarPermiso(TipoPermisos.GESTION_STOCK);
         emp.asignarPermiso(TipoPermisos.GESTION_CATEGORIAS);
         emp.asignarPermiso(TipoPermisos.GESTION_PEDIDOS);
@@ -57,32 +57,32 @@ public class pruebaEmpleado {
         System.out.println("\n PRUEBA GESTIÓN DE CATEGORÍAS ");
         // =============================================
         ProductoVenta spiderman = tienda.getStockVentas().get(0);
-        resultado = emp.añadirProductoACategoria(spiderman, catJuegos);
+        resultado = emp.añadirProductoACategoria(spiderman.getId(), catJuegos.getNombre());
         if (resultado) {
             System.out.println("Spiderman añadido a Juegos correctamente");
         } else {
             System.out.println("Error al añadir Spiderman a Juegos");
         }
 
-        resultado = emp.añadirProductoACategoria(spiderman, catJuegos);
+        resultado = emp.añadirProductoACategoria(spiderman.getId(), catJuegos.getNombre());
         if (!resultado) {
             System.out.println("No se puede añadir un producto que ya está en la categoría, comportamiento correcto");
         }
 
-        resultado = emp.eliminarProductoDeCategoria(spiderman, catJuegos);
+        resultado = emp.eliminarProductoDeCategoria(spiderman.getId(), catJuegos.getNombre());
         if (resultado) {
             System.out.println("Spiderman eliminado de Juegos correctamente");
         } else {
             System.out.println("Error al eliminar Spiderman de Juegos");
         }
 
-        resultado = emp.eliminarProductoDeCategoria(spiderman, catJuegos);
+        resultado = emp.eliminarProductoDeCategoria(spiderman.getId(), catJuegos.getNombre());
         if (!resultado) {
             System.out.println("No se puede eliminar un producto que no está en la categoría, comportamiento correcto");
         }
 
-        Empleado empSinPermiso = new Empleado("pedro", "5678", "pedro@checkpoint.es");
-        resultado = empSinPermiso.añadirProductoACategoria(spiderman, catComics);
+        Empleado empSinPermiso = new Empleado("pedro", "Pedro@5678");
+        resultado = empSinPermiso.añadirProductoACategoria(spiderman.getId(), catComics.getNombre());
         if (!resultado) {
             System.out.println("Un empleado sin permiso no puede gestionar categorías, comportamiento correcto");
         }
@@ -91,19 +91,19 @@ public class pruebaEmpleado {
         System.out.println("\n PRUEBA AÑADIR UNIDADES ");
         // =============================================
 
-        resultado = emp.añadirUnidadesProductoExistente(spiderman.getId(), 5);
+        resultado = emp.reponerStockProducto(spiderman.getId(), 5);
         if (resultado) {
             System.out.println("Añadidas 5 unidades a Spiderman correctamente, stock actual: " + tienda.getStockVentas().get(0).getStockDisponible());
         } else {
             System.out.println("Error al añadir unidades");
         }
 
-        resultado = emp.añadirUnidadesProductoExistente(spiderman.getId(), -1);
+        resultado = emp.reponerStockProducto(spiderman.getId(), -1);
         if (!resultado) {
             System.out.println("No se pueden añadir unidades negativas, comportamiento correcto");
         }
 
-        resultado = emp.añadirUnidadesProductoExistente("ID_FALSO", 5);
+        resultado = emp.reponerStockProducto("ID_FALSO", 5);
         if (!resultado) {
             System.out.println("No se pueden añadir unidades a un producto que no existe, comportamiento correcto");
         }
