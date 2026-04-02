@@ -1,6 +1,9 @@
 package tienda;
 
 import java.util.*;
+
+import Excepcion.PesosInvalidosException;
+import Excepcion.RecomendadorNoActivoException;
 import productos.*;
 import usuarios.*;
 import ventas.*;
@@ -17,10 +20,16 @@ public class Recomendador {
 
 	
 
-	public List<ProductoVenta> generarSugerencias(Cliente cliente) {
-		if (!activo || cliente == null) {
+	public List<ProductoVenta> generarSugerencias(Cliente cliente) throws RecomendadorNoActivoException  {
+		if (!activo) {
+	        throw new RecomendadorNoActivoException();
+	    }
+		
+		if ( cliente == null) {
 			return new ArrayList<>();
 		}
+		
+		
 
 		
 		Set<String> excluidos = obtenerIdsExcluidos(cliente);
@@ -189,11 +198,10 @@ public class Recomendador {
 	}
 
 	
-	public void setPesos(double pesoValoracion, double pesoCompras, double pesoCategorias) {
-		if (pesoValoracion < 0 || pesoCompras < 0 || pesoCategorias < 0) {
-			System.out.println("Los pesos no pueden ser negativos.");
-			return;
-		}
+	public void setPesos(double pesoValoracion, double pesoCompras, double pesoCategorias) throws PesosInvalidosException {
+		if (pesoValoracion < 0 || pesoCompras < 0 || pesoCategorias < 0 || (pesoValoracion + pesoCompras + pesoCategorias == 0)) {
+	        throw new PesosInvalidosException(pesoValoracion, pesoCompras, pesoCategorias);
+	    }
 		double suma = pesoValoracion + pesoCompras + pesoCategorias;
 		if (suma == 0) {
 			System.out.println("Al menos un peso debe ser mayor que 0.");

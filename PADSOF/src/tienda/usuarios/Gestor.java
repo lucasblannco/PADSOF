@@ -8,6 +8,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale.Category;
 
+import Excepcion.AnioInvalidoException;
+import Excepcion.RangoFechasInvalidoException;
 //import com.sun.xml.internal.stream.events.AttributeImpl;
 import ventas.*;
 import productos.Categoria;
@@ -491,18 +493,17 @@ public class Gestor extends UsuarioRegistrado {
 	public List<Cliente> verClientesConMasPedidosCancelados() {
 		return motorEstadistico.obtenerClientesConMasPedidosCaducados();
 	}
+	public double consultarIngresosRango(LocalDate inicio, LocalDate fin) throws RangoFechasInvalidoException {
+        return motorEstadistico.calcularIngresosRangoFechas(inicio, fin);
+    }
 
-	public double consultarIngresosRango(LocalDate inicio, LocalDate fin) {
-		return motorEstadistico.calcularIngresosRangoFechas(inicio, fin);
-	}
+    public double[] consultarIngresosPorMeses(int año) throws AnioInvalidoException, RangoFechasInvalidoException {
+        return motorEstadistico.calcularIngresosMesesAño(año);
+    }
 
-	public double[] consultarIngresosPorMeses(int año) {
-		return motorEstadistico.calcularIngresosMesesAño(año);
-	}
-
-	public double[] consultarIngresosPorMesesActual() {
-		return motorEstadistico.calcularIngresosMesesAñoActual();
-	}
+    public double[] consultarIngresosPorMesesActual() throws AnioInvalidoException, RangoFechasInvalidoException {
+        return motorEstadistico.calcularIngresosMesesAñoActual();
+    }
 
 	public double consultarIngresosVenta() {
 		return motorEstadistico.calcularIngresosVenta();

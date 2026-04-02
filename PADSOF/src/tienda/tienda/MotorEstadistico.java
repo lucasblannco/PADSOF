@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import Excepcion.AnioInvalidoException;
+import Excepcion.RangoFechasInvalidoException;
 import intercambios.*;
 import usuarios.*;
 import ventas.*;
@@ -88,15 +90,9 @@ public class MotorEstadistico {
 		return clientes;
 	}
 
-	public double calcularIngresosRangoFechas(LocalDate inicio, LocalDate fin) {
-		if (inicio == null || fin == null) {
-			System.out.println("Las fechas de inicio y fin no pueden ser null.");
-			return 0.0;
-		}
-
-		if (fin.isBefore(inicio)) {
-			System.out.println("La fecha de fin no puede ser anterior a la de inicio.");
-			return 0.0;
+	public double calcularIngresosRangoFechas(LocalDate inicio, LocalDate fin) throws RangoFechasInvalidoException {
+		if (inicio == null || fin == null || fin.isBefore(inicio)) {
+			throw new RangoFechasInvalidoException(inicio, fin);
 		}
 
 		Tienda tienda = Tienda.getInstancia();
@@ -109,35 +105,29 @@ public class MotorEstadistico {
 				+ this.calcularTasacionesEnRango(tienda.getPendientesTasacion(), inicio, fin);
 	}
 
-	public double[] calcularIngresosMesesAño(int año) {
+	public double[] calcularIngresosMesesAño(int año) throws AnioInvalidoException, RangoFechasInvalidoException {
 		 double[] ingresosPorMes = new double[12];
 		if (año <= 0) {
-            System.out.println("Error: el anio debe ser mayor que 0.");
-            return new double[12];
-        }
+			throw new AnioInvalidoException(año);
+		}
  
-       
+		for (int mes = 1; mes <= 12; mes++) {
+			YearMonth ym     = YearMonth.of(año, mes);//devuelve el mes en la posicion mes del año año
+			LocalDate inicio = ym.atDay(1);//primer dia
+			LocalDate fin    = ym.atEndOfMonth();//ultimo dia
+			ingresosPorMes[mes - 1] = this.calcularIngresosRangoFechas(inicio, fin);
+		}
  
-        for (int mes = 1; mes <= 12; mes++) {
-            YearMonth ym     = YearMonth.of(año, mes);//devuelve el mes en la posicion mes del año año
-            LocalDate inicio = ym.atDay(1);//primer dia
-            LocalDate fin    = ym.atEndOfMonth();//ultimo dia
-            ingresosPorMes[mes - 1] = this.calcularIngresosRangoFechas(inicio, fin);
-        }
- 
-        return ingresosPorMes;
-    }
+		return ingresosPorMes;
+	}
 	
-	public double[] calcularIngresosMesesAñoActual() {
+	public double[] calcularIngresosMesesAñoActual() throws AnioInvalidoException, RangoFechasInvalidoException {
 		return this.calcularIngresosMesesAño(LocalDate.now().getYear());
 	}
 
-	public double calcularIngresosVentaRango(LocalDate inicio, LocalDate fin) {
-		if (inicio == null || fin == null) {
-			System.out.println("Las fechas de inicio y fin no pueden ser null.");
-		}
-		if (fin.isBefore(inicio)) {
-			System.out.println("La fecha de fin (" + fin + ") no puede ser anterior a la de inicio (" + inicio + ").");
+	public double calcularIngresosVentaRango(LocalDate inicio, LocalDate fin) throws RangoFechasInvalidoException {
+		if (inicio == null || fin == null || fin.isBefore(inicio)) {
+			throw new RangoFechasInvalidoException(inicio, fin);
 		}
 
 		Tienda tienda = Tienda.getInstancia();
@@ -147,19 +137,21 @@ public class MotorEstadistico {
 
 		double total = 0.0;
 		for (Pedido p : tienda.getHistorialVentas()) {
-		    if (p.getEstado() == EstadoPedido.CANCELADO) continue;//confirmamos q el pedido se realizo
-		    LocalDate fechaPedido = p.getFechaCreacion().toLocalDate();
-		    if (!fechaPedido.isBefore(inicio) && !fechaPedido.isAfter(fin)) {
-		        total += p.getTotal();
-		    }
+			if (p.getEstado() == EstadoPedido.CANCELADO) continue;//confirmamos q el pedido se realizo
+			LocalDate fechaPedido = p.getFechaCreacion().toLocalDate();
+			if (!fechaPedido.isBefore(inicio) && !fechaPedido.isAfter(fin)) {
+				total += p.getTotal();
+			}
 		}
 		return total;
 	}
 
 	public double calcularIngresosVenta() {
-
-		return calcularIngresosVentaRango(LocalDate.MIN, LocalDate.MAX);
-		
+		try {
+			return calcularIngresosVentaRango(LocalDate.MIN, LocalDate.MAX);
+		} catch (RangoFechasInvalidoException e) {
+			return 0.0;
+		}
 	}
 
 	public double calcularIngresosTasacion() {

@@ -5,6 +5,7 @@ import productos.*;
 import tienda.*;
 import usuarios.*;
 import ventas.*;
+import Excepcion.*;
 
 public class PruebaRecomendador {
 
@@ -27,8 +28,7 @@ public class PruebaRecomendador {
 		 * Montamos la tienda con productos, categorias, clientes y pedidos El gestor ya
 		 * existe en la tienda (lo crea el constructor de Tienda). -Valoraciones a poner
 		 * comic1=9, comic2=7 -> Comics figura1=8, figura2=6 -> Figuras jm1=5 -> Juegos
-		 * 
-		 * alice: compro comic1 -> categoria favorita Comics bob: compro comic1 y
+		 * * alice: compro comic1 -> categoria favorita Comics bob: compro comic1 y
 		 * figura1 (tiene comic1 en comun con alice) carlos: sin historial (caso borde)
 		 */
 		System.out.println("\n============= MONTAJE =============");
@@ -64,28 +64,33 @@ public class PruebaRecomendador {
 		tienda.getCategorias().add(catJuegos);
 
 		// el empleado sube los productos
-		ArrayList<Categoria> catsComics  = new ArrayList<>(Arrays.asList(catComics));
+		ArrayList<Categoria> catsComics = new ArrayList<>(Arrays.asList(catComics));
 		ArrayList<Categoria> catsFiguras = new ArrayList<>(Arrays.asList(catFiguras));
-		ArrayList<Categoria> catsJuegos  = new ArrayList<>(Arrays.asList(catJuegos));
+		ArrayList<Categoria> catsJuegos = new ArrayList<>(Arrays.asList(catJuegos));
 
-		tasador.añadirProducto_nuevo("C", "Saga Vol.1", "desc", "img", 12.50, 20, catsComics,  200, "Image",   2012, 0, 0, 0, null, null, 0, 0, 0, 0, null);
-		tasador.añadirProducto_nuevo("C", "Watchmen",   "desc", "img", 15.00, 10, catsComics,  400, "DC",      1987, 0, 0, 0, null, null, 0, 0, 0, 0, null);
-		tasador.añadirProducto_nuevo("F", "Goku SSJ",   "desc", "img", 35.00, 15, catsFiguras, 0,   null,      0,    20, 15, 12, "PVC", "Bandai",   0, 0, 0, 0, null);
-		tasador.añadirProducto_nuevo("F", "Link",       "desc", "img", 40.00,  8, catsFiguras, 0,   null,      0,    18, 12, 10, "PVC", "Nintendo", 0, 0, 0, 0, null);
-		tasador.añadirProducto_nuevo("J", "Catan",      "desc", "img", 45.00, 12, catsJuegos,  0,   null,      0,    0,  0,  0,  null,  null,       2, 4, 8, 99, "Eurogame");
+		tasador.añadirProducto_nuevo("C", "Saga Vol.1", "desc", "img", 12.50, 20, catsComics, 200, "Image", 2012, 0, 0,
+				0, null, null, 0, 0, 0, 0, null);
+		tasador.añadirProducto_nuevo("C", "Watchmen", "desc", "img", 15.00, 10, catsComics, 400, "DC", 1987, 0, 0, 0,
+				null, null, 0, 0, 0, 0, null);
+		tasador.añadirProducto_nuevo("F", "Goku SSJ", "desc", "img", 35.00, 15, catsFiguras, 0, null, 0, 20, 15, 12,
+				"PVC", "Bandai", 0, 0, 0, 0, null);
+		tasador.añadirProducto_nuevo("F", "Link", "desc", "img", 40.00, 8, catsFiguras, 0, null, 0, 18, 12, 10, "PVC",
+				"Nintendo", 0, 0, 0, 0, null);
+		tasador.añadirProducto_nuevo("J", "Catan", "desc", "img", 45.00, 12, catsJuegos, 0, null, 0, 0, 0, 0, null,
+				null, 2, 4, 8, 99, "Eurogame");
 
-		ProductoVenta comic1  = tienda.getStockVentas().get(0);
-		ProductoVenta comic2  = tienda.getStockVentas().get(1);
+		ProductoVenta comic1 = tienda.getStockVentas().get(0);
+		ProductoVenta comic2 = tienda.getStockVentas().get(1);
 		ProductoVenta figura1 = tienda.getStockVentas().get(2);
 		ProductoVenta figura2 = tienda.getStockVentas().get(3);
-		ProductoVenta jm1     = tienda.getStockVentas().get(4);
+		ProductoVenta jm1 = tienda.getStockVentas().get(4);
 
 		// clientes se registran y hacen login
-		tienda.registrarNuevoCliente("alice",  "Alice@1234", "11111111A");
-		tienda.registrarNuevoCliente("bob",    "Bob@1234",   "22222222B");
+		tienda.registrarNuevoCliente("alice", "Alice@1234", "11111111A");
+		tienda.registrarNuevoCliente("bob", "Bob@1234", "22222222B");
 		tienda.registrarNuevoCliente("carlos", "Carlos@123", "33333333C");
-		Cliente alice  = tienda.loginCliente("alice",  "Alice@1234");
-		Cliente bob    = tienda.loginCliente("bob",    "Bob@1234");
+		Cliente alice = tienda.loginCliente("alice", "Alice@1234");
+		Cliente bob = tienda.loginCliente("bob", "Bob@1234");
 		Cliente carlos = tienda.loginCliente("carlos", "Carlos@123");
 
 		// Resenas: comic1=9, comic2=7, figura1=8, figura2=6, jm1=5
@@ -121,22 +126,25 @@ public class PruebaRecomendador {
 		 */
 		System.out.println("\n============= recomendarPorValoracion =============");
 
-		rec.setPesos(1, 0, 0);
-		List<ProductoVenta> sugerencias = rec.generarSugerencias(alice);
+		try {
+			rec.setPesos(1, 0, 0);
+			List<ProductoVenta> sugerencias = rec.generarSugerencias(alice);
 
-		check("Devuelve sugerencias no vacias", sugerencias != null && !sugerencias.isEmpty());
-		boolean resultado = true;
-
-		for (Producto p : sugerencias) {
-			if (p.getNombre().equals("Saga Vol.1")) {
-				resultado = false;
-				break;
+			check("Devuelve sugerencias no vacias", sugerencias != null && !sugerencias.isEmpty());
+			boolean resultado = true;
+			for (Producto p : sugerencias) {
+				if (p.getNombre().equals("Saga Vol.1")) {
+					resultado = false;
+					break;
+				}
 			}
+			check("No incluye comic1 (ya comprado por alice)", resultado);
+			check("El primero es figura1 (puntuacion 8.0, la mas alta disponible)",
+					sugerencias.get(0).getNombre().equals("Goku SSJ"));
+			check("No supera el limite maximo", sugerencias.size() <= rec.getLimiteMaximo());
+		} catch (Exception e) {
+			fallos++;
 		}
-		check("No incluye comic1 (ya comprado por alice)", resultado);
-		check("El primero es figura1 (puntuacion 8.0, la mas alta disponible)",
-				sugerencias.get(0).getNombre().equals("Goku SSJ"));
-		check("No supera el limite maximo", sugerencias.size() <= rec.getLimiteMaximo());
 
 		/*
 		 * Comprobamos el recomendador por compras. Bob compro comic1 (en comun con
@@ -144,29 +152,31 @@ public class PruebaRecomendador {
 		 */
 		System.out.println("\n============= recomendarPorCompras =============");
 
-		rec.setPesos(0, 1, 0);
-		sugerencias = rec.generarSugerencias(alice);
+		try {
+			rec.setPesos(0, 1, 0);
+			List<ProductoVenta> sugerencias = rec.generarSugerencias(alice);
 
-		check("Devuelve sugerencias no vacias", sugerencias != null && !sugerencias.isEmpty());
-		resultado = true;
-
-		for (Producto p : sugerencias) {
-			if (p.getNombre().equals("Saga Vol.1")) {
-				resultado = false;
-				break;
+			check("Devuelve sugerencias no vacias", sugerencias != null && !sugerencias.isEmpty());
+			boolean resultado = true;
+			for (Producto p : sugerencias) {
+				if (p.getNombre().equals("Saga Vol.1")) {
+					resultado = false;
+					break;
+				}
 			}
-		}
-		check("No incluye comic1 (ya comprado por alice)", resultado);
+			check("No incluye comic1 (ya comprado por alice)", resultado);
 
-		resultado = false;
-
-		for (Producto p : sugerencias) {
-			if (p.getNombre().equals("Goku SSJ")) {
-				resultado = true;
-				break;
+			resultado = false;
+			for (Producto p : sugerencias) {
+				if (p.getNombre().equals("Goku SSJ")) {
+					resultado = true;
+					break;
+				}
 			}
+			check("Incluye figura1 (bob la compro y tiene comic1 en comun con alice)", resultado);
+		} catch (Exception e) {
+			fallos++;
 		}
-		check("Incluye figura1 (bob la compro y tiene comic1 en comun con alice)", resultado);
 
 		/*
 		 * Comprobamos el recomendador por categorias. Categoria favorita de alice es
@@ -175,93 +185,101 @@ public class PruebaRecomendador {
 		 */
 		System.out.println("\n============= recomendarPorCategorias =============");
 
-		rec.setPesos(0, 0, 1);
-		sugerencias = rec.generarSugerencias(alice);
+		try {
+			rec.setPesos(0, 0, 1);
+			List<ProductoVenta> sugerencias = rec.generarSugerencias(alice);
 
-		check("Devuelve sugerencias no vacias", sugerencias != null && !sugerencias.isEmpty());
-		resultado = false;
-
-		for (Producto p : sugerencias) {
-			if (p.getNombre().equals("Watchmen")) {
-				resultado = true;
-				break;
+			check("Devuelve sugerencias no vacias", sugerencias != null && !sugerencias.isEmpty());
+			boolean resultado = false;
+			for (Producto p : sugerencias) {
+				if (p.getNombre().equals("Watchmen")) {
+					resultado = true;
+					break;
+				}
 			}
-		}
-		check("Incluye comic2 (misma categoria favorita, no comprado)", resultado);
+			check("Incluye comic2 (misma categoria favorita, no comprado)", resultado);
 
-		resultado = true;
-
-		for (Producto p : sugerencias) {
-			if (p.getNombre().equals("Saga Vol.1")) {
-				resultado = false;
-				break;
+			resultado = true;
+			for (Producto p : sugerencias) {
+				if (p.getNombre().equals("Saga Vol.1")) {
+					resultado = false;
+					break;
+				}
 			}
+			check("No incluye comic1 (ya comprado)", resultado);
+			check("Solo incluye un elemento, comic2", sugerencias.size() == 1);
+		} catch (Exception e) {
+			fallos++;
 		}
-		check("No incluye comic1 (ya comprado)", resultado);
-
-		check("Solo incluye un elemento, comic2", sugerencias.size() == 1);
 
 		/*
 		 * Comprobamos el recomendador con los tres criterios activos.
 		 */
 		System.out.println("\n============= recomendador ponderado =============");
 
-		rec.setPesos(1, 1, 1);
-		sugerencias = rec.generarSugerencias(alice);
+		try {
+			rec.setPesos(1, 1, 1);
+			List<ProductoVenta> sugerencias = rec.generarSugerencias(alice);
 
-		check("Devuelve sugerencias no vacias", sugerencias != null && !sugerencias.isEmpty());
-		resultado = true;
-
-		for (Producto p : sugerencias) {
-			if (p.getNombre().equals("Saga Vol.1")) {
-				resultado = false;
-				break;
+			check("Devuelve sugerencias no vacias", sugerencias != null && !sugerencias.isEmpty());
+			boolean resultado = true;
+			for (Producto p : sugerencias) {
+				if (p.getNombre().equals("Saga Vol.1")) {
+					resultado = false;
+					break;
+				}
 			}
+			check("No incluye comic1 (ya comprado)", resultado);
+			check("No supera el limite maximo", sugerencias.size() <= rec.getLimiteMaximo());
+		} catch (Exception e) {
+			fallos++;
 		}
-		check("No incluye comic1 (ya comprado)",
-				resultado);
-		check("No supera el limite maximo", sugerencias.size() <= rec.getLimiteMaximo());
 
 		/*
 		 * Caso extremo: carlos sin historial.
 		 */
 		System.out.println("\n============= carlos sin historial (caso extremo) =============");
 
-		rec.setConfiguracion(rec.getLimiteMaximo(), true); 
-		rec.setPesos(0, 0, 1);
-		sugerencias = rec.generarSugerencias(carlos);
-		check("Sin historial, recomendador por categorias devuelve lista vacia", sugerencias.isEmpty());
+		try {
+			rec.setConfiguracion(rec.getLimiteMaximo(), true);
+			rec.setPesos(0, 0, 1);
+			check("Sin historial, recomendador por categorias devuelve lista vacia",
+					rec.generarSugerencias(carlos).isEmpty());
 
-		rec.setPesos(1, 0, 0);
-		sugerencias = rec.generarSugerencias(carlos);
-		check("Sin historial, recomendador por valoracion devuelve productos", !sugerencias.isEmpty());
-		check("Sin historial no hay excluidos, devuelve hasta el limite", sugerencias.size() <= rec.getLimiteMaximo());
-		
-		rec.setPesos(0,1,0);
-		sugerencias = rec.generarSugerencias(carlos);
-		check("Sin historial, recomendador por compras comun devuelve lista vacia",sugerencias.isEmpty());
+			rec.setPesos(1, 0, 0);
+			List<ProductoVenta> sugerencias = rec.generarSugerencias(carlos);
+			check("Sin historial, recomendador por valoracion devuelve productos", !sugerencias.isEmpty());
+			check("Sin historial no hay excluidos, devuelve hasta el limite",
+					sugerencias.size() <= rec.getLimiteMaximo());
+
+			rec.setPesos(0, 1, 0);
+			check("Sin historial, recomendador por compras comun devuelve lista vacia",
+					rec.generarSugerencias(carlos).isEmpty());
+		} catch (Exception e) {
+			fallos++;
+		}
 
 		/*
 		 * Comprobamos que los productos en el carrito tambien se excluyen.
 		 */
 		System.out.println("\n============= exclusion por carrito =============");
 
-		alice.añadirProductoCarrito(comic2, 1);
-
-		rec.setPesos(1, 0, 0);
-		sugerencias = rec.generarSugerencias(alice);
-		resultado = true;
-
-		for (Producto p : sugerencias) {
-			if (p.getNombre().equals("Watchmen")) {
-				resultado = false;
-				break;
+		try {
+			alice.añadirProductoCarrito(comic2, 1);
+			rec.setPesos(1, 0, 0);
+			List<ProductoVenta> sugerencias = rec.generarSugerencias(alice);
+			boolean resultado = true;
+			for (Producto p : sugerencias) {
+				if (p.getNombre().equals("Watchmen")) {
+					resultado = false;
+					break;
+				}
 			}
+			check("comic2 en carrito no aparece en sugerencias", resultado);
+			alice.setCarritoActual(null);
+		} catch (Exception e) {
+			fallos++;
 		}
-		check("comic2 en carrito no aparece en sugerencias",
-				resultado);
-
-		alice.setCarritoActual(null);
 
 		/*
 		 * Comprobamos el control de errores de configuracion del recomendador.
@@ -275,25 +293,47 @@ public class PruebaRecomendador {
 		rec.setConfiguracion(-3, true);
 		check("setConfiguracion con limite negativo no cambia el limite", rec.getLimiteMaximo() == limiteAntes);
 
-		double pv = rec.getPesoValoracion();
-		double pc = rec.getPesoCompras();
-		rec.setPesos(-1, 0.5, 0.5);
-		check("setPesos con peso negativo no cambia los pesos",
-				rec.getPesoValoracion() == pv && rec.getPesoCompras() == pc);
+		rec.getPesoValoracion();
+		rec.getPesoCompras();
 
-		rec.setPesos(0, 0, 0);
-		check("setPesos todos a 0 no cambia los pesos", rec.getPesoValoracion() == pv);
+		// Prueba de pesos negativos
+		try {
+			rec.setPesos(-1, 0.5, 0.5);
+			check("setPesos con peso negativo no cambia los pesos", false); // No debería llegar aquí si lanza excepción
+		} catch (PesosInvalidosException e) {
+			check("setPesos con peso negativo lanza PesosInvalidosException", true);
+		}
 
-		rec.setConfiguracion(1, true);
-		rec.setPesos(1, 0, 0);
-		sugerencias = rec.generarSugerencias(alice);
-		check("Con limite 1 solo devuelve 1 sugerencia", sugerencias.size() == 1);
+		// Prueba de pesos a cero
+		try {
+			rec.setPesos(0, 0, 0);
+			check("setPesos todos a 0 no cambia los pesos", false);
+		} catch (PesosInvalidosException e) {
+			check("setPesos todos a 0 lanza PesosInvalidosException", true);
+		}
 
-		rec.setConfiguracion(5, false);
-		sugerencias = rec.generarSugerencias(alice);
-		check("Con recomendador desactivado devuelve lista vacia", sugerencias.isEmpty());
+		try {
+			rec.setConfiguracion(1, true);
+			rec.setPesos(1, 0, 0);
+			check("Con limite 1 solo devuelve 1 sugerencia", rec.generarSugerencias(alice).size() == 1);
+		} catch (Exception e) {
+			fallos++;
+		}
 
-		check("generarSugerencias con cliente null devuelve lista vacia", rec.generarSugerencias(null).isEmpty());
+		// Prueba de recomendador desactivado
+		try {
+			rec.setConfiguracion(5, false);
+			rec.generarSugerencias(alice);
+			check("Con recomendador desactivado devuelve lista vacia", false);
+		} catch (RecomendadorNoActivoException e) {
+			check("Con recomendador desactivado lanza RecomendadorNoActivoException", true);
+		}
+		rec.setConfiguracion(5, true);
+		try {
+			check("generarSugerencias con cliente null devuelve lista vacia", rec.generarSugerencias(null).isEmpty());
+		} catch (Exception e) {
+			fallos++;
+		}
 
 		/*
 		 * Imprimimos el resultado del test.
