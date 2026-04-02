@@ -77,17 +77,57 @@ public class Pedido {
 	}
 
 	private double recalcularTotal(Carrito carrito) {
-		double suma = 0.0;
-
+		double subtotal = 0.0;
 		for (LineaPedido linea : this.lineas) {
-			suma += linea.getSubtotal();
+			subtotal += linea.getSubtotal();
 		}
 
-		if (this.descuentoAplicado != null && carrito !=null) {
-			suma = this.descuentoAplicado.aplicarDescuento(carrito);
+		if (this.descuentoAplicado == null) {
+			return subtotal;
 		}
 
-		return suma;
+		if (carrito != null) {
+			return this.descuentoAplicado.aplicarDescuento(carrito);
+		}
+
+		if (this.descuentoAplicado instanceof DescuentoVolumen) {
+			DescuentoVolumen dv = (DescuentoVolumen) this.descuentoAplicado;
+			if (!dv.estaActivo() || subtotal < dv.getUmbralMinimo())
+				return subtotal;
+			return subtotal * (1 - dv.getPorcentaje());
+		}
+
+		if (this.descuentoAplicado instanceof DescuentoCategoria) {
+			DescuentoCategoria dc = (DescuentoCategoria) this.descuentoAplicado;
+			if (!dc.estaActivo())
+				return subtotal;
+			double total = 0.0;
+			for (LineaPedido linea : this.lineas) {
+				double sub = linea.getSubtotal();
+				if (linea.getProducto().getCategorias().contains(dc.getCategoria())) {
+					sub *= (1 - dc.getPorcentaje());
+				}
+				total += sub;
+			}
+			return total;
+		}
+
+		if (this.descuentoAplicado instanceof DescuentoCantidad) {
+			DescuentoCantidad dca = (DescuentoCantidad) this.descuentoAplicado;
+			if (!dca.estaActivo())
+				return subtotal;
+			double total = 0.0;
+			for (LineaPedido linea : this.lineas) {
+				double sub = linea.getSubtotal();
+				if (linea.getCantidad() >= dca.getCantidadMinima()) {
+					sub *= (1 - dca.getPorcentaje());
+				}
+				total += sub;
+			}
+			return total;
+		}
+
+		return subtotal;
 	}
 
 	public boolean pagar(String tarjeta, int cvv, Date caducidad) {

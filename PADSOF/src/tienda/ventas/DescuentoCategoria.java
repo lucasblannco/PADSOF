@@ -35,4 +35,12 @@ public class DescuentoCategoria extends Descuento {
 		}
 		return total;
 	}
+
+	public Categoria getCategoria() {
+		return categoria;
+	}
+
+	public double getPorcentaje() {
+		return porcentaje;
+	}
 }

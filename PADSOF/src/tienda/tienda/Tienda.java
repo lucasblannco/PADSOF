@@ -10,6 +10,7 @@ import usuarios.TipoPermisos;
 import usuarios.UsuarioRegistrado;
 import ventas.Descuento;
 import ventas.Pedido;
+import ventas.Regalo;
 import productos.*;
 
 public class Tienda {
@@ -432,6 +433,39 @@ public class Tienda {
 			p.setBloqueado(false);
 			this.catalogoIntercambio.add(p);
 		}
+	}
+
+	// buscar productos de segunda mano, pero que no esten bloqueados
+	/*
+	 * public List<Producto2Mano> buscarSegundaMano(String query) {
+	 * List<Producto2Mano> -ultados = new ArrayList<>(); for (Producto2Mano p :
+	 * catalogoIntercambio) { // AHORA FILTRAMOS TAMBIÉN POR VISIBLE if
+	 * (p.isVisible() && !p.isBloqueado() &&
+	 * p.getNombre().toLowerCase().contains(query.toLowerCase())) {
+	 * resultados.add(p); } } return resultados; }
+	 */
+
+	public void aplicarDescuentoPrioritario(Carrito carrito) {
+		for (Descuento descuento : this.descuentosActivos) {
+			if (!descuento.estaActivo()) {
+				continue;
+			}
+
+			if (descuento instanceof Regalo) {
+				Regalo regalo = (Regalo) descuento;
+				if (regalo.aplicaRegalo(carrito)) {
+					carrito.setDescuentoAplicado(descuento);
+					return;
+				}
+			} else {
+				double totalConDescuento = descuento.aplicarDescuento(carrito);
+				if (totalConDescuento < carrito.calcularSubtotal()) {
+					carrito.setDescuentoAplicado(descuento);
+					return;
+				}
+			}
+		}
+		carrito.setDescuentoAplicado(null);
 	}
 
 	// --- GESTIÓN DE VENTAS NUEVAS

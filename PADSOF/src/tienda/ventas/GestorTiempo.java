@@ -29,10 +29,23 @@ public class GestorTiempo {
 	private void iniciarRevisionPeriodica() {
 		Tienda tienda = Tienda.getInstancia();
 
-		int tiempoRevision = (tienda.getTiempoMaxCarrito() <= tienda.getTiempoMaxOferta() ? tienda.getTiempoMaxCarrito()
-				: tienda.getTiempoMaxOferta());
-		if (tiempoRevision == 0) {
+		int tiempoCarrito = tienda.getTiempoMaxCarrito();
+		int tiempoOferta = tienda.getTiempoMaxOferta();
+
+		int tiempoRevision;
+
+		if (tiempoCarrito > 0 && tiempoOferta > 0) {
+			tiempoRevision = tiempoCarrito <= tiempoOferta ? tiempoCarrito : tiempoOferta;
+		} else if (tiempoCarrito > 0) {
+			tiempoRevision = tiempoCarrito;
+		} else if (tiempoOferta > 0) {
+			tiempoRevision = tiempoOferta;
+		} else {
 			tiempoRevision = 5;
+		}
+
+		if (tiempoRevision < 1) {
+			tiempoRevision = 1;
 		}
 
 		this.scheduler.scheduleAtFixedRate(() -> {
