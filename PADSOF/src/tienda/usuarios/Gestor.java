@@ -39,7 +39,10 @@ public class Gestor extends UsuarioRegistrado {
 		System.out.println("4. Ver Estadísticas de Rendimiento");
 	}
 
-	// METODOS GLOBALES
+
+	
+	
+	
 	private Empleado buscarEmpleadoporId(String id) {
 		if (id == null || id.isBlank()) {
 			return null;
@@ -137,10 +140,6 @@ public class Gestor extends UsuarioRegistrado {
 		Empleado e = buscarEmpleadoporId(idEmpleado);
 		if (e == null) {
 			System.out.println("El empleado no puede ser null");
-			return false;
-		}
-		if (!Tienda.getInstancia().getUsuarios().contains(e)) {
-			System.out.println("El empleado no exiate en el sistema");
 			return false;
 		}
 		e.getPermisos().clear();

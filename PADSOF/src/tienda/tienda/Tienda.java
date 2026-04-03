@@ -619,4 +619,43 @@ public class Tienda {
 		}
 		this.precioValoracion = precioTasacion;
 	}
+	
+	//Metodo para los test
+	public void vaciarTienda() {
+	    // 1. Limpiamos las listas de usuarios y sesiones
+	    if (this.usuarios != null) {
+	        this.usuarios.clear();
+	        // RE-CREAMOS EL GESTOR: Al ser el "USR-1", los tests lo necesitan vivo
+	        Gestor gestor = new Gestor();
+	        this.usuarios.add(gestor);
+	        
+	        // También reseteamos las sesiones activas
+	        if (this.usuariosConSesionActiva != null) {
+	            this.usuariosConSesionActiva.clear();
+	            this.usuariosConSesionActiva.add(gestor);
+	        }
+	    }
+
+	    // 2. Limpiamos el stock y catálogos
+	    if (this.stockVentas != null) this.stockVentas.clear();
+	    if (this.catalogoIntercambio != null) this.catalogoIntercambio.clear();
+	    if (this.pendientes_Tasacion != null) this.pendientes_Tasacion.clear();
+	    
+	    // 3. Limpiamos categorías y descuentos
+	    if (this.categorias != null) this.categorias.clear();
+	    if (this.descuentosActivos != null) this.descuentosActivos.clear();
+	    if (this.historialDescuentos != null) this.historialDescuentos.clear();
+	    
+	    // 4. Limpiamos historial de ventas y notificaciones
+	    if (this.historialVentas != null) this.historialVentas.clear();
+	    if (this.historialNotificaciones != null) this.historialNotificaciones.clear();
+	    if (this.intercambiosFinalizados != null) this.intercambiosFinalizados.clear();
+
+	    // 5. Opcional: Resetear tiempos si quieres que cada test los configure
+	    this.tiempoMaxCarrito = 0;
+	    this.tiempoMaxOferta = 0;
+	    this.tiempoMaxPago = 0;
+
+	    System.out.println("[SISTEMA] Tienda reseteada para nueva prueba unitaria.");
+	}
 }

@@ -98,10 +98,10 @@ public class Recomendador {
 			boolean tieneEnComun = false;
 			for (Pedido ped : otro.getHistorialPedidos()) {
 				if (ped.getEstado() == EstadoPedido.CANCELADO)
-					continue;// break de C
+					continue;
 				for (LineaPedido l : ped.getLineas()) {
 					if (compradosPorCliente.contains(l.getProducto().getId())) {
-						// encontramos que un cliente ha comprado un producto que ha cmprado nuestro
+						// encontramos que un cliente ha comprado un producto que ha comprado nuestro
 						// cliente
 						tieneEnComun = true;
 						break;
@@ -177,7 +177,7 @@ public class Recomendador {
 	// peso * (n-i)
 	private void acumularPuntuaciones(List<ProductoVenta> lista, double peso, Map<String, Double> puntuaciones,
 			Map<String, ProductoVenta> porId) {
-		if(peso==0) return; //si no tiene peso, ni lo tneeeeeeeenemos en cuenta
+		if(peso==0) return; //si no tiene peso, ni lo tenemos en cuenta
 		int n = lista.size();
 		for (int i = 0; i < n; i++) {
 			ProductoVenta p = lista.get(i);
