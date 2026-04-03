@@ -164,7 +164,8 @@ public class Tienda {
 			if (c.getNombre().equalsIgnoreCase(nombre))
 				return c;
 		}
-		System.out.println("No existe ninguna categoria en la tienda con el nombre " + nombre + ".");
+		
+
 		return null;
 	}
 
@@ -622,7 +623,21 @@ public class Tienda {
 	
 	//Metodo para los test
 	public void vaciarTienda() {
-	    // 1. Limpiamos las listas de usuarios y sesiones
+		Estadistica est = Estadistica.getInstancia();
+	    est.setnProductosVentas(1);
+	    est.setnUsuarioRegistrado(1);
+	    est.setnUsuarioNoRegistrado(1);
+	    est.setnProducto2Mano(1);
+	    est.setnVentas(1);
+	    est.setnDescuentos(1);
+	    est.setnIntercambiosFinalizados(1);
+	    est.setnCategorias(1);
+	    est.setnCarritos(1);
+	    est.setnReseñas(1);
+	    est.setnTasacionesCobradas(0);
+	    est.setnNotificaciones(1);
+	  
+		// 1. Limpiamos las listas de usuarios y sesiones
 	    if (this.usuarios != null) {
 	        this.usuarios.clear();
 	        // RE-CREAMOS EL GESTOR: Al ser el "USR-1", los tests lo necesitan vivo
@@ -655,7 +670,16 @@ public class Tienda {
 	    this.tiempoMaxCarrito = 0;
 	    this.tiempoMaxOferta = 0;
 	    this.tiempoMaxPago = 0;
-
-	    System.out.println("[SISTEMA] Tienda reseteada para nueva prueba unitaria.");
+	 // Resetear contadores de Estadistica
+	    
 	}
+	public ArrayList<Categoria> seleccionarCategorias(String... nombres) {
+	    ArrayList<Categoria> lista = new ArrayList<>();
+	    for (String nombre : nombres) {
+	        Categoria c = buscarCategoriaPorNombre(nombre);
+	        if (c != null) lista.add(c);
+	    }
+	    return lista;
+	}
+	
 }

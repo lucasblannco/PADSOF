@@ -152,7 +152,6 @@ public class Pedido {
 		System.out.println("El pago no se ha podido procesar");
 		return false;
 	}
-
 	public boolean marcarPreparado() {
 		if (this.estado != EstadoPedido.PAGADO) {
 			return false;
@@ -333,5 +332,13 @@ public class Pedido {
 
 	public void setRecogida_solicitada(boolean recogida_solicitada) {
 		this.recogidaSolicitada = recogida_solicitada;
+	}
+
+	public void setEstado(EstadoPedido estado) {
+		this.estado = estado;
+	}
+
+	public void setCodigoRecogida(String codigoRecogida) {
+		this.codigoRecogida = codigoRecogida;
 	}
 }

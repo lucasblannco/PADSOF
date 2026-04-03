@@ -48,30 +48,26 @@ public class Empleado extends UsuarioRegistrado {
 	@Override
 	public void mostrarPanelPrincipal() {
 		int i = 5;
-	    System.out.println("--- PANEL DE CONTROL: EMPLEADO ---");
-	
-	    System.out.println("1. Gestionar Inventario (Añadir/Modificar productos)");
-	    System.out.println("2. Tramitar Pedidos Pendientes");
-	    
-	    System.out.println("3. Marcar Pedido como Entregado (Recogida en tienda)");
-	    
-	   
-	    System.out.println("4. Generar Informe de Ventas Mensual");
-	    if (this.permisos.contains(TipoPermisos.VALORACION_PRODUCTOS)) {
-	        System.out.println(i+". Tasación de Productos (Peticiones de clientes)");
-	        	i++;
-	    }
-	    
-	   
-	    if (this.permisos.contains(TipoPermisos.CONFIRMACION_INTERCAMBIO)) {
-	        System.out.println(i+". Confirmar Intercambios Acordados");
-	        i++;
-	    }
-	    
-	
-	    
-	    System.out.println(i+". Cerrar Sesión");
-	   
+		System.out.println("--- PANEL DE CONTROL: EMPLEADO ---");
+
+		System.out.println("1. Gestionar Inventario (Añadir/Modificar productos)");
+		System.out.println("2. Tramitar Pedidos Pendientes");
+
+		System.out.println("3. Marcar Pedido como Entregado (Recogida en tienda)");
+
+		System.out.println("4. Generar Informe de Ventas Mensual");
+		if (this.permisos.contains(TipoPermisos.VALORACION_PRODUCTOS)) {
+			System.out.println(i + ". Tasación de Productos (Peticiones de clientes)");
+			i++;
+		}
+
+		if (this.permisos.contains(TipoPermisos.CONFIRMACION_INTERCAMBIO)) {
+			System.out.println(i + ". Confirmar Intercambios Acordados");
+			i++;
+		}
+
+		System.out.println(i + ". Cerrar Sesión");
+
 	}
 
 	private boolean puedeRealizarTarea(TipoPermisos permiso) {
@@ -91,7 +87,7 @@ public class Empleado extends UsuarioRegistrado {
 			System.out.println("El id del producto no puede estar vacío.");
 			return null;
 		}
-		for (Producto2Mano p : Tienda.getInstancia().getPendientes_Tasacion()) {
+		for (Producto2Mano p : Tienda.getInstancia().getPendientesTasacion()) {
 			if (p.getId().equals(idProducto))
 				return p;
 		}
@@ -237,37 +233,29 @@ public class Empleado extends UsuarioRegistrado {
 		}
 	}
 
-	// si un producto no es aceptado, como borramos ese producto? habria que hacer
-	// una funcion en tienda.
 	public void tasarProducto(String idProducto, double precio, EstadoProducto estado) {
-		if (!puedeRealizarTarea(TipoPermisos.VALORACION_PRODUCTOS))
-			return;
 
-		// Comprobamos que el producto esté pendiente de tasación
+		if (!puedeRealizarTarea(TipoPermisos.VALORACION_PRODUCTOS)) {
+			return;
+		}
+
 		Producto2Mano p = buscarProductoPendientePorId(idProducto);
 		if (p == null) {
 			System.out.println("El producto " + idProducto + " no está pendiente de tasación.");
 			return;
 		}
+		boolean aceptado = p.valorar(precio, estado, this);
+		Tienda.getInstancia().getPendientesTasacion().remove(p);
 
-		Tienda.getInstancia().getPendientes_Tasacion().remove(p);
-
-		if (estado == EstadoProducto.NO_ACEPTADO) {
+		if (!aceptado && estado == EstadoProducto.NO_ACEPTADO) {
 			p.getPropietario().recibirNotificacionTipo(
-					"El producto " + p.getNombre() + " ha sido rechazado al no cumplir las expectativas suficientes.",
+					"El producto " + p.getNombre() + " ha sido rechazado al no cumplir las expectativas.",
 					TipoNotificacion.VALORACION_COMPLETADA);
-			return;
+		} else if (aceptado) {
+			p.getPropietario().recibirNotificacionTipo(
+					"El producto " + p.getNombre() + " ha sido tasado con éxito.Ya es visible para los demas clientes",
+					TipoNotificacion.VALORACION_COMPLETADA);
 		}
-
-		Valoracion nuevaVal = new Valoracion(precio, estado, this);
-		p.setValoracion(nuevaVal);
-		p.setVisible(true);
-		this.valoraciones.add(nuevaVal);
-		Tienda.getInstancia().publicarParaIntercambio(p);
-		p.getPropietario().recibirNotificacionTipo(
-				"El producto " + p.getNombre() + " ha sido tasado y publicado con éxito.",
-				TipoNotificacion.VALORACION_COMPLETADA);
-		this.recibirNotificacion("Has completado la valoración del producto " + p.getNombre() + " con éxito.");
 	}
 
 	public boolean confirmarIntercambio(Oferta o) {
@@ -291,7 +279,8 @@ public class Empleado extends UsuarioRegistrado {
 			int minNumjugadores, int maxNumjugadores, int minEdad, int maxEdad, String Estilo) {
 
 		if (!puedeRealizarTarea(TipoPermisos.GESTION_STOCK)) {
-			System.out.println("No tienes permiso para trabajar con productos");
+			
+			
 			return false;
 		}
 		Tienda tienda = Tienda.getInstancia();
@@ -419,7 +408,7 @@ public class Empleado extends UsuarioRegistrado {
 				unidades = unidades + cantidad;
 				p.setStockDisponible(unidades);
 				System.out.println("Se han añadiendo las unidades correctamente. Ahora el producto " + p.getId()
-						+ " tiene " + p.getStockDisponible() + ".");
+						+ " tiene " + p.getStockDisponible() + " unidades en stock.");
 				return true;
 			}
 		}
@@ -499,7 +488,8 @@ public class Empleado extends UsuarioRegistrado {
 
 			this.recibirNotificacion("Has añadido productos al sistema desde un fichero de texto. Creados: "
 					+ productosNuevos + ", Actualizados: " + stockActualizado);
-
+			System.out.println("El empleado "+ this.getId() +" ha  añadido productos al sistema desde un fichero de texto. Creados: "
+					+ productosNuevos + ", Actualizados: " + stockActualizado);
 			return true;
 
 		} catch (IOException e) {
@@ -576,6 +566,7 @@ public class Empleado extends UsuarioRegistrado {
 
 		boolean añadido = c.addProducto(p);
 		if (añadido) {
+			System.out.println("Se ha añadido el producto con id "+idProducto+" a la categoria "+nombreCat+".");
 			for (Cliente cliente : Tienda.getInstancia().obtenerClientesTienda()) {
 
 				cliente.notificarProductoNuevoCategoria(
@@ -610,6 +601,7 @@ public class Empleado extends UsuarioRegistrado {
 
 		boolean eliminado = c.deleteProducto(p);
 		if (eliminado) {
+			System.out.println("Se ha eliminado el producto con id "+idProducto+" de la categoria "+nombreCat+".");
 			for (Cliente cliente : Tienda.getInstancia().obtenerClientesTienda()) {
 
 				cliente.notificarProductoNuevoCategoria(

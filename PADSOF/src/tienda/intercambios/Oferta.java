@@ -27,7 +27,7 @@ public class Oferta {
 			if (p.getEstado() == null) { // Si el estado es null, es que no ha sido tasado
 				throw new ProductoNoTasadoException(p.getId(), p.getNombre());
 			}
-		}
+	}
 		// Validamos que todos los productos solicitados estén tasados
 		for (Producto2Mano p : productosSolicitados) {
 			if (p.getEstado() == null) {

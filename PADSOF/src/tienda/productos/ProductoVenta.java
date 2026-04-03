@@ -166,4 +166,31 @@ public abstract class ProductoVenta extends Producto {
 		return true;
 	}
 
+	public String resumen() {
+	    String cats = "";
+	    for (Categoria c : categorias) cats += c.getNombre() + " ";
+
+	    String valoracion = reseñas.isEmpty()
+	        ? "Sin reseñas"
+	        : String.format("%.1f", getMediaPuntuacion()) + "/10";
+
+	    return "[" + id + "] " + nombre
+	        + " | Precio: " + precioOficial + "€"
+	        + " | Stock: " + stockDisponible
+	        + " | Puntuacion: " + valoracion
+	        + " | Categorias: " + (cats.isBlank() ? "ninguna" : cats.trim());
+	}
+	public void imprimirCategorias() {
+	    if (categorias.isEmpty()) {
+	        System.out.println("  [" + id + "] " + nombre + " -> sin categorias");
+	        return;
+	    }
+	    String cats = "";
+	    for (Categoria c : categorias) {
+	        if (!cats.equals("")) cats += ", ";
+	        cats += c.getNombre();
+	    }
+	    System.out.println("  [" + id + "] " + nombre + " -> " + cats);
+	}
 }
+

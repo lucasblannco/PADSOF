@@ -12,6 +12,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import Excepcion.ProductoNoTasadoException;
 import intercambios.*;
 import productos.Producto2Mano;
 
@@ -60,7 +61,7 @@ public class Cliente extends UsuarioRegistrado {
 		}
 		List<Producto2Mano> array = new ArrayList<>();
 		for (Producto2Mano p : c.getCarteraIntercambio()) {
-			if (p.isVisible() && !p.isBloqueado()) {
+			if (p.isVisible()) {
 				array.add(p);
 			}
 		}
@@ -107,12 +108,6 @@ public class Cliente extends UsuarioRegistrado {
 		return true;
 	}
 
-	// OFERTAS
-	// quiero poder disntiguir entre lsa ofertas que tengo que responder y las que
-	// me tienen que responder.
-	// para no hacer 2 arrays, hago 2 metodos y ya
-
-	// Esta es la que tengo que contestar yo//
 	public List<Oferta> getOfertasParaDecidir() {
 		List<Oferta> paraDecidir = new ArrayList<>();
 		for (Oferta o : ofertasPendientes) {
@@ -176,14 +171,29 @@ public class Cliente extends UsuarioRegistrado {
 				return false;
 			}
 		}
-		Oferta nuevaOferta = new Oferta(this, destinatario, misProductos, susProductos);
-		this.ofertasPendientes.add(nuevaOferta);
-		destinatario.getOfertasPendientes().add(nuevaOferta);
-		destinatario.recibirNotificacionTipo("Has recibido una propuesta de intercambio de " + this.getNickname(),
-				TipoNotificacion.OFERTA_RECIBIDA);
-		for (Producto2Mano p : misProductos)
-			p.setBloqueado(true);
-		return true;
+		try {
+			Oferta nuevaOferta = new Oferta(this, destinatario, misProductos, susProductos);
+
+			// Si llegamos aquí es que no ha saltado la excepción
+			this.ofertasPendientes.add(nuevaOferta);
+			destinatario.getOfertasPendientes().add(nuevaOferta);
+
+			destinatario.recibirNotificacionTipo("Has recibido una propuesta de intercambio de " + this.getNickname(),
+					TipoNotificacion.OFERTA_RECIBIDA);
+
+			// Bloqueamos mis productos para que no se usen en otra oferta mientras esta
+			// esté pendiente
+			for (Producto2Mano p : misProductos) {
+				p.setBloqueado(true);
+			}
+
+			return true;
+
+		} catch (ProductoNoTasadoException e) {
+			// Capturamos el error si algún producto no tiene estado de tasación
+			System.out.println("Error: No se pudo crear la oferta. " + e.getMessage());
+			return false;
+		}
 	}
 
 //aceptar Oferta
@@ -427,7 +437,6 @@ public class Cliente extends UsuarioRegistrado {
 		for (Pedido ped : tienda.getHistorialVentas()) {
 			if (ped.getCliente().equals(this) && codigoRecogida.equals(ped.getCodigoRecogida())
 					&& ped.getEstado() == EstadoPedido.LISTO_PARA_RECOGER) {
-
 				ped.setRecogida_solicitada(true);
 				return true;
 			}

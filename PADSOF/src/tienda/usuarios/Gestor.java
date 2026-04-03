@@ -3,6 +3,7 @@ package usuarios;
 import java.security.PublicKey;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.IllegalFormatFlagsException;
 import java.util.Iterator;
 import java.util.List;
@@ -39,10 +40,6 @@ public class Gestor extends UsuarioRegistrado {
 		System.out.println("4. Ver Estadísticas de Rendimiento");
 	}
 
-
-	
-	
-	
 	private Empleado buscarEmpleadoporId(String id) {
 		if (id == null || id.isBlank()) {
 			return null;
@@ -107,6 +104,14 @@ public class Gestor extends UsuarioRegistrado {
 		tienda.getUsuarios().add(nuevoEmpleado);
 		System.out.println("Empleado con id " + nuevoEmpleado.getId() + " ha sido dado de alta en la aplicacion");
 		return true;
+	}
+
+	public List<TipoPermisos> crearListaPermisos(TipoPermisos... permisos) {
+		List<TipoPermisos> lista = new ArrayList<>();
+		for (TipoPermisos p : permisos) {
+			lista.add(p);
+		}
+		return lista;
 	}
 
 	public boolean darDeAltaEmpleados_Permisos(String nickname, String password, List<TipoPermisos> permisos) {
@@ -187,7 +192,7 @@ public class Gestor extends UsuarioRegistrado {
 	}
 
 	// GESTION DE LOS TIEMPOS MAXIMOS DE LA APLICACION Y PRECIO VALORACION
-	public boolean setTiemposSistema(int tOferta, int tCarrito, int tPago) {
+	public boolean configurarTiemposSistema(int tOferta, int tCarrito, int tPago) {
 		if (tOferta <= 0 || tCarrito <= 0 || tPago <= 0) {
 			System.out.println("Todos los tiempos deben ser mayores que 0");
 			return false;
@@ -398,7 +403,7 @@ public class Gestor extends UsuarioRegistrado {
 		}
 		Categoria c = new Categoria(nombre, descripcion);
 		Tienda.getInstancia().getCategorias().add(c);
-		System.out.println("La categoria " + nombre + " ha sifo creada y añadida correctamente.");
+		System.out.println("La categoria " + nombre + " ha sido creada y añadida correctamente.");
 		return true;
 	}
 
@@ -492,17 +497,18 @@ public class Gestor extends UsuarioRegistrado {
 	public List<Cliente> verClientesConMasPedidosCancelados() {
 		return motorEstadistico.obtenerClientesConMasPedidosCaducados();
 	}
+
 	public double consultarIngresosRango(LocalDate inicio, LocalDate fin) throws RangoFechasInvalidoException {
-        return motorEstadistico.calcularIngresosRangoFechas(inicio, fin);
-    }
+		return motorEstadistico.calcularIngresosRangoFechas(inicio, fin);
+	}
 
-    public double[] consultarIngresosPorMeses(int año) throws AnioInvalidoException, RangoFechasInvalidoException {
-        return motorEstadistico.calcularIngresosMesesAño(año);
-    }
+	public double[] consultarIngresosPorMeses(int año) throws AnioInvalidoException, RangoFechasInvalidoException {
+		return motorEstadistico.calcularIngresosMesesAño(año);
+	}
 
-    public double[] consultarIngresosPorMesesActual() throws AnioInvalidoException, RangoFechasInvalidoException {
-        return motorEstadistico.calcularIngresosMesesAñoActual();
-    }
+	public double[] consultarIngresosPorMesesActual() throws AnioInvalidoException, RangoFechasInvalidoException {
+		return motorEstadistico.calcularIngresosMesesAñoActual();
+	}
 
 	public double consultarIngresosVenta() {
 		return motorEstadistico.calcularIngresosVenta();

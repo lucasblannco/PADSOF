@@ -46,7 +46,7 @@ public class PruebaRecomendador {
 		}
 
 		// el gestor configura los tiempos del sistema (necesario para el carrito)
-		gestor.setTiemposSistema(60, 60, 60);
+		gestor.configurarTiemposSistema(60, 60, 60);
 
 		// el gestor crea un empleado q pueda tasar
 		List<TipoPermisos> permisosT = new ArrayList<>();
