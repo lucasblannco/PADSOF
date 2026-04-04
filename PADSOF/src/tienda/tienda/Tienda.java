@@ -145,12 +145,14 @@ public class Tienda {
 		}
 		return productos;
 	}
+
 	public void imprimirCatalogo() {
-	    System.out.println("   CATÁLOGO DE PRODUCTOS (" + stockVentas.size() + ") ");
-	    for (ProductoVenta p : stockVentas) {
-	        System.out.println("  " + p.resumen());
-	    }
+		System.out.println("   CATÁLOGO DE PRODUCTOS (" + stockVentas.size() + ") ");
+		for (ProductoVenta p : stockVentas) {
+			System.out.println("  " + p.resumen());
+		}
 	}
+
 	// Busca por id iterando la lista — robusto aunque haya huecos en los indices
 	public ProductoVenta buscarProductoVentaPorId(String idProducto) {
 		if (idProducto == null || idProducto.isBlank())
@@ -169,7 +171,6 @@ public class Tienda {
 			if (c.getNombre().equalsIgnoreCase(nombre))
 				return c;
 		}
-		
 
 		return null;
 	}
@@ -187,26 +188,27 @@ public class Tienda {
 		}
 		return productos;
 	}
+
 	public Pack buscarPackPorNombre(String nombre) {
-	    if (nombre == null || nombre.isBlank()) return null;
-	    for (ProductoVenta p : stockVentas) {
-	        if (p instanceof Pack && p.getNombre().equalsIgnoreCase(nombre)) {
-	            return (Pack) p;
-	        }
-	    }
-	    System.out.println(" No existe ningún pack con el nombre: " + nombre);
-	    return null;
+		if (nombre == null || nombre.isBlank())
+			return null;
+		for (ProductoVenta p : stockVentas) {
+			if (p instanceof Pack && p.getNombre().equalsIgnoreCase(nombre)) {
+				return (Pack) p;
+			}
+		}
+		System.out.println(" No existe ningún pack con el nombre: " + nombre);
+		return null;
 	}
-	
+
 	public void imprimirUsuariosConSesionActiva() {
-	    System.out.println("  Usuarios con sesion activa: " + usuariosConSesionActiva.size());
-	    for (UsuarioRegistrado u : usuariosConSesionActiva) {
-	        String tipo = u instanceof Gestor ? "GESTOR" 
-	                    : u instanceof Empleado ? "EMPLEADO" 
-	                    : "CLIENTE";
-	        System.out.println("   - [" + tipo + "] " + u.getNickname() + " | id: " + u.getId());
-	    }
+		System.out.println("  Usuarios con sesion activa: " + usuariosConSesionActiva.size());
+		for (UsuarioRegistrado u : usuariosConSesionActiva) {
+			String tipo = u instanceof Gestor ? "GESTOR" : u instanceof Empleado ? "EMPLEADO" : "CLIENTE";
+			System.out.println("   - [" + tipo + "] " + u.getNickname() + " | id: " + u.getId());
+		}
 	}
+
 	public List<ProductoVenta> buscarProductoPorCategoria(String nombreCategoria) {
 		Categoria cat = buscarCategoriaPorNombre(nombreCategoria);
 		if (cat == null) {
@@ -354,7 +356,6 @@ public class Tienda {
 		return resultado;
 	}
 
-	// Bug corregido: getPreferencias() -> verPreferencias()
 	public void notificarDescuento(Descuento d) {
 		for (Cliente c : obtenerClientesTienda()) {
 			if (c.getPreferencias().debeRecibirNotificacion(TipoNotificacion.DESCUENTO)) {
@@ -363,8 +364,6 @@ public class Tienda {
 		}
 	}
 
-	// Bug corregido: recibirNotificacion() no existe en Cliente ->
-	// usar recibirNotificacionTipo con tipo obligatorio CONFIRMACION_RESERVA_CARRITO
 	public Cliente registrarNuevoCliente(String nickname, String password, String dni) {
 		if (!dni.matches("\\d{8}[A-Za-z]")) {
 			System.out.println("El DNI no tiene el formato correcto (8 dígitos y 1 letra).");
@@ -383,8 +382,9 @@ public class Tienda {
 
 		Cliente nuevo = new Cliente(nickname, password, dni);
 		this.usuarios.add(nuevo);
-		nuevo.recibirNotificacionTipo("¡Bienvenido a CheckPoint, " + nickname
-				+ "! Te has registrado correctamente, ahora podrás consultar nuestra tienda.",
+		nuevo.recibirNotificacionTipo(
+				"¡Bienvenido a CheckPoint, " + nickname
+						+ "! Te has registrado correctamente, ahora podrás consultar nuestra tienda.",
 				TipoNotificacion.CONFIRMACION_RESERVA_CARRITO);
 		return nuevo;
 	}
@@ -439,7 +439,9 @@ public class Tienda {
 
 	// - DESCUENTOS
 	public void agregarDescuento(Descuento d) {
-		this.descuentosActivos.add(d);
+		if (d.estaActivo()) {
+			this.descuentosActivos.add(d);
+		}
 		this.historialDescuentos.add(d);
 	}
 
@@ -491,6 +493,32 @@ public class Tienda {
 			}
 		}
 		carrito.setDescuentoAplicado(null);
+	}
+
+	public void imprimirDescuentosActivos() {
+		if (descuentosActivos.isEmpty()) {
+			System.out.println("  No hay descuentos activos.");
+			return;
+		}
+		System.out.println("  Descuentos activos (" + descuentosActivos.size() + "):");
+		for (Descuento d : descuentosActivos) {
+			System.out.println("   [" + d.getId() + "] " + d.getNombre() + " | activo: " + d.estaActivo() + " | desde: "
+					+ d.getFechaInicio().toLocalDate() + " " + d.getFechaInicio().toLocalTime().withNano(0) + " hasta: "
+					+ d.getFechaFin().toLocalDate() + " " + d.getFechaFin().toLocalTime().withNano(0));
+		}
+	}
+
+	public void imprimirHistorialDescuentos() {
+		if (historialDescuentos.isEmpty()) {
+			System.out.println("  No hay descuentos en el historial.");
+			return;
+		}
+		System.out.println("  Historial de descuentos (" + historialDescuentos.size() + "):");
+		for (Descuento d : historialDescuentos) {
+			System.out.println("   [" + d.getId() + "] " + d.getNombre() + " | activo: " + d.estaActivo() + " | desde: "
+					+ d.getFechaInicio().toLocalDate() + " " + d.getFechaInicio().toLocalTime().withNano(0) + " hasta: "
+					+ d.getFechaFin().toLocalDate() + " " + d.getFechaFin().toLocalTime().withNano(0));
+		}
 	}
 
 	// --- GESTIÓN DE VENTAS NUEVAS
@@ -643,66 +671,77 @@ public class Tienda {
 		}
 		this.precioValoracion = precioTasacion;
 	}
-	
-	//Metodo para los test
+
+	// Metodo para los test
 	public void vaciarTienda() {
 		Estadistica est = Estadistica.getInstancia();
-	    est.setnProductosVentas(1);
-	    est.setnUsuarioRegistrado(1);
-	    est.setnUsuarioNoRegistrado(1);
-	    est.setnProducto2Mano(1);
-	    est.setnVentas(1);
-	    est.setnDescuentos(1);
-	    est.setnIntercambiosFinalizados(1);
-	    est.setnCategorias(1);
-	    est.setnCarritos(1);
-	    est.setnReseñas(1);
-	    est.setnTasacionesCobradas(0);
-	    est.setnNotificaciones(1);
-	  
+		est.setnProductosVentas(1);
+		est.setnUsuarioRegistrado(1);
+		est.setnUsuarioNoRegistrado(1);
+		est.setnProducto2Mano(1);
+		est.setnVentas(1);
+		est.setnDescuentos(1);
+		est.setnIntercambiosFinalizados(1);
+		est.setnCategorias(1);
+		est.setnCarritos(1);
+		est.setnReseñas(1);
+		est.setnTasacionesCobradas(0);
+		est.setnNotificaciones(1);
+
 		// 1. Limpiamos las listas de usuarios y sesiones
-	    if (this.usuarios != null) {
-	        this.usuarios.clear();
-	        // RE-CREAMOS EL GESTOR: Al ser el "USR-1", los tests lo necesitan vivo
-	        Gestor gestor = new Gestor();
-	        this.usuarios.add(gestor);
-	        
-	        // También reseteamos las sesiones activas
-	        if (this.usuariosConSesionActiva != null) {
-	            this.usuariosConSesionActiva.clear();
-	            this.usuariosConSesionActiva.add(gestor);
-	        }
-	    }
+		if (this.usuarios != null) {
+			this.usuarios.clear();
+			// RE-CREAMOS EL GESTOR: Al ser el "USR-1", los tests lo necesitan vivo
+			Gestor gestor = new Gestor();
+			this.usuarios.add(gestor);
 
-	    // 2. Limpiamos el stock y catálogos
-	    if (this.stockVentas != null) this.stockVentas.clear();
-	    if (this.catalogoIntercambio != null) this.catalogoIntercambio.clear();
-	    if (this.pendientes_Tasacion != null) this.pendientes_Tasacion.clear();
-	    
-	    // 3. Limpiamos categorías y descuentos
-	    if (this.categorias != null) this.categorias.clear();
-	    if (this.descuentosActivos != null) this.descuentosActivos.clear();
-	    if (this.historialDescuentos != null) this.historialDescuentos.clear();
-	    
-	    // 4. Limpiamos historial de ventas y notificaciones
-	    if (this.historialVentas != null) this.historialVentas.clear();
-	    if (this.historialNotificaciones != null) this.historialNotificaciones.clear();
-	    if (this.intercambiosFinalizados != null) this.intercambiosFinalizados.clear();
+			// También reseteamos las sesiones activas
+			if (this.usuariosConSesionActiva != null) {
+				this.usuariosConSesionActiva.clear();
+				this.usuariosConSesionActiva.add(gestor);
+			}
+		}
 
-	    // 5. Opcional: Resetear tiempos si quieres que cada test los configure
-	    this.tiempoMaxCarrito = 0;
-	    this.tiempoMaxOferta = 0;
-	    this.tiempoMaxPago = 0;
-	 // Resetear contadores de Estadistica
-	    
+		// 2. Limpiamos el stock y catálogos
+		if (this.stockVentas != null)
+			this.stockVentas.clear();
+		if (this.catalogoIntercambio != null)
+			this.catalogoIntercambio.clear();
+		if (this.pendientes_Tasacion != null)
+			this.pendientes_Tasacion.clear();
+
+		// 3. Limpiamos categorías y descuentos
+		if (this.categorias != null)
+			this.categorias.clear();
+		if (this.descuentosActivos != null)
+			this.descuentosActivos.clear();
+		if (this.historialDescuentos != null)
+			this.historialDescuentos.clear();
+
+		// 4. Limpiamos historial de ventas y notificaciones
+		if (this.historialVentas != null)
+			this.historialVentas.clear();
+		if (this.historialNotificaciones != null)
+			this.historialNotificaciones.clear();
+		if (this.intercambiosFinalizados != null)
+			this.intercambiosFinalizados.clear();
+
+		// 5. Opcional: Resetear tiempos si quieres que cada test los configure
+		this.tiempoMaxCarrito = 0;
+		this.tiempoMaxOferta = 0;
+		this.tiempoMaxPago = 0;
+		// Resetear contadores de Estadistica
+
 	}
+
 	public ArrayList<Categoria> seleccionarCategorias(String... nombres) {
-	    ArrayList<Categoria> lista = new ArrayList<>();
-	    for (String nombre : nombres) {
-	        Categoria c = buscarCategoriaPorNombre(nombre);
-	        if (c != null) lista.add(c);
-	    }
-	    return lista;
+		ArrayList<Categoria> lista = new ArrayList<>();
+		for (String nombre : nombres) {
+			Categoria c = buscarCategoriaPorNombre(nombre);
+			if (c != null)
+				lista.add(c);
+		}
+		return lista;
 	}
-	
+
 }

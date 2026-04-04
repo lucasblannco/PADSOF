@@ -45,8 +45,6 @@ public class Cliente extends UsuarioRegistrado {
 		this.notificaciones = new ArrayList<>();
 	}
 
-	
-
 	public void subirProducto(String nombre, String descripString, String imagen) {
 		Producto2Mano product = new Producto2Mano(this, nombre, descripString, imagen);
 		carteraIntercambio.add(product);
@@ -70,8 +68,8 @@ public class Cliente extends UsuarioRegistrado {
 			return false;
 		}
 		if (Tienda.getInstancia().getPendientesTasacion().contains(p)) {
-		    System.out.println("El producto ya está pendiente de tasacion.");
-		    return false;
+			System.out.println("El producto ya está pendiente de tasacion.");
+			return false;
 		}
 		if (p.isVisible()) {
 			System.out.println("El producto ya ha sido tasado");
@@ -181,15 +179,15 @@ public class Cliente extends UsuarioRegistrado {
 
 //aceptar Oferta
 	public void confirmarIntercambio(Oferta oferta) {
-	    if (this.getOfertasParaDecidir().contains(oferta)) {
-	        try {
-	            oferta.aceptarOferta();
-	        } catch (OfertaNoDisponibleException e) {
-	            System.out.println(e.getMessage());
-	        }
-	        return;
-	    }
-	    System.out.println("Esta oferta no se encuentra  disponible");
+		if (this.getOfertasParaDecidir().contains(oferta)) {
+			try {
+				oferta.aceptarOferta();
+			} catch (OfertaNoDisponibleException e) {
+				System.out.println(e.getMessage());
+			}
+			return;
+		}
+		System.out.println("Esta oferta no se encuentra  disponible");
 	}
 
 	public List<Oferta> verIntercambioscon(Cliente c) {
@@ -203,6 +201,62 @@ public class Cliente extends UsuarioRegistrado {
 			}
 		}
 		return intercambios;
+	}
+	public void verMisOfertasEnviadas() {
+	    List<Oferta> enviadas = getOfertasEnEspera();
+	    if (enviadas.isEmpty()) {
+	        System.out.println("  " + getNickname() + " no tiene ofertas enviadas pendientes.");
+	        return;
+	    }
+	    System.out.println("  Ofertas enviadas de " + getNickname()
+	        + " (" + enviadas.size() + "):");
+	    for (Oferta o : enviadas) {
+	        o.imprimirResumen();
+	    }
+	}
+
+	public void verMisOfertasPorResponder() {
+	    List<Oferta> porResponder = getOfertasParaDecidir();
+	    if (porResponder.isEmpty()) {
+	        System.out.println("  " + getNickname() + " no tiene ofertas por responder.");
+	        return;
+	    }
+	    System.out.println("  Ofertas por responder de " + getNickname()
+	        + " (" + porResponder.size() + "):");
+	    for (Oferta o : porResponder) {
+	        o.imprimirResumen();
+	    }
+	}
+	public void verMiHistorialIntercambios() {
+		if (historialIntercambios.isEmpty()) {
+			System.out.println("  " + getNickname() + " no tiene intercambios finalizados.");
+			return;
+		}
+		System.out.println(
+				"  Historial de intercambios de " + getNickname() + " (" + historialIntercambios.size() + "):");
+		for (Oferta o : historialIntercambios) {
+			System.out.println(
+					"   [" + o.getId() + "] " + o.getOrigen().getNickname() + " <-> " + o.getDestino().getNickname());
+
+			// Si soy el origen, yo di los ofertados y recibí los solicitados
+			// Si soy el destino, yo di los solicitados y recibí los ofertados
+			boolean soyOrigen = o.getOrigen().equals(this);
+
+			String dados = "";
+			String recibidos = "";
+			for (Producto2Mano p : (soyOrigen ? o.getProductosOfertados() : o.getProductosSolicitados())) {
+				if (!dados.equals(""))
+					dados += ", ";
+				dados += p.getNombre();
+			}
+			for (Producto2Mano p : (soyOrigen ? o.getProductosSolicitados() : o.getProductosOfertados())) {
+				if (!recibidos.equals(""))
+					recibidos += ", ";
+				recibidos += p.getNombre();
+			}
+			System.out.println("   Entregados: " + dados);
+			System.out.println("   Recibidos:  " + recibidos);
+		}
 	}
 
 	public boolean productoHasidoPedidoYentregado(ProductoVenta p) {
@@ -326,7 +380,12 @@ public class Cliente extends UsuarioRegistrado {
 		if (o == null || !this.getOfertasPendientes().contains(o)) {
 			return false;
 		}
-		o.rechazar();
+		try {
+			o.rechazar();
+		} catch (OfertaNoDisponibleException e) {
+			System.out.println(e.getMessage());
+			return false;
+		}
 		return true;
 	}
 
@@ -518,12 +577,13 @@ public class Cliente extends UsuarioRegistrado {
 			}
 		}
 	}
+
 	public List<Producto2Mano> crearListaProductos2Mano(Producto2Mano... productos) {
-	    List<Producto2Mano> lista = new ArrayList<>();
-	    for (Producto2Mano p : productos) {
-	        lista.add(p);
-	    }
-	    return lista;
+		List<Producto2Mano> lista = new ArrayList<>();
+		for (Producto2Mano p : productos) {
+			lista.add(p);
+		}
+		return lista;
 	}
 	// --- GETTERS ---
 

@@ -21,13 +21,13 @@ public class Oferta {
 
 	public Oferta(Cliente origen, Cliente destino, List<Producto2Mano> productosOfertados,
 			List<Producto2Mano> productosSolicitados) throws ProductoNoTasadoException {
-		
+
 		// Validamos que todos los productos ofertados estén tasados
 		for (Producto2Mano p : productosOfertados) {
 			if (p.getEstado() == null) { // Si el estado es null, es que no ha sido tasado
 				throw new ProductoNoTasadoException(p.getId(), p.getNombre());
 			}
-	}
+		}
 		// Validamos que todos los productos solicitados estén tasados
 		for (Producto2Mano p : productosSolicitados) {
 			if (p.getEstado() == null) {
@@ -60,7 +60,7 @@ public class Oferta {
 		// mas ofertas
 		this.origen.getOfertasPendientes().remove(this);
 		this.destino.getOfertasPendientes().remove(this);
-		this.origen.recibirNotificacionTipo("Tu oferta con ID " + this.getId() + " ha sido RECHAZADA por el cliente"
+		this.origen.recibirNotificacionTipo("Tu oferta con ID " + this.getId() + " ha sido RECHAZADA por el cliente "
 				+ this.destino.getNickname() + ".", TipoNotificacion.OFERTA_RECHAZADA);
 	}
 
@@ -96,32 +96,35 @@ public class Oferta {
 			// AHORA SE ENVIARIAN
 		}
 		Tienda.getInstancia().registrarIntercambioFinalizado(this);
-		this.origen.recibirNotificacionTipo("¡Intercambio ID " + this.id + " aceptado por el usuario"
+		origen.recibirNotificacionTipo("¡Intercambio ID " + this.id + " aceptado por el usuario "
 				+ this.getDestino().getNickname() + "! Preparando envío.", TipoNotificacion.INTERCAMBIO_REALIZADO);
-		this.destino.recibirNotificacionTipo("Has aceptado el intercambio con el usuario" + this.origen.getNickname()
+		destino.recibirNotificacionTipo("Has aceptado el intercambio con el usuario " + this.origen.getNickname()
 				+ ". Los productos han salido de tu inventario.", TipoNotificacion.INTERCAMBIO_REALIZADO);
-		 this.estado = EstadoOferta.REALIZADA; 
+		this.estado = EstadoOferta.REALIZADA;
 	}
 
 	public boolean haCaducado() {
-		int tiempoMaxOferta	=Tienda.getInstancia().getTiempoMaxOferta();
-		 return LocalDateTime.now().isAfter(fechaOferta.plusMinutes(tiempoMaxOferta));//Comprobamos si el tiempo en el que finaliza la oferta es anterior al tiempo real de ahora
+		int tiempoMaxOferta = Tienda.getInstancia().getTiempoMaxOferta();
+		return LocalDateTime.now().isAfter(fechaOferta.plusMinutes(tiempoMaxOferta));// Comprobamos si el tiempo en el
+																						// que finaliza la oferta es
+																						// anterior al tiempo real de
+																						// ahora
 	}
 
 	public void imprimirResumen() {
 		System.out.println("Resumen de la oferta:");
-	    System.out.println("  [" + id + "]"
-	        + " | estado: " + estado
-	        + " | " + origen.getNickname() + " -> " + destino.getNickname());
-	    System.out.println("  Productos ofertados por " + origen.getNickname() + ":");
-	    for (Producto2Mano p : productosOfertados) {
-	        System.out.println("   -> " + p.resumen());
-	    }
-	    System.out.println("  Productos solicitados a " + destino.getNickname() + ":");
-	    for (Producto2Mano p : productosSolicitados) {
-	        System.out.println("   -> " + p.resumen());
-	    }
+		System.out.println("  [" + id + "]" + " | estado: " + estado + " | " + origen.getNickname() + " -> "
+				+ destino.getNickname());
+		System.out.println("  Productos ofertados por " + origen.getNickname() + ":");
+		for (Producto2Mano p : productosOfertados) {
+			System.out.println("   -> " + p.resumen());
+		}
+		System.out.println("  Productos solicitados a " + destino.getNickname() + ":");
+		for (Producto2Mano p : productosSolicitados) {
+			System.out.println("   -> " + p.resumen());
+		}
 	}
+
 	// Getters y Setters
 	public String getId() {
 		return id;

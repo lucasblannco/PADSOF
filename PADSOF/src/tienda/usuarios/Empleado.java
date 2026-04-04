@@ -272,6 +272,8 @@ public class Empleado extends UsuarioRegistrado {
 		}
 		try {
 			o.aceptarYEjecutar();
+			this.recibirNotificacion("Has confirmado el intercambio entre los usuarios " + o.getOrigen().getNickname()
+					+ " y " + o.getDestino().getNickname());
 		} catch (OfertaNoDisponibleException e) {
 			System.out.println(e.getMessage());
 			return false;
