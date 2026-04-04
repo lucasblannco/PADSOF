@@ -100,27 +100,25 @@ public class MotorEstadistico {
 			System.out.println("La tienda no ha sido inicializada.");
 			return 0.0;
 		} // tenemos en cuenta los tasados y los no tasados
-		return this.calcularIngresosVentaRango(inicio, fin)
-				+ this.calcularTasacionesEnRango(tienda.getCatalogoIntercambio(), inicio, fin)
-				+ this.calcularTasacionesEnRango(tienda.getPendientesTasacion(), inicio, fin);
+		return this.calcularIngresosVentaRango(inicio, fin) + this.calcularTasacionesEnRango(inicio, fin);
 	}
 
 	public double[] calcularIngresosMesesAño(int año) throws AnioInvalidoException, RangoFechasInvalidoException {
-		 double[] ingresosPorMes = new double[12];
+		double[] ingresosPorMes = new double[12];
 		if (año <= 0) {
 			throw new AnioInvalidoException(año);
 		}
- 
+
 		for (int mes = 1; mes <= 12; mes++) {
-			YearMonth ym     = YearMonth.of(año, mes);//devuelve el mes en la posicion mes del año año
-			LocalDate inicio = ym.atDay(1);//primer dia
-			LocalDate fin    = ym.atEndOfMonth();//ultimo dia
+			YearMonth ym = YearMonth.of(año, mes);// devuelve el mes en la posicion mes del año año
+			LocalDate inicio = ym.atDay(1);// primer dia
+			LocalDate fin = ym.atEndOfMonth();// ultimo dia
 			ingresosPorMes[mes - 1] = this.calcularIngresosRangoFechas(inicio, fin);
 		}
- 
+
 		return ingresosPorMes;
 	}
-	
+
 	public double[] calcularIngresosMesesAñoActual() throws AnioInvalidoException, RangoFechasInvalidoException {
 		return this.calcularIngresosMesesAño(LocalDate.now().getYear());
 	}
@@ -137,7 +135,8 @@ public class MotorEstadistico {
 
 		double total = 0.0;
 		for (Pedido p : tienda.getHistorialVentas()) {
-			if (p.getEstado() == EstadoPedido.CANCELADO) continue;//confirmamos q el pedido se realizo
+			if (p.getEstado() == EstadoPedido.CANCELADO)
+				continue;// confirmamos q el pedido se realizo
 			LocalDate fechaPedido = p.getFechaCreacion().toLocalDate();
 			if (!fechaPedido.isBefore(inicio) && !fechaPedido.isAfter(fin)) {
 				total += p.getTotal();
@@ -158,13 +157,13 @@ public class MotorEstadistico {
 		return (Estadistica.getInstancia().getnTasacionesCobradas()) * (Tienda.getInstancia().getPrecioTasacion());
 	}
 
-	private double calcularTasacionesEnRango(List<Producto2Mano> productos, LocalDate inicio, LocalDate fin) {
+	private double calcularTasacionesEnRango(LocalDate inicio, LocalDate fin) {
 		double total = 0.0;
-		for (Producto2Mano p : productos) {
+		for (Producto2Mano p : Tienda.getInstancia().getHistorialProductos2Mano()) {
 			if (p.getValoracion() != null && p.getValoracion().getFecha() != null) {
 				LocalDate fechaVal = p.getValoracion().getFecha().toLocalDate();
 				if (!fechaVal.isBefore(inicio) && !fechaVal.isAfter(fin)) {
-					total += p.getValoracion().getPrecioTasacion();
+					total += p.getValoracion().getPrecioPagado();
 				}
 			}
 		}

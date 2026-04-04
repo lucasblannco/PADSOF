@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.Date;
 
 import Excepcion.ValoracionInvalidaException;
+import tienda.Tienda;
 import usuarios.Empleado;
 import ventas.Pago;
 
@@ -14,7 +15,7 @@ public class Valoracion {
 	private Empleado empleado;
 	private Pago pago;
 	private double precioTasacion;
-
+	private double precioPagado; 
 	public Valoracion(double precioTasacion, EstadoProducto estadoProducto, Empleado empleado) {
 		if (precioTasacion < 0) {
 			throw new ValoracionInvalidaException("El precio de tasación no puede ser negativo.");
@@ -29,7 +30,8 @@ public class Valoracion {
 		this.fecha = LocalDateTime.now();
 		this.estadoProducto = estadoProducto;
 		this.empleado = empleado;
-		this.precioTasacion = precioTasacion;
+		this.precioTasacion=precioTasacion;
+		this.precioPagado=Tienda.getInstancia().getPrecioTasacion();
 	}
 
 	public Valoracion(LocalDateTime fecha, double precioTasacion, EstadoProducto estadoProducto,
@@ -113,4 +115,13 @@ public class Valoracion {
 		}
 		this.precioTasacion = precioTasacion;
 	}
+
+	public double getPrecioPagado() {
+		return precioPagado;
+	}
+
+	public void setPrecioPagado(double precioPagado) {
+		this.precioPagado = precioPagado;
+	}
+
 }
