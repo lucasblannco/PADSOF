@@ -2,6 +2,7 @@ package usuarios;
 
 import java.util.List;
 
+import productos.Categoria;
 import productos.Producto2Mano;
 import productos.ProductoVenta;
 import productos.Reseña;
@@ -86,7 +87,7 @@ public abstract class UsuarioRegistrado {
 			System.out.println("El producto '" + p.getNombre() + "' no tiene reseñas.");
 			return new ArrayList<>();
 		}
-		System.out.println("=== Reseñas de '" + p.getNombre() + "' ===" + " | Media: "
+		System.out.println(" Reseñas de '" + p.getNombre() + "' " + " | Media: "
 				+ String.format("%.1f", p.getMediaPuntuacion()) + "/10");
 		for (Reseña r : p.getReseñas()) {
 			System.out.println("  " + r);
@@ -113,7 +114,14 @@ public abstract class UsuarioRegistrado {
 	}
 
 	public ProductoVenta buscarProductoPorId(String id) {
-		return Tienda.getInstancia().buscarProductoVentaPorId(id);
+	    ProductoVenta p = Tienda.getInstancia().buscarProductoVentaPorId(id);
+	    if (p == null) {
+	        System.out.println("  No se encontro ningun producto con id '" + id + "'");
+	        return null;
+	    }
+	    System.out.println("  Producto encontrado:");
+	    System.out.println("  " + p.resumen());
+	    return p;
 	}
 
 	public List<ProductoVenta> buscarProductosPorCategoria(String nombreCategoria) {
@@ -143,13 +151,60 @@ public abstract class UsuarioRegistrado {
 
 	public List<ProductoVenta> buscarProductosVentaFiltrados() {
 	    List<ProductoVenta> resultado = Tienda.getInstancia().buscarProductosFiltrados(filtroVenta);
-	    System.out.println("  Resultados con filtro " + filtroVenta + " (" + resultado.size() + "):");
+	    if (resultado.isEmpty()) {
+	        System.out.println("  Ningun producto cumple el filtro: " + filtroVenta);
+	        return resultado;
+	    }
 	    for (ProductoVenta p : resultado) {
 	        System.out.println("  " + p.resumen());
 	    }
 	    return resultado;
 	}
 
+	public void filtrarPorPrecio(double min, double max) {
+	    filtroVenta.resetear();
+	    filtroVenta.setPrecioMinimo(min);
+	    filtroVenta.setPrecioMaximo(max);
+	    System.out.println("  Filtro aplicado: " + filtroVenta);
+	    buscarProductosVentaFiltrados();
+	    filtroVenta.resetear();
+	}
+
+	public void filtrarPorCategoria(String nombreCategoria) {
+	    filtroVenta.resetear();
+	    Categoria c = Tienda.getInstancia().buscarCategoriaPorNombre(nombreCategoria);
+	    if (c == null) {
+	        System.out.println("  Categoria '" + nombreCategoria + "' no encontrada.");
+	        return;
+	    }
+	    filtroVenta.añadirCategoria(c);
+	    System.out.println("  Filtro aplicado: " + filtroVenta);
+	    buscarProductosVentaFiltrados();
+	    filtroVenta.resetear();
+	}
+
+	public void filtrarPorPuntuacion(double puntuacionMinima) {
+	    filtroVenta.resetear();
+	    filtroVenta.setPuntuacionMinima(puntuacionMinima);
+	    System.out.println("  Filtro aplicado: " + filtroVenta);
+	    buscarProductosVentaFiltrados();
+	    filtroVenta.resetear();
+	}
+
+	public void filtrarProductos(double precioMin, double precioMax,
+	        double puntuacionMin, String... categorias) {
+	    filtroVenta.resetear();
+	    filtroVenta.setPrecioMinimo(precioMin);
+	    filtroVenta.setPrecioMaximo(precioMax);
+	    filtroVenta.setPuntuacionMinima(puntuacionMin);
+	    for (String nombreCat : categorias) {
+	        Categoria c = Tienda.getInstancia().buscarCategoriaPorNombre(nombreCat);
+	        if (c != null) filtroVenta.añadirCategoria(c);
+	    }
+	    System.out.println("  Filtro aplicado: " + filtroVenta);
+	    buscarProductosVentaFiltrados();
+	    filtroVenta.resetear();
+	}
 	public List<Producto2Mano> buscarProductos2ManoFiltrados() {
 		return Tienda.getInstancia().buscarSegundaManoFiltrado(filtro2Mano);
 	}

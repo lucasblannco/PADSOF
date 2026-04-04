@@ -236,7 +236,7 @@ public class Cliente extends UsuarioRegistrado {
 		if (this.productoHasidoPedidoYentregado(p)) {
 			Reseña res = new Reseña(this, p, pts, texto);
 			this.reseñas.add(res);
-			
+
 			System.out.println("Reseña creada y añadida con exito ");
 			return true;
 		}
@@ -400,7 +400,9 @@ public class Cliente extends UsuarioRegistrado {
 			this.getHistorialPedidos().add(pedido);
 			Tienda.getInstancia().registrarVenta(pedido);
 			this.carritoActual = null;
-			System.out.println("El cliente "+this.getNickname()+"ha reservado correctamente su carrito. Debe pagarlo antes de que se cumplan "+Tienda.getInstancia().getTiempoMaxPago()+" minutos.");
+			System.out.println("El cliente " + this.getNickname()
+					+ "ha reservado correctamente su carrito. Debe pagarlo antes de que se cumplan "
+					+ Tienda.getInstancia().getTiempoMaxPago() + " minutos.");
 			this.recibirNotificacionTipo(
 					"Pedido creado correctamente. Tienes " + Tienda.getInstancia().getTiempoMaxPago()
 							+ " minutos para pagarlo y completar la reserva.",
@@ -489,13 +491,47 @@ public class Cliente extends UsuarioRegistrado {
 		this.setNickname(nuevoNickname);
 		this.setPassword(nuevoPass); // Recuerda tener estos métodos en la clase padre
 
-		System.out.println(" Perfil del cliente actualizado con éxito. Tu nickname actual es: "+this.getNickname());
+		System.out.println(" Perfil del cliente actualizado con éxito. Tu nickname actual es: " + this.getNickname());
 		return true;
 	}
 
 	public void verMisPreferencias() {
-	    System.out.println("Preferencias de " + this.getNickname()+": ");
-	    System.out.println(this.preferencias);
+		System.out.println("Preferencias de " + this.getNickname() + ": ");
+		System.out.println(this.preferencias);
+	}
+
+	public void verHistorialPedidos() {
+		if (historialPedidos.isEmpty()) {
+			System.out.println("  " + getNickname() + " no tiene pedidos.");
+			return;
+		}
+		System.out.println("  Historial de pedidos de " + getNickname() + " (" + historialPedidos.size() + "):");
+		for (Pedido p : historialPedidos) {
+			System.out.println(
+					"   [" + p.getIdPedido() + "]" + " | total: " + p.getTotal() + "€" + " | estado: " + p.getEstado());
+			for (LineaPedido l : p.getLineas()) {
+				System.out.println("     -> " + l.getProducto().getNombre() + " x" + l.getCantidad());
+			}
+		}
+	}
+
+	public void verMiCartera() {
+		if (carteraIntercambio.isEmpty()) {
+			System.out.println("  " + getNickname() + " no tiene productos en su cartera.");
+			return;
+		}
+		System.out.println("  Cartera de " + getNickname() + " (" + carteraIntercambio.size() + " productos):");
+		for (Producto2Mano p : carteraIntercambio) {
+			if (p.getValoracion() == null) {
+				System.out.println(
+						"   [" + p.getId() + "] " + p.getNombre() + " | sin  tasacion, no visible para los demas");
+			} else {
+				System.out.println("   [" + p.getId() + "] " + p.getNombre() + " | precio: "
+						+ p.getValoracion().getPrecioTasacion() + "€" + " | estado: "
+						+ p.getValoracion().getEstadoProducto() + " | visible: " + p.isVisible() + " | bloqueado: "
+						+ p.isBloqueado());
+			}
+		}
 	}
 	// --- GETTERS ---
 

@@ -105,8 +105,8 @@ public class DemostradorMain {
 				"Estrategia");
 
 		empStock.añadirProducto_nuevo("F", "Figura Goku SSJ", "Figura de Dragon Ball", "goku.jpg", 35.00, 5,
-				tienda.seleccionarCategorias("Anime", "Replicas","Accion"), 0, null, 0, 20.0, 15.0, 12.0, "PVC", "Bandai", 0, 0,
-				0, 0, null);
+				tienda.seleccionarCategorias("Anime", "Replicas", "Accion"), 0, null, 0, 20.0, 15.0, 12.0, "PVC",
+				"Bandai", 0, 0, 0, 0, null);
 
 		empStock.añadirProducto_nuevo("C", "Akira Vol.1", "Manga de ciencia ficcion", "akira.jpg", 12.99, 20,
 				tienda.seleccionarCategorias("Anime", "Ciencia-ficcion"), 350, "Kodansha", 1982, 0, 0, 0, null, null, 0,
@@ -246,24 +246,23 @@ public class DemostradorMain {
 		System.out.println("Intento de desactivar una notificacion que es obligatoria: ");
 		boolean resultado = alice.configurarPreferenciaNotificacion(TipoNotificacion.PAGO_EXITOSO, false);
 
-		System.out.println("FLUJO DE COMPRA Y BUSQUEDA: ");
-		
-		System.out.println("  Todos los productos disponibles: " + tienda.buscarProductoVenta().size());
-		tienda.imprimirCatalogo();
-		
+		System.out.println("\nFLUJO DE COMPRA Y BUSQUEDA: ");
 
-		// Alice busca por nombre
+		tienda.imprimirCatalogo();
+
+		// Alice busca por nombre y compra
 		System.out.println("\n  Alice busca 'watch':");
 		alice.buscarProductosPorNombre("watch");
 		System.out.println("\n  Alice busca 'catan':");
-		alice.buscarProductosPorNombre("catan");		
+		alice.buscarProductosPorNombre("catan");
+
 		alice.añadirProductoCarrito(watchmen, 1);
 		alice.añadirProductoCarrito(catan, 1);
-		System.out.println("  " + alice.getNickname() + " añade al carrito: '" + watchmen.getNombre() + " y "
+		System.out.println("  " + alice.getNickname() + " añade al carrito: '" + watchmen.getNombre() + "' y '"
 				+ catan.getNombre() + "'");
 		alice.reservarCarrito();
 		Pedido pedidoAlice = alice.getHistorialPedidos().get(0);
-		System.out.println("  Carrito reservado : pedido: " + pedidoAlice.getIdPedido() + " | total: "
+		System.out.println("  Carrito reservado: pedido: " + pedidoAlice.getIdPedido() + " | total: "
 				+ pedidoAlice.getTotal() + "€" + " | estado: " + pedidoAlice.getEstado());
 
 		Date fechaTarjeta = new Date(System.currentTimeMillis() + 100000000L);
@@ -272,30 +271,25 @@ public class DemostradorMain {
 
 		if (pagado) {
 			empPedidos.prepararPedido(pedidoAlice.getIdPedido());
-
-			// El usuario solicita recogerlo aportando el codigo de recogida
+			alice.verHistorialPedidos();
 			alice.solicitarRecogidaPedido(pedidoAlice.getCodigoRecogida());
 			System.out.println("  Recogida solicitada: " + pedidoAlice.isRecogida_solicitada());
-
 			empPedidos.entregarPedido(pedidoAlice.getCodigoRecogida());
 			System.out.println("  Pedido entregado -> estado: " + pedidoAlice.getEstado());
-
 			alice.escribirReseña(watchmen, 9, "Una obra maestra absoluta");
 			System.out.println("  Reseña de '" + watchmen.getNombre() + "' -> media: " + watchmen.getMediaPuntuacion());
 		} else {
-			System.out.println("  El pago fue rechazado por el banco.");
-			System.out.println("  El pedido sigue en estado: " + pedidoAlice.getEstado());
-			System.out.println("  Alice puede intentarlo de nuevo con otra tarjeta.");
+			System.out.println("  Pago rechazado por el banco. Estado: " + pedidoAlice.getEstado());
 		}
-		
-		
-		System.out.println("\n  Bob busca los productos de la categoria 'accion':");
-		alice.buscarProductosPorCategoria("accion");
-		
+
+		// Bob busca por categoria y compra
+		System.out.println("\n  Bob busca productos de la categoria 'Accion':");
+		bob.buscarProductosPorCategoria("Accion");
+
 		bob.añadirProductoCarrito(watchmen, 1);
 		bob.reservarCarrito();
 		Pedido pedidoBob = bob.getHistorialPedidos().get(0);
-		System.out.println("  Pedido bob creado: " + pedidoBob.getIdPedido() + " | total: " + pedidoBob.getTotal() + "€"
+		System.out.println("  Pedido bob: " + pedidoBob.getIdPedido() + " | total: " + pedidoBob.getTotal() + "€"
 				+ " | estado: " + pedidoBob.getEstado());
 
 		boolean pagadoBob = bob.pagarCarrito(pedidoBob, "1234567890123456", fechaTarjeta, 123);
@@ -309,15 +303,46 @@ public class DemostradorMain {
 			empPedidos.entregarPedido(pedidoBob.getCodigoRecogida());
 			System.out.println("  Pedido entregado -> estado: " + pedidoBob.getEstado());
 			bob.escribirReseña(watchmen, 7, "Muy bueno pero denso");
-			System.out.println("  Bob reseña '" + watchmen.getNombre() + "'");
 		} else {
-			System.out.println("  Pago rechazado por el banco. Pedido en estado: " + pedidoBob.getEstado());
+			System.out.println("  Pago rechazado por el banco. Estado: " + pedidoBob.getEstado());
 		}
+
+		// Carlos busca con filtros y compra
+		System.out.println("\n  Carlos busca por id el producto akira:");
+		carlos.buscarProductoPorId(akira.getId());
+
+		System.out.println("\n  Busqueda con filtros:");
+
+		System.out.println("\n  Carlos filtra productos entre 10€ y 20€:");
+		carlos.filtrarPorPrecio(10.0, 20.0);
+
+		System.out.println("\n  Bob filtra productos de categoria 'Familiar':");
+		bob.filtrarPorCategoria("Familiar");
+
+		System.out.println("\n  Alice filtra productos con puntuacion minima 7:");
+		alice.filtrarPorPuntuacion(7.0);
+
+		System.out.println("\n  Carlos filtra Anime entre 10€ y 30€:");
+		carlos.filtrarProductos(10.0, 30.0, 0.0, "Anime");
+
+		System.out.println("\n  Bob filtra entre 10€ y 50€ con puntuacion minima 8:");
+		bob.filtrarProductos(10.0, 50.0, 8.0);
+
+		System.out.println("\n  Alice filtra Anime entre 10€ y 20€ con puntuacion minima 7:");
+		alice.filtrarProductos(10.0, 20.0, 7.0, "Anime");
+
+		System.out.println("\n  Carlos filtra con puntuacion minima 10 (sin resultados):");
+		carlos.filtrarPorPuntuacion(10.0);
+
+		System.out.println("\n  Bob filtra categoria inexistente:");
+		bob.filtrarPorCategoria("CategoriaFalsa");
+
+		// Carlos decide comprar akira tras buscarlo
 		carlos.añadirProductoCarrito(akira, 2);
 		carlos.reservarCarrito();
 		Pedido pedidoCarlos = carlos.getHistorialPedidos().get(0);
-		System.out.println("  Pedido carlos creado: " + pedidoCarlos.getIdPedido() + " | total: "
-				+ pedidoCarlos.getTotal() + "€" + " | estado: " + pedidoCarlos.getEstado());
+		System.out.println("  Pedido carlos: " + pedidoCarlos.getIdPedido() + " | total: " + pedidoCarlos.getTotal()
+				+ "€" + " | estado: " + pedidoCarlos.getEstado());
 
 		boolean pagadoCarlos = carlos.pagarCarrito(pedidoCarlos, "1234567890123456", fechaTarjeta, 123);
 		System.out.println(
@@ -325,19 +350,36 @@ public class DemostradorMain {
 
 		if (pagadoCarlos) {
 			empPedidos.prepararPedido(pedidoCarlos.getIdPedido());
-			
 			carlos.solicitarRecogidaPedido(pedidoCarlos.getCodigoRecogida());
 			empPedidos.entregarPedido(pedidoCarlos.getCodigoRecogida());
 			carlos.escribirReseña(akira, 8, "Imprescindible");
+			System.out.println("  Carlos reseña '" + akira.getNombre() + "'");
 		} else {
-			System.out.println("  Pago rechazado por el banco. Pedido en estado: " + pedidoCarlos.getEstado());
+			System.out.println("  Pago rechazado por el banco. Estado: " + pedidoCarlos.getEstado());
 		}
+
 		alice.verReseñasProducto(watchmen);
 		alice.verReseñasProducto(akira);
+
 		System.out.println("\n  Stock tras las compras:");
 		System.out.println("  " + watchmen.resumen());
 		System.out.println("  " + akira.resumen());
 		System.out.println("  " + catan.resumen());
+		System.out.println("\n  Historial de pedidos:");
+		alice.verHistorialPedidos();
+		bob.verHistorialPedidos();
+		carlos.verHistorialPedidos();
+
+		System.out.println("\n PRODUCTOS DE SEGUNDA MANO");
+		alice.subirProducto("Naruto Vol.1", "Manga en buen estado", "naruto.jpg");
+		bob.subirProducto("Figura Pikachu", "Figura original sin caja", "pikachu.jpg");
+		bob.subirProducto("Risk Edicion Especial", "Algo desgastado", "risk.jpg");
+		carlos.subirProducto("One Piece Vol.5", "Buen estado", "op.jpg");
+		System.out.println("\n  Carteras antes de tasar:");
+		alice.verMiCartera();
+		bob.verMiCartera();
+		carlos.verMiCartera();
+
 	}
 
 }
