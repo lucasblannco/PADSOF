@@ -236,7 +236,7 @@ public class Cliente extends UsuarioRegistrado {
 		if (this.productoHasidoPedidoYentregado(p)) {
 			Reseña res = new Reseña(this, p, pts, texto);
 			this.reseñas.add(res);
-			p.getReseñas().add(res);
+			
 			System.out.println("Reseña creada y añadida con exito ");
 			return true;
 		}
@@ -400,6 +400,7 @@ public class Cliente extends UsuarioRegistrado {
 			this.getHistorialPedidos().add(pedido);
 			Tienda.getInstancia().registrarVenta(pedido);
 			this.carritoActual = null;
+			System.out.println("El cliente "+this.getNickname()+"ha reservado correctamente su carrito. Debe pagarlo antes de que se cumplan "+Tienda.getInstancia().getTiempoMaxPago()+" minutos.");
 			this.recibirNotificacionTipo(
 					"Pedido creado correctamente. Tienes " + Tienda.getInstancia().getTiempoMaxPago()
 							+ " minutos para pagarlo y completar la reserva.",
@@ -488,10 +489,14 @@ public class Cliente extends UsuarioRegistrado {
 		this.setNickname(nuevoNickname);
 		this.setPassword(nuevoPass); // Recuerda tener estos métodos en la clase padre
 
-		System.out.println("Perfil del cliente actualizado con éxito.");
+		System.out.println(" Perfil del cliente actualizado con éxito. Tu nickname actual es: "+this.getNickname());
 		return true;
 	}
 
+	public void verMisPreferencias() {
+	    System.out.println("Preferencias de " + this.getNickname()+": ");
+	    System.out.println(this.preferencias);
+	}
 	// --- GETTERS ---
 
 	public List<Pedido> getHistorialPedidos() {

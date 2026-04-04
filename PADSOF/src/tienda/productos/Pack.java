@@ -37,8 +37,6 @@ public class Pack extends ProductoVenta {
 
 		this.lineas.add(lp);
 
-		
-
 		lp.getProducto()
 				.setStockDisponible(lp.getProducto().getStockDisponible() - lp.getUnidades() * this.stockDisponible);
 		return true;
@@ -191,5 +189,17 @@ public class Pack extends ProductoVenta {
 
 	public void setLineas(ArrayList<LineaPack> lineas) {
 		this.lineas = lineas;
+	}
+
+	public void resumenPrecios() {
+	   
+	   System.out.println("Resumen de precios:");
+	    System.out.println(" Suma productos: " + this.calcularSumaProductos() + "€");
+	    System.out.println(" Precio actual:  " + this.calcularPrecioFinal() + "€");
+	    
+	    // Calculamos el ahorro (opcional, pero queda muy bien)
+	    double ahorro = this.calcularSumaProductos() - this.calcularPrecioFinal();
+	    System.out.printf(" Ahorro total:   %.2f€\n", ahorro);
+	  
 	}
 }

@@ -518,6 +518,7 @@ public class Empleado extends UsuarioRegistrado {
 			ped.getCliente().recibirNotificacionTipo("Tu pedido con codigo de recogida " + ped.getCodigoRecogida()
 					+ " está preparado. Puedes recogerlo.", TipoNotificacion.PEDIDO_LISTO);
 		}
+		System.out.println("Pedido preparado correctamente por el empleado "+this.getId()+". Está listo para recoger.");
 		return ok;
 	}
 
@@ -634,6 +635,7 @@ public class Empleado extends UsuarioRegistrado {
 		}
 		Pack p = new Pack(nombre, descripcion, imagen, precioOficial, stock, lineas);
 		Tienda.getInstancia().añadirProducto(p);
+		System.out.println("El empleado "+ id+" ha creado correctamente el pack con id "+p.getId()+".");
 		this.recibirNotificacion("Has creado el pack " + nombre + " correctamente.");
 		return true;
 	}
@@ -669,6 +671,35 @@ public class Empleado extends UsuarioRegistrado {
 		return ((Pack) pack).addProducto(producto, unidades);
 	}
 
+	public boolean modificarUnidadesProductoEnPack(String idProducto, String idPack, int nuevasUnidades) {
+	    if (!puedeRealizarTarea(TipoPermisos.GESTION_PACKS)) {
+	        System.out.println("El empleado " + this.getNickname() + " no tiene permiso para trabajar con packs.");
+	        return false;
+	    }
+	    if (idPack == null || idPack.isBlank()) {
+	        System.out.println("El id del pack no puede estar vacio.");
+	        return false;
+	    }
+	    if (idProducto == null || idProducto.isBlank()) {
+	        System.out.println("El id del producto no puede estar vacio.");
+	        return false;
+	    }
+	    if (nuevasUnidades <= 0) {
+	        System.out.println("Las unidades deben ser mayor que 0.");
+	        return false;
+	    }
+	    ProductoVenta pack = Tienda.getInstancia().buscarProductoVentaPorId(idPack);
+	    if (pack == null || !(pack instanceof Pack)) {
+	        System.out.println("No existe ningun pack con id: " + idPack);
+	        return false;
+	    }
+	    ProductoVenta producto = Tienda.getInstancia().buscarProductoVentaPorId(idProducto);
+	    if (producto == null) {
+	        System.out.println("No existe ningun producto con id: " + idProducto);
+	        return false;
+	    }
+	    return ((Pack) pack).modificarUnidades(producto, nuevasUnidades);
+	}
 	public boolean eliminarProductoDePack(String idPack, String idProducto) {
 		if (!puedeRealizarTarea(TipoPermisos.GESTION_PACKS))
 			return false;

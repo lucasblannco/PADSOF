@@ -145,7 +145,12 @@ public class Tienda {
 		}
 		return productos;
 	}
-
+	public void imprimirCatalogo() {
+	    System.out.println("   CATÁLOGO DE PRODUCTOS (" + stockVentas.size() + ") ");
+	    for (ProductoVenta p : stockVentas) {
+	        System.out.println("  " + p.resumen());
+	    }
+	}
 	// Busca por id iterando la lista — robusto aunque haya huecos en los indices
 	public ProductoVenta buscarProductoVentaPorId(String idProducto) {
 		if (idProducto == null || idProducto.isBlank())
@@ -182,7 +187,26 @@ public class Tienda {
 		}
 		return productos;
 	}
-
+	public Pack buscarPackPorNombre(String nombre) {
+	    if (nombre == null || nombre.isBlank()) return null;
+	    for (ProductoVenta p : stockVentas) {
+	        if (p instanceof Pack && p.getNombre().equalsIgnoreCase(nombre)) {
+	            return (Pack) p;
+	        }
+	    }
+	    System.out.println(" No existe ningún pack con el nombre: " + nombre);
+	    return null;
+	}
+	
+	public void imprimirUsuariosConSesionActiva() {
+	    System.out.println("  Usuarios con sesion activa: " + usuariosConSesionActiva.size());
+	    for (UsuarioRegistrado u : usuariosConSesionActiva) {
+	        String tipo = u instanceof Gestor ? "GESTOR" 
+	                    : u instanceof Empleado ? "EMPLEADO" 
+	                    : "CLIENTE";
+	        System.out.println("   - [" + tipo + "] " + u.getNickname() + " | id: " + u.getId());
+	    }
+	}
 	public List<ProductoVenta> buscarProductoPorCategoria(String nombreCategoria) {
 		Categoria cat = buscarCategoriaPorNombre(nombreCategoria);
 		if (cat == null) {

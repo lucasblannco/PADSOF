@@ -27,6 +27,14 @@ public class DemostradorMain {
 		return lista;
 	}
 
+	static void imprimirStockPack(Pack pack) {
+		System.out.println("  Stock reservado para pack '" + pack.getNombre() + "':");
+		for (LineaPack lp : pack.getLineas()) {
+			System.out.println("   - " + lp.getProducto().getNombre() + " | unidades en pack: " + lp.getUnidades()
+					+ " | stock restante: " + lp.getProducto().getStockDisponible());
+		}
+	}
+
 	public static void main(String[] args) {
 		System.out.println("Bienvenido al demostrado de la tienda CHECKPOINT");
 		Tienda tienda = Tienda.getInstancia();
@@ -97,7 +105,7 @@ public class DemostradorMain {
 				"Estrategia");
 
 		empStock.añadirProducto_nuevo("F", "Figura Goku SSJ", "Figura de Dragon Ball", "goku.jpg", 35.00, 5,
-				tienda.seleccionarCategorias("Anime", "Replicas"), 0, null, 0, 20.0, 15.0, 12.0, "PVC", "Bandai", 0, 0,
+				tienda.seleccionarCategorias("Anime", "Replicas","Accion"), 0, null, 0, 20.0, 15.0, 12.0, "PVC", "Bandai", 0, 0,
 				0, 0, null);
 
 		empStock.añadirProducto_nuevo("C", "Akira Vol.1", "Manga de ciencia ficcion", "akira.jpg", 12.99, 20,
@@ -143,7 +151,6 @@ public class DemostradorMain {
 
 		System.out.println("\n CREAR PACKS");
 
-	
 		ProductoVenta akira = tienda.buscarproductoPorNombre("Akira Vol.1").get(0);
 		ProductoVenta catan = tienda.buscarproductoPorNombre("Catan").get(0);
 		ProductoVenta pandemic = tienda.buscarproductoPorNombre("Pandemic").get(0);
@@ -154,10 +161,183 @@ public class DemostradorMain {
 
 		ArrayList<LineaPack> lineasGamer = construirLineasPack(new LineaPack(catan, 1), new LineaPack(figGoku, 1),
 				new LineaPack(akira, 1));
-		empStock.crearPack("Pack Gamer", "PaSystem.out.println(\"Recuperancion de los productos: \");ck con juego y figura", "pack.jpg", 70.00, 3, lineasGamer);
-		for (ProductoVenta p : tienda.getStockVentas()) {
-			System.out.println("  " + p.resumen());
+		empStock.crearPack("Pack Gamer", "Pack con juego y figura", "pack.jpg", 70.00, 3, lineasGamer);
+		Pack packGamer = tienda.buscarPackPorNombre("Pack Gamer");
+		packGamer.resumenPrecios();
+		imprimirStockPack(packGamer);
+		// añadimos un producto que no estaba al pack(pandemic)
+		System.out.println("\n  Añadir producto nuevo al pack (Pandemic):");
+		boolean añadido = empStock.añadirProductoaPack(pandemic.getId(), packGamer.getId(), 1);
+		System.out.println("  Resultado: " + (añadido ? "OK" : "FALLIDO"));
+		imprimirStockPack(packGamer);
+
+		// modificar unidades de producto que ya estaba (Akira)
+		System.out.println("\n  Modificar unidades de Akira en el pack (de 1 a 2):");
+		boolean modificado = empStock.modificarUnidadesProductoEnPack(akira.getId(), packGamer.getId(), 2);
+		System.out.println("  Resultado: " + (modificado ? "OK" : "FALLIDO"));
+		imprimirStockPack(packGamer);
+
+		// modificar precio del pack
+		empStock.modificarPrecioPack(packGamer.getId(), 65.00);
+		System.out.println("\n  Precio actualizado:");
+		packGamer.resumenPrecios();
+
+		System.out.println("\n  Eliminar pandemic del pack:");
+		boolean eliminadoProducto = empStock.eliminarProductoDePack(packGamer.getId(), pandemic.getId());
+		System.out.println("  Resultado: " + (eliminadoProducto ? "OK" : "FALLIDO"));
+		System.out.println("  Stock de pandemic recuperado: " + pandemic.getStockDisponible());
+		imprimirStockPack(packGamer);
+
+		System.out.println("\n  Intentar eliminar producto que no esta en el pack (Pandemic):");
+		boolean eliminadoNoExiste = empStock.eliminarProductoDePack(packGamer.getId(), pandemic.getId());
+		System.out.println("  Resultado: " + (eliminadoNoExiste ? "OK" : "FALLIDO - producto no estaba en el pack"));
+
+		// Caso 6: eliminar el pack entero
+		System.out.println("\n  Eliminar pack :");
+		boolean eliminadoPack = empStock.eliminarPack(packGamer.getId());
+		System.out.println("  Resultado: " + (eliminadoPack ? "OK" : "FALLIDO"));
+
+		System.out.println("  Pack en tienda: "
+				+ (tienda.buscarPackPorNombre("Pack Gamer") != null ? "SI" : "NO - eliminado correctamente"));
+
+		System.out.println("\n REGISTRO Y LOGIN DE CLIENTES");
+		tienda.registrarNuevoCliente("alice", "Alice@1234", "11111111A");
+		tienda.registrarNuevoCliente("bob", "Bob@1234", "22222222B");
+		tienda.registrarNuevoCliente("carlos", "Carlos@123", "33333333C");
+		System.out.println("  Clientes registrados: " + tienda.obtenerClientesTienda().size());
+		// Intentos fallidos
+		System.out.println("\nIntentos con dni duplicado, nickname duplicado o contraseña poco segura:");
+		tienda.registrarNuevoCliente("otro", "Otro@1234", "11111111A");
+		tienda.registrarNuevoCliente("alice", "Alice@9999", "99999999Z");
+		tienda.registrarNuevoCliente("dani", "hola", "22334455Y");
+		tienda.registrarNuevoCliente("dani", "Lahyrfe3_", "444");
+
+		System.out.println("Inicio de sesion Correcto: ");
+
+		Cliente alice = tienda.loginCliente("alice", "Alice@1234");
+		Cliente bob = tienda.loginCliente("bob", "Bob@1234");
+		Cliente carlos = tienda.loginCliente("carlos", "Carlos@123");
+		tienda.imprimirUsuariosConSesionActiva();
+
+		// alice no tiene esa contraseña, luego no puede iniciar sesion
+		System.out.println("Prueba a iniciar sesion con contraseña incorrecta: ");
+		tienda.loginCliente("alice", "wrongpass");
+
+		System.out.println("Modificacion del perfil:");
+		alice.modificarPerfil("alicia", "Alicia@5678");
+
+		System.out.println("Modificacion de perfil incorrecto(nickname ya utilizado por otro usuario):");
+		alice.modificarPerfil("bob", "Bob@1234");
+
+		System.out.println("\nPREFERENCIA DE NOTIFICACIONES: ");
+		// Quitamos descuentos
+		alice.configurarPreferenciaNotificacion(TipoNotificacion.DESCUENTO, false);
+
+		// Añadir categorias de interes
+		alice.añadirCategoriaInteresParaRecibirInfo("Anime");
+		alice.añadirCategoriaInteresParaRecibirInfo("Accion");
+
+		alice.verMisPreferencias();
+
+		// Eliminar categoria de interes
+		alice.eliminarCategoriaInteres("Accion");
+
+		// Intentar desactivar notificacion obligatoria
+		System.out.println("Intento de desactivar una notificacion que es obligatoria: ");
+		boolean resultado = alice.configurarPreferenciaNotificacion(TipoNotificacion.PAGO_EXITOSO, false);
+
+		System.out.println("FLUJO DE COMPRA Y BUSQUEDA: ");
+		
+		System.out.println("  Todos los productos disponibles: " + tienda.buscarProductoVenta().size());
+		tienda.imprimirCatalogo();
+		
+
+		// Alice busca por nombre
+		System.out.println("\n  Alice busca 'watch':");
+		alice.buscarProductosPorNombre("watch");
+		System.out.println("\n  Alice busca 'catan':");
+		alice.buscarProductosPorNombre("catan");		
+		alice.añadirProductoCarrito(watchmen, 1);
+		alice.añadirProductoCarrito(catan, 1);
+		System.out.println("  " + alice.getNickname() + " añade al carrito: '" + watchmen.getNombre() + " y "
+				+ catan.getNombre() + "'");
+		alice.reservarCarrito();
+		Pedido pedidoAlice = alice.getHistorialPedidos().get(0);
+		System.out.println("  Carrito reservado : pedido: " + pedidoAlice.getIdPedido() + " | total: "
+				+ pedidoAlice.getTotal() + "€" + " | estado: " + pedidoAlice.getEstado());
+
+		Date fechaTarjeta = new Date(System.currentTimeMillis() + 100000000L);
+		boolean pagado = alice.pagarCarrito(pedidoAlice, "1234567890123456", fechaTarjeta, 123);
+		System.out.println("  Pago -> " + (pagado ? "PAGADO" : "FALLIDO") + " | estado: " + pedidoAlice.getEstado());
+
+		if (pagado) {
+			empPedidos.prepararPedido(pedidoAlice.getIdPedido());
+
+			// El usuario solicita recogerlo aportando el codigo de recogida
+			alice.solicitarRecogidaPedido(pedidoAlice.getCodigoRecogida());
+			System.out.println("  Recogida solicitada: " + pedidoAlice.isRecogida_solicitada());
+
+			empPedidos.entregarPedido(pedidoAlice.getCodigoRecogida());
+			System.out.println("  Pedido entregado -> estado: " + pedidoAlice.getEstado());
+
+			alice.escribirReseña(watchmen, 9, "Una obra maestra absoluta");
+			System.out.println("  Reseña de '" + watchmen.getNombre() + "' -> media: " + watchmen.getMediaPuntuacion());
+		} else {
+			System.out.println("  El pago fue rechazado por el banco.");
+			System.out.println("  El pedido sigue en estado: " + pedidoAlice.getEstado());
+			System.out.println("  Alice puede intentarlo de nuevo con otra tarjeta.");
 		}
+		
+		
+		System.out.println("\n  Bob busca los productos de la categoria 'accion':");
+		alice.buscarProductosPorCategoria("accion");
+		
+		bob.añadirProductoCarrito(watchmen, 1);
+		bob.reservarCarrito();
+		Pedido pedidoBob = bob.getHistorialPedidos().get(0);
+		System.out.println("  Pedido bob creado: " + pedidoBob.getIdPedido() + " | total: " + pedidoBob.getTotal() + "€"
+				+ " | estado: " + pedidoBob.getEstado());
+
+		boolean pagadoBob = bob.pagarCarrito(pedidoBob, "1234567890123456", fechaTarjeta, 123);
+		System.out
+				.println("  Pago bob -> " + (pagadoBob ? "PAGADO" : "FALLIDO") + " | estado: " + pedidoBob.getEstado());
+
+		if (pagadoBob) {
+			empPedidos.prepararPedido(pedidoBob.getIdPedido());
+			bob.solicitarRecogidaPedido(pedidoBob.getCodigoRecogida());
+			System.out.println("  Recogida solicitada: " + pedidoBob.isRecogida_solicitada());
+			empPedidos.entregarPedido(pedidoBob.getCodigoRecogida());
+			System.out.println("  Pedido entregado -> estado: " + pedidoBob.getEstado());
+			bob.escribirReseña(watchmen, 7, "Muy bueno pero denso");
+			System.out.println("  Bob reseña '" + watchmen.getNombre() + "'");
+		} else {
+			System.out.println("  Pago rechazado por el banco. Pedido en estado: " + pedidoBob.getEstado());
+		}
+		carlos.añadirProductoCarrito(akira, 2);
+		carlos.reservarCarrito();
+		Pedido pedidoCarlos = carlos.getHistorialPedidos().get(0);
+		System.out.println("  Pedido carlos creado: " + pedidoCarlos.getIdPedido() + " | total: "
+				+ pedidoCarlos.getTotal() + "€" + " | estado: " + pedidoCarlos.getEstado());
+
+		boolean pagadoCarlos = carlos.pagarCarrito(pedidoCarlos, "1234567890123456", fechaTarjeta, 123);
+		System.out.println(
+				"  Pago carlos -> " + (pagadoCarlos ? "PAGADO" : "FALLIDO") + " | estado: " + pedidoCarlos.getEstado());
+
+		if (pagadoCarlos) {
+			empPedidos.prepararPedido(pedidoCarlos.getIdPedido());
+			
+			carlos.solicitarRecogidaPedido(pedidoCarlos.getCodigoRecogida());
+			empPedidos.entregarPedido(pedidoCarlos.getCodigoRecogida());
+			carlos.escribirReseña(akira, 8, "Imprescindible");
+		} else {
+			System.out.println("  Pago rechazado por el banco. Pedido en estado: " + pedidoCarlos.getEstado());
+		}
+		alice.verReseñasProducto(watchmen);
+		alice.verReseñasProducto(akira);
+		System.out.println("\n  Stock tras las compras:");
+		System.out.println("  " + watchmen.resumen());
+		System.out.println("  " + akira.resumen());
+		System.out.println("  " + catan.resumen());
 	}
 
 }

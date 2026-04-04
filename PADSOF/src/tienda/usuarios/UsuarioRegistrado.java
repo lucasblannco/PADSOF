@@ -4,13 +4,13 @@ import java.util.List;
 
 import productos.Producto2Mano;
 import productos.ProductoVenta;
+import productos.Reseña;
 
 import java.io.FileReader;
 import java.security.PublicKey;
 import java.util.ArrayList;
 
 import tienda.*;
-
 
 public abstract class UsuarioRegistrado {
 
@@ -77,13 +77,39 @@ public abstract class UsuarioRegistrado {
 		return true;
 	}
 
+	public List<Reseña> verReseñasProducto(ProductoVenta p) {
+		if (p == null) {
+			System.out.println("El producto no puede ser null.");
+			return null;
+		}
+		if (p.getReseñas().isEmpty()) {
+			System.out.println("El producto '" + p.getNombre() + "' no tiene reseñas.");
+			return new ArrayList<>();
+		}
+		System.out.println("=== Reseñas de '" + p.getNombre() + "' ===" + " | Media: "
+				+ String.format("%.1f", p.getMediaPuntuacion()) + "/10");
+		for (Reseña r : p.getReseñas()) {
+			System.out.println("  " + r);
+		}
+		return p.getReseñas();
+	}
+
 	// busqueda
 	public List<ProductoVenta> buscarProductos() {
 		return Tienda.getInstancia().buscarProductoVenta();
 	}
 
 	public List<ProductoVenta> buscarProductosPorNombre(String nombre) {
-		return Tienda.getInstancia().buscarproductoPorNombre(nombre);
+	    List<ProductoVenta> resultado = Tienda.getInstancia().buscarproductoPorNombre(nombre);
+	    if (resultado == null || resultado.isEmpty()) {
+	        System.out.println("  No se encontraron productos con el nombre '" + nombre + "'");
+	        return resultado;
+	    }
+	    System.out.println("  Resultados para '" + nombre + "' (" + resultado.size() + "):");
+	    for (ProductoVenta p : resultado) {
+	        System.out.println("  " + p.resumen());
+	    }
+	    return resultado;
 	}
 
 	public ProductoVenta buscarProductoPorId(String id) {
@@ -91,7 +117,16 @@ public abstract class UsuarioRegistrado {
 	}
 
 	public List<ProductoVenta> buscarProductosPorCategoria(String nombreCategoria) {
-		return Tienda.getInstancia().buscarProductoPorCategoria(nombreCategoria);
+	    List<ProductoVenta> resultado = Tienda.getInstancia().buscarProductoPorCategoria(nombreCategoria);
+	    if (resultado == null || resultado.isEmpty()) {
+	        System.out.println("  No se encontraron productos en la categoria '" + nombreCategoria + "'");
+	        return resultado;
+	    }
+	    System.out.println("  Resultados categoria '" + nombreCategoria + "' (" + resultado.size() + "):");
+	    for (ProductoVenta p : resultado) {
+	        System.out.println("  " + p.resumen());
+	    }
+	    return resultado;
 	}
 
 	public List<Producto2Mano> buscarProductosSegundaMano() {
@@ -107,7 +142,12 @@ public abstract class UsuarioRegistrado {
 	}
 
 	public List<ProductoVenta> buscarProductosVentaFiltrados() {
-		return Tienda.getInstancia().buscarProductosFiltrados(filtroVenta);
+	    List<ProductoVenta> resultado = Tienda.getInstancia().buscarProductosFiltrados(filtroVenta);
+	    System.out.println("  Resultados con filtro " + filtroVenta + " (" + resultado.size() + "):");
+	    for (ProductoVenta p : resultado) {
+	        System.out.println("  " + p.resumen());
+	    }
+	    return resultado;
 	}
 
 	public List<Producto2Mano> buscarProductos2ManoFiltrados() {
@@ -145,7 +185,7 @@ public abstract class UsuarioRegistrado {
 
 	public void mostrarPanelPrincipal() {
 		return;
-		
+
 	}
 
 }
