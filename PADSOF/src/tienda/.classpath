@@ -2,7 +2,7 @@
 <classpath>
 	<classpathentry excluding="test/" kind="src" path=""/>
 	<classpathentry kind="src" path="test"/>
-	<classpathentry kind="lib" path="/home/dani/Documentos/Repositorios/PADSOF/TeleChargeAndPaySystem8.jar"/>
+	<classpathentry kind="lib" path="D:/Desktop/colando/PADSOF/PADSOF/src/TeleChargeAndPaySystem8.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
 		<attributes>
 			<attribute name="module" value="true"/>
