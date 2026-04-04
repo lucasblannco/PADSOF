@@ -2,6 +2,9 @@ package productos;
 
 import java.util.*;
 
+import Excepcion.ProductoInvalidoException;
+import Excepcion.ProductoYaEnCategoriaException;
+import Excepcion.ReseñaDuplicadaException;
 import tienda.Estadistica;
 
 public abstract class ProductoVenta extends Producto {
@@ -16,6 +19,14 @@ public abstract class ProductoVenta extends Producto {
 			int stockDisponible) {
 
 		super(nombre, descripcion, imagenRuta);
+
+		if (precioOficial < 0) {
+			throw new ProductoInvalidoException("El precio oficial no puede ser negativo.");
+		}
+		if (stockDisponible < 0) {
+			throw new ProductoInvalidoException("El stock disponible no puede ser negativo.");
+		}
+
 		Estadistica est = Estadistica.getInstancia();
 		this.id = "PV-" + est.getnProductosVentas();
 		est.setnProductosVentas(est.getnProductosVentas() + 1);
@@ -49,9 +60,10 @@ public abstract class ProductoVenta extends Producto {
 	}
 
 	public void setStockDisponible(int cantidad) {
-		if (cantidad >= 0) {
-			this.stockDisponible = cantidad;
+		if (cantidad < 0) {
+			throw new ProductoInvalidoException("El stock disponible no puede ser negativo.");
 		}
+		this.stockDisponible = cantidad;
 	}
 
 	public ArrayList<Categoria> getCategorias() {
@@ -63,7 +75,8 @@ public abstract class ProductoVenta extends Producto {
 			return false;
 		}
 		if (this.categorias.contains(c)) {
-			return false;
+			throw new ProductoYaEnCategoriaException(
+					"El producto " + this.getNombre() + " ya pertenece a la categoría " + c.getNombre() + ".");
 		}
 
 		this.categorias.add(c);
@@ -108,8 +121,7 @@ public abstract class ProductoVenta extends Producto {
 
 		for (Reseña existente : this.reseñas) {
 			if (existente.getAutor() != null && existente.getAutor().equals(r.getAutor())) {
-				System.out.println("Este cliente ya ha reseñado este producto.");
-				return false;
+				throw new ReseñaDuplicadaException("Este cliente ya ha reseñado este producto.");
 			}
 		}
 
@@ -130,28 +142,27 @@ public abstract class ProductoVenta extends Producto {
 		return true;
 	}
 
-	
 	@Override
 	public String toString() {
 		String tipo = "Producto";
-	    if (this instanceof Comic) tipo = "CÓMIC";
-	    else if (this instanceof Figura) tipo = "FIGURA";
-	    else if (this instanceof JuegoMesa) tipo = "JUEGO";
-	    else if (this instanceof Pack) tipo = "PACK"; // Por si tienes packs creados
+		if (this instanceof Comic)
+			tipo = "CÓMIC";
+		else if (this instanceof Figura)
+			tipo = "FIGURA";
+		else if (this instanceof JuegoMesa)
+			tipo = "JUEGO";
+		else if (this instanceof Pack)
+			tipo = "PACK";
 
-	    String cats = "";
-	    for (Categoria c : categorias) cats += c.getNombre() + " ";
-	    
-	    String valoracion = reseñas.isEmpty() 
-	        ? "Sin reseñas" 
-	        : String.format("%.1f", getMediaPuntuacion()) + "/5";
-	    
-	  
-	    return "[" + tipo + "][" + id + "] " + nombre 
-	        + " | Precio: " + precioOficial + "€"
-	        + " | Stock: " + stockDisponible
-	        + " | Puntuación: " + valoracion
-	        + " | Categorías: " + (cats.isBlank() ? "ninguna" : cats);
+		String cats = "";
+		for (Categoria c : categorias)
+			cats += c.getNombre() + " ";
+
+		String valoracion = reseñas.isEmpty() ? "Sin reseñas" : String.format("%.1f", getMediaPuntuacion()) + "/5";
+
+		return "[" + tipo + "][" + id + "] " + nombre + " | Precio: " + precioOficial + "€" + " | Stock: "
+				+ stockDisponible + " | Puntuación: " + valoracion + " | Categorías: "
+				+ (cats.isBlank() ? "ninguna" : cats);
 	}
 
 	public double getPrecioOficial() {
@@ -160,37 +171,34 @@ public abstract class ProductoVenta extends Producto {
 
 	public boolean setPrecioOficial(double precioOficial) {
 		if (precioOficial < 0) {
-			return false;
+			throw new ProductoInvalidoException("El precio oficial no puede ser negativo.");
 		}
 		this.precioOficial = precioOficial;
 		return true;
 	}
 
 	public String resumen() {
-	    String cats = "";
-	    for (Categoria c : categorias) cats += c.getNombre() + " ";
+		String cats = "";
+		for (Categoria c : categorias)
+			cats += c.getNombre() + " ";
 
-	    String valoracion = reseñas.isEmpty()
-	        ? "Sin reseñas"
-	        : String.format("%.1f", getMediaPuntuacion()) + "/10";
+		String valoracion = reseñas.isEmpty() ? "Sin reseñas" : String.format("%.1f", getMediaPuntuacion()) + "/10";
 
-	    return "[" + id + "] " + nombre
-	        + " | Precio: " + precioOficial + "€"
-	        + " | Stock: " + stockDisponible
-	        + " | Puntuacion: " + valoracion
-	        + " | Categorias: " + (cats.isBlank() ? "ninguna" : cats.trim());
+		return "[" + id + "] " + nombre + " | Precio: " + precioOficial + "€" + " | Stock: " + stockDisponible
+				+ " | Puntuacion: " + valoracion + " | Categorias: " + (cats.isBlank() ? "ninguna" : cats.trim());
 	}
+
 	public void imprimirCategorias() {
-	    if (categorias.isEmpty()) {
-	        System.out.println("  [" + id + "] " + nombre + " -> sin categorias");
-	        return;
-	    }
-	    String cats = "";
-	    for (Categoria c : categorias) {
-	        if (!cats.equals("")) cats += ", ";
-	        cats += c.getNombre();
-	    }
-	    System.out.println("  [" + id + "] " + nombre + " -> " + cats);
+		if (categorias.isEmpty()) {
+			System.out.println("  [" + id + "] " + nombre + " -> sin categorias");
+			return;
+		}
+		String cats = "";
+		for (Categoria c : categorias) {
+			if (!cats.equals(""))
+				cats += ", ";
+			cats += c.getNombre();
+		}
+		System.out.println("  [" + id + "] " + nombre + " -> " + cats);
 	}
 }
-

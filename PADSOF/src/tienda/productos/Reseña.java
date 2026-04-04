@@ -1,5 +1,6 @@
 package productos;
 
+import Excepcion.ProductoInvalidoException;
 import usuarios.Cliente;
 import tienda.Estadistica;
 import java.time.*;
@@ -19,10 +20,9 @@ public class Reseña {
 		this.autor = autor;
 		this.producto = null;
 
-		if (puntuacion < 0)
-			puntuacion = 0;
-		if (puntuacion > 10)
-			puntuacion = 10;
+		if (puntuacion < 0 || puntuacion > 10) {
+			throw new ProductoInvalidoException("La puntuación de la reseña debe estar entre 0 y 10.");
+		}
 		this.puntuacion = puntuacion;
 
 		this.comentario = (comentario == null) ? "" : comentario;
@@ -31,7 +31,6 @@ public class Reseña {
 		if (productoV != null) {
 			productoV.addReseña(this);
 		}
-
 	}
 
 	public LocalDate getFecha() {
@@ -44,7 +43,7 @@ public class Reseña {
 
 	public boolean setProducto(ProductoVenta p) {
 		if (p == null) {
-			return false;
+			throw new ProductoInvalidoException("El producto de la reseña no puede ser null.");
 		}
 		this.producto = p;
 		return true;
@@ -59,5 +58,4 @@ public class Reseña {
 	public Cliente getAutor() {
 		return autor;
 	}
-
 }
