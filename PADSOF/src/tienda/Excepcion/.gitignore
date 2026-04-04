@@ -5,3 +5,9 @@
 /ProductoBloqueadoException.class
 /SistemaNoConfiguradoException.class
 /TipoProductoDesconocidoException.class
+/AnioInvalidoException.class
+/OfertaNoDisponibleException.class
+/PesosInvalidosException.class
+/ProductoNoTasadoException.class
+/RangoFechasInvalidoException.class
+/RecomendadorNoActivoException.class
