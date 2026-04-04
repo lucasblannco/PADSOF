@@ -42,7 +42,6 @@ public class DemostradorMain {
 		System.out.println("Bienvenido al demostrado de la tienda CHECKPOINT");
 		Tienda tienda = Tienda.getInstancia();
 		Gestor gestor = tienda.getGestor();
-		tienda.vaciarTienda();
 		System.out.println("CONFIGURACION DE LOS TIEMPOS DE LA APLICACION");
 
 		gestor.configurarTiemposSistema(60, 30, 30);
@@ -56,12 +55,11 @@ public class DemostradorMain {
 
 		gestor.crearCategoria("Familiar", "Tematica para realizar en familia");
 		gestor.crearCategoria("Accion", "Tematica de accion");
-		gestor.crearCategoria("Ciencia-ficcion", "Productos de ciencia ficcion");
+		gestor.crearCategoria("Ciencia-ficcion ", "Productos de ciencia ficcion");
 		gestor.crearCategoria("Anime", "Productos de anime y manga");
 		gestor.crearCategoria("Replicas", "Objetos de coleccionista a escala real");
 		gestor.crearCategoria("Retro-Gaming",
 				"Consolas clásicas, cartuchos originales y accesorios de sistemas de videojuegos antiguos.");
-		gestor.crearCategoria("Estrategia", "Juegos de estrategia");
 
 		String nombres = "";
 		for (Categoria c : tienda.getCategorias()) {
@@ -250,7 +248,6 @@ public class DemostradorMain {
 		// Intentar desactivar notificacion obligatoria
 		System.out.println("Intento de desactivar una notificacion que es obligatoria: ");
 		boolean resultado = alice.configurarPreferenciaNotificacion(TipoNotificacion.PAGO_EXITOSO, false);
-		System.out.println("  Resultado: " + resultado);
 
 		System.out.println("\nFLUJO DE COMPRA Y BUSQUEDA: ");
 
