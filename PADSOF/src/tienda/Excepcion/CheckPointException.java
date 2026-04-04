@@ -1,9 +1,9 @@
 package Excepcion;
 
+public class CheckPointException extends RuntimeException {
+	private static final long serialVersionUID = 1L;
 
-public class CheckPointException extends Exception {
-    private static final long serialVersionUID = 1L;
-    public CheckPointException(String mensaje) {
-        super(mensaje);
-    }
+	public CheckPointException(String mensaje) {
+		super(mensaje);
+	}
 }

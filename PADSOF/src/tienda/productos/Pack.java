@@ -2,6 +2,10 @@ package productos;
 
 import java.util.ArrayList;
 
+import Excepcion.ProductoInvalidoException;
+import Excepcion.ProductoYaEnPackException;
+import Excepcion.StockInsuficienteParaPackException;
+
 public class Pack extends ProductoVenta {
 	private ArrayList<LineaPack> lineas;
 
@@ -20,19 +24,21 @@ public class Pack extends ProductoVenta {
 		}
 	}
 
-	// AñADIR OTRO TIPO DE PRODUCTO AL PACK
+	// AÑADIR OTRO TIPO DE PRODUCTO AL PACK
 	public boolean addLinea(LineaPack lp) {
 		if (lp == null) {
-			return false;
+			throw new ProductoInvalidoException("La línea del pack no puede ser null.");
 		}
 		if (contieneProducto(lp.getProducto())) {
-			return false;
+			throw new ProductoYaEnPackException(
+					"El producto " + lp.getProducto().getNombre() + " ya está incluido en el pack.");
 		}
 		if (lp.getProducto() == this) {
-			return false;
+			throw new ProductoInvalidoException("Un pack no puede contenerse a sí mismo.");
 		}
 		if (lp.getProducto().getStockDisponible() < lp.getUnidades() * this.stockDisponible) {
-			return false;
+			throw new StockInsuficienteParaPackException(
+					"No hay stock suficiente para añadir " + lp.getProducto().getNombre() + " al pack.");
 		}
 
 		this.lineas.add(lp);
@@ -64,8 +70,11 @@ public class Pack extends ProductoVenta {
 	}
 
 	public boolean modificarUnidades(ProductoVenta p, int nuevasUnidades) {
-		if (p == null || nuevasUnidades < 0) {
-			return false;
+		if (p == null) {
+			throw new ProductoInvalidoException("El producto no puede ser null.");
+		}
+		if (nuevasUnidades < 0) {
+			throw new ProductoInvalidoException("Las nuevas unidades no pueden ser negativas.");
 		}
 
 		if (nuevasUnidades == 0) {
@@ -93,7 +102,8 @@ public class Pack extends ProductoVenta {
 		if (diferencia > 0) {
 			int stockNecesario = diferencia * this.stockDisponible;
 			if (p.getStockDisponible() < stockNecesario) {
-				return false;
+				throw new StockInsuficienteParaPackException(
+						"No hay stock suficiente para modificar las unidades de " + p.getNombre() + " en el pack.");
 			}
 		}
 
@@ -101,7 +111,8 @@ public class Pack extends ProductoVenta {
 
 		if (this.precioOficial >= calcularSumaProductos() - 1) {
 			lineaActual.setUnidades(unidadesActuales);
-			return false;
+			throw new ProductoInvalidoException(
+					"El precio del pack debe ser al menos un euro menor que la suma de sus productos.");
 		}
 
 		int ajusteStock = diferencia * this.stockDisponible;
@@ -110,14 +121,17 @@ public class Pack extends ProductoVenta {
 	}
 
 	public boolean addProducto(ProductoVenta p, int unidades) {
-		if (p == null || unidades <= 0) {
-			return false;
+		if (p == null) {
+			throw new ProductoInvalidoException("El producto no puede ser null.");
+		}
+		if (unidades <= 0) {
+			throw new ProductoInvalidoException("Las unidades deben ser mayores que 0.");
 		}
 		if (p == this) {
-			return false;
+			throw new ProductoInvalidoException("Un pack no puede contenerse a sí mismo.");
 		}
 		if (contieneProducto(p)) {
-			return false;
+			throw new ProductoYaEnPackException("El producto " + p.getNombre() + " ya está incluido en el pack.");
 		}
 
 		LineaPack lp = new LineaPack(p, unidades);
@@ -125,8 +139,14 @@ public class Pack extends ProductoVenta {
 	}
 
 	public boolean addProducto_conunaUnidad(ProductoVenta p) {
-		if (p == null || p == this || contieneProducto(p)) {
-			return false;
+		if (p == null) {
+			throw new ProductoInvalidoException("El producto no puede ser null.");
+		}
+		if (p == this) {
+			throw new ProductoInvalidoException("Un pack no puede contenerse a sí mismo.");
+		}
+		if (contieneProducto(p)) {
+			throw new ProductoYaEnPackException("El producto " + p.getNombre() + " ya está incluido en el pack.");
 		}
 		return addProducto(p, 1);
 	}
@@ -154,12 +174,12 @@ public class Pack extends ProductoVenta {
 	}
 
 	public boolean setPrecioOficial(double nuevoPrecio) {
-		if (nuevoPrecio <= 0)
-			return false;
+		if (nuevoPrecio <= 0) {
+			throw new ProductoInvalidoException("El precio del pack debe ser mayor que 0.");
+		}
 		if (!this.lineas.isEmpty() && nuevoPrecio >= calcularSumaProductos() - 1) {
-			System.out.println(
+			throw new ProductoInvalidoException(
 					"El precio del pack debe ser al menos un euro menor que la suma (" + calcularSumaProductos() + ")");
-			return false;
 		}
 		this.precioOficial = nuevoPrecio;
 		return true;
@@ -192,14 +212,11 @@ public class Pack extends ProductoVenta {
 	}
 
 	public void resumenPrecios() {
-	   
-	   System.out.println("Resumen de precios:");
-	    System.out.println(" Suma productos: " + this.calcularSumaProductos() + "€");
-	    System.out.println(" Precio actual:  " + this.calcularPrecioFinal() + "€");
-	    
-	    // Calculamos el ahorro (opcional, pero queda muy bien)
-	    double ahorro = this.calcularSumaProductos() - this.calcularPrecioFinal();
-	    System.out.printf(" Ahorro total:   %.2f€\n", ahorro);
-	  
+		System.out.println("Resumen de precios:");
+		System.out.println(" Suma productos: " + this.calcularSumaProductos() + "€");
+		System.out.println(" Precio actual:  " + this.calcularPrecioFinal() + "€");
+
+		double ahorro = this.calcularSumaProductos() - this.calcularPrecioFinal();
+		System.out.printf(" Ahorro total:   %.2f€\n", ahorro);
 	}
 }

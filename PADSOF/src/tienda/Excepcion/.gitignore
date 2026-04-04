@@ -11,3 +11,9 @@
 /ProductoNoTasadoException.class
 /RangoFechasInvalidoException.class
 /RecomendadorNoActivoException.class
+/ProductoInvalidoException.class
+/ReseñaDuplicadaException.class
+/ProductoYaEnCategoriaException.class
+/ProductoYaEnPackException.class
+/StockInsuficienteParaPackException.class
+/ValoracionInvalidaException.class

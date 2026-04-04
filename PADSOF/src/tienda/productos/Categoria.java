@@ -1,6 +1,7 @@
 package productos;
 
 import java.util.*;
+import Excepcion.ProductoYaEnCategoriaException;
 
 public class Categoria {
 	private String nombre;
@@ -8,11 +9,9 @@ public class Categoria {
 	private ArrayList<ProductoVenta> productos;
 
 	public Categoria(String nombre, String descripcion) {
-
 		this.nombre = nombre;
 		this.descripcion = descripcion;
 		this.productos = new ArrayList<>();
-		;
 	}
 
 	public boolean addProducto(ProductoVenta p) {
@@ -20,13 +19,11 @@ public class Categoria {
 			return false;
 		}
 		if (this.productos.contains(p)) {
-			System.out.println("La categoria " + this.getNombre() + " ya contiene al producto " + p.getNombre()
-					+ " . No se puede añadir.");
-			return false;
+			throw new ProductoYaEnCategoriaException(
+					"La categoria " + this.getNombre() + " ya contiene al producto " + p.getNombre() + ".");
 		}
 
 		this.productos.add(p);
-
 		p.addCategoriaInterno(this);
 
 		return true;
@@ -43,7 +40,6 @@ public class Categoria {
 		}
 
 		this.productos.remove(p);
-
 		p.deleteCategoriaInterno(this);
 		return true;
 	}
@@ -92,5 +88,4 @@ public class Categoria {
 	public ArrayList<ProductoVenta> getProductos() {
 		return productos;
 	}
-
 }

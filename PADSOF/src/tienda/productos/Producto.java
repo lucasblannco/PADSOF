@@ -1,5 +1,7 @@
 package productos;
 
+import Excepcion.ProductoInvalidoException;
+
 public abstract class Producto {
 	protected String id;
 	protected String nombre;
@@ -7,6 +9,16 @@ public abstract class Producto {
 	protected String imagenRuta;
 
 	public Producto(String nombre, String descripcion, String imagenRuta) {
+		if (nombre == null || nombre.isBlank()) {
+			throw new ProductoInvalidoException("El nombre del producto no puede estar vacío.");
+		}
+		if (descripcion == null || descripcion.isBlank()) {
+			throw new ProductoInvalidoException("La descripción del producto no puede estar vacía.");
+		}
+		if (imagenRuta == null || imagenRuta.isBlank()) {
+			throw new ProductoInvalidoException("La ruta de la imagen no puede estar vacía.");
+		}
+
 		this.id = "0";
 		this.nombre = nombre;
 		this.descripcion = descripcion;
@@ -31,6 +43,9 @@ public abstract class Producto {
 	}
 
 	public void setDescripcion(String descripcion) {
+		if (descripcion == null || descripcion.isBlank()) {
+			throw new ProductoInvalidoException("La descripción del producto no puede estar vacía.");
+		}
 		this.descripcion = descripcion;
 	}
 
@@ -39,7 +54,9 @@ public abstract class Producto {
 	}
 
 	public void setImagenRuta(String imagenRuta) {
+		if (imagenRuta == null || imagenRuta.isBlank()) {
+			throw new ProductoInvalidoException("La ruta de la imagen no puede estar vacía.");
+		}
 		this.imagenRuta = imagenRuta;
 	}
-
 }

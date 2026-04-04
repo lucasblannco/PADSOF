@@ -3,6 +3,7 @@ package productos;
 import java.time.LocalDateTime;
 import java.util.Date;
 
+import Excepcion.ValoracionInvalidaException;
 import usuarios.Empleado;
 import ventas.Pago;
 
@@ -15,16 +16,42 @@ public class Valoracion {
 	private double precioTasacion;
 
 	public Valoracion(double precioTasacion, EstadoProducto estadoProducto, Empleado empleado) {
+		if (precioTasacion < 0) {
+			throw new ValoracionInvalidaException("El precio de tasación no puede ser negativo.");
+		}
+		if (estadoProducto == null) {
+			throw new ValoracionInvalidaException("El estado del producto no puede ser null.");
+		}
+		if (empleado == null) {
+			throw new ValoracionInvalidaException("El empleado tasador no puede ser null.");
+		}
+
 		this.fecha = LocalDateTime.now();
 		this.estadoProducto = estadoProducto;
 		this.empleado = empleado;
-		this.precioTasacion=precioTasacion;
+		this.precioTasacion = precioTasacion;
 	}
 
 	public Valoracion(LocalDateTime fecha, double precioTasacion, EstadoProducto estadoProducto,
 			EstadoValoracion estadoValoracion, Empleado empleado, Pago pago) {
-		this.fecha = fecha;
+		if (fecha == null) {
+			throw new ValoracionInvalidaException("La fecha de la valoración no puede ser null.");
+		}
+		if (precioTasacion < 0) {
+			throw new ValoracionInvalidaException("El precio de tasación no puede ser negativo.");
+		}
+		if (estadoProducto == null) {
+			throw new ValoracionInvalidaException("El estado del producto no puede ser null.");
+		}
+		if (estadoValoracion == null) {
+			throw new ValoracionInvalidaException("El estado de la valoración no puede ser null.");
+		}
+		if (empleado == null) {
+			throw new ValoracionInvalidaException("El empleado tasador no puede ser null.");
+		}
 
+		this.fecha = fecha;
+		this.precioTasacion = precioTasacion;
 		this.estadoProducto = estadoProducto;
 		this.estadoValoracion = estadoValoracion;
 		this.empleado = empleado;
@@ -64,6 +91,9 @@ public class Valoracion {
 	}
 
 	public void setEstadoValoracion(EstadoValoracion estadoValoracion) {
+		if (estadoValoracion == null) {
+			throw new ValoracionInvalidaException("El estado de la valoración no puede ser null.");
+		}
 		this.estadoValoracion = estadoValoracion;
 	}
 
@@ -78,7 +108,9 @@ public class Valoracion {
 	}
 
 	public void setPrecioTasacion(double precioTasacion) {
+		if (precioTasacion < 0) {
+			throw new ValoracionInvalidaException("El precio de tasación no puede ser negativo.");
+		}
 		this.precioTasacion = precioTasacion;
 	}
-
 }

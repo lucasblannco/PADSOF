@@ -1,5 +1,7 @@
 package productos;
 
+import Excepcion.ProductoInvalidoException;
+import Excepcion.ValoracionInvalidaException;
 import usuarios.Cliente;
 import usuarios.Empleado;
 import tienda.Estadistica;
@@ -13,6 +15,11 @@ public class Producto2Mano extends Producto {
 	public Producto2Mano(String nombre, String descripcion, String imagenRuta, Valoracion valoracion,
 			Cliente propietario, boolean bloqueado, boolean visible) {
 		super(nombre, descripcion, imagenRuta);
+
+		if (propietario == null) {
+			throw new ProductoInvalidoException("El producto de segunda mano debe tener un propietario.");
+		}
+
 		Estadistica est = Estadistica.getInstancia();
 		this.id = "P2M-" + String.valueOf(est.getnProducto2Mano());
 		this.valoracion = valoracion;
@@ -24,6 +31,11 @@ public class Producto2Mano extends Producto {
 
 	public Producto2Mano(Cliente propietario, String nombre, String descripcion, String imagenRuta) {
 		super(nombre, descripcion, imagenRuta);
+
+		if (propietario == null) {
+			throw new ProductoInvalidoException("El producto de segunda mano debe tener un propietario.");
+		}
+
 		Estadistica est = Estadistica.getInstancia();
 		this.id = "P2M" + String.valueOf(est.getnProducto2Mano());
 		est.setnProducto2Mano(est.getnProducto2Mano() + 1);
@@ -34,8 +46,14 @@ public class Producto2Mano extends Producto {
 	}
 
 	public boolean valorar(double precioTasacion, EstadoProducto estado, Empleado empleado) {
-		if (estado == null || empleado == null || precioTasacion < 0) {
-			return false;
+		if (estado == null) {
+			throw new ValoracionInvalidaException("El estado del producto no puede ser null.");
+		}
+		if (empleado == null) {
+			throw new ValoracionInvalidaException("El empleado tasador no puede ser null.");
+		}
+		if (precioTasacion < 0) {
+			throw new ValoracionInvalidaException("El precio de tasación no puede ser negativo.");
 		}
 
 		this.valoracion = new Valoracion(precioTasacion, estado, empleado);
@@ -99,8 +117,6 @@ public class Producto2Mano extends Producto {
 	}
 
 	public Object getEstado() {
-		// TODO Auto-generated method stub
 		return this.valoracion.getEstadoValoracion();
 	}
-
 }
