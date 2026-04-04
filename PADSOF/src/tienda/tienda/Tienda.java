@@ -117,7 +117,7 @@ public class Tienda {
 				return (Cliente) u;
 			}
 		}
-		System.out.println("No existe ningún cliente con nickname: " + nickname);
+		System.err.println("No existe ningún cliente con nickname: " + nickname);
 		return null;
 	}
 
@@ -453,7 +453,6 @@ public class Tienda {
 		this.descuentosActivos.removeAll(descuentos_finalizados);
 	}
 
-	// --- LÓGICA DE INTERCAMBIO
 	public void publicarParaIntercambio(Producto2Mano p) {
 		if (p.getValoracion() != null && !this.getCatalogoIntercambio().contains(p)) {
 			p.setBloqueado(false);

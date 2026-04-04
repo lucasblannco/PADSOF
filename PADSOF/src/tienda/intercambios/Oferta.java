@@ -108,6 +108,20 @@ public class Oferta {
 		 return LocalDateTime.now().isAfter(fechaOferta.plusMinutes(tiempoMaxOferta));//Comprobamos si el tiempo en el que finaliza la oferta es anterior al tiempo real de ahora
 	}
 
+	public void imprimirResumen() {
+		System.out.println("Resumen de la oferta:");
+	    System.out.println("  [" + id + "]"
+	        + " | estado: " + estado
+	        + " | " + origen.getNickname() + " -> " + destino.getNickname());
+	    System.out.println("  Productos ofertados por " + origen.getNickname() + ":");
+	    for (Producto2Mano p : productosOfertados) {
+	        System.out.println("   -> " + p.resumen());
+	    }
+	    System.out.println("  Productos solicitados a " + destino.getNickname() + ":");
+	    for (Producto2Mano p : productosSolicitados) {
+	        System.out.println("   -> " + p.resumen());
+	    }
+	}
 	// Getters y Setters
 	public String getId() {
 		return id;

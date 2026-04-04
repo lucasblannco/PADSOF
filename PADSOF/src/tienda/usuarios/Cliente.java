@@ -12,6 +12,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import Excepcion.OfertaNoDisponibleException;
 import Excepcion.ProductoNoTasadoException;
 import intercambios.*;
 import productos.Producto2Mano;
@@ -44,29 +45,7 @@ public class Cliente extends UsuarioRegistrado {
 		this.notificaciones = new ArrayList<>();
 	}
 
-	// Ver la cartera de otro usuario
-	public List<Producto2Mano> verCarteraCliente(String nickname) {
-		if (nickname == null || nickname.isBlank()) {
-			System.out.println(
-					"El nickname del usuario sobre el que se quiere ver la cartera de objetos de segunda mano no puede estar vacio");
-			return null;
-		}
-		Cliente c = Tienda.getInstancia().buscarClientePorNickname(nickname);
-		if (c == null) {
-			return new ArrayList<>();
-		}
-		if (c.equals(this)) {
-			System.out.println("Para ver tu propia cartera usa getCarteraIntercambio().");
-			return new ArrayList<>();
-		}
-		List<Producto2Mano> array = new ArrayList<>();
-		for (Producto2Mano p : c.getCarteraIntercambio()) {
-			if (p.isVisible()) {
-				array.add(p);
-			}
-		}
-		return array;
-	}
+	
 
 	public void subirProducto(String nombre, String descripString, String imagen) {
 		Producto2Mano product = new Producto2Mano(this, nombre, descripString, imagen);
@@ -87,8 +66,12 @@ public class Cliente extends UsuarioRegistrado {
 			return false;
 		}
 		if (!tieneProductoenSuCartera(p)) {
-			System.out.println("El producto no está en tu cartera del cliente " + this.getNickname());
+			System.out.println("El producto no está en la cartera del cliente " + this.getNickname());
 			return false;
+		}
+		if (Tienda.getInstancia().getPendientesTasacion().contains(p)) {
+		    System.out.println("El producto ya está pendiente de tasacion.");
+		    return false;
 		}
 		if (p.isVisible()) {
 			System.out.println("El producto ya ha sido tasado");
@@ -198,13 +181,15 @@ public class Cliente extends UsuarioRegistrado {
 
 //aceptar Oferta
 	public void confirmarIntercambio(Oferta oferta) {
-		if (this.getOfertasParaDecidir().contains(oferta)) {
-			// oferta.aceptarYEjecutar();
-			oferta.aceptarOferta();
-			return;
-		}
-		System.out.println("Esta oferta no la tienes disponible");
-		return;
+	    if (this.getOfertasParaDecidir().contains(oferta)) {
+	        try {
+	            oferta.aceptarOferta();
+	        } catch (OfertaNoDisponibleException e) {
+	            System.out.println(e.getMessage());
+	        }
+	        return;
+	    }
+	    System.out.println("Esta oferta no se encuentra  disponible");
 	}
 
 	public List<Oferta> verIntercambioscon(Cliente c) {
@@ -532,6 +517,13 @@ public class Cliente extends UsuarioRegistrado {
 						+ p.isBloqueado());
 			}
 		}
+	}
+	public List<Producto2Mano> crearListaProductos2Mano(Producto2Mano... productos) {
+	    List<Producto2Mano> lista = new ArrayList<>();
+	    for (Producto2Mano p : productos) {
+	        lista.add(p);
+	    }
+	    return lista;
 	}
 	// --- GETTERS ---
 

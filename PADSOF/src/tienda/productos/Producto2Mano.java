@@ -89,6 +89,15 @@ public class Producto2Mano extends Producto {
 				+ " | Disponible: " + (!this.bloqueado ? "Sí" : "No") + " |";
 	}
 
+	public String resumen() {
+		String valoracionStr = (valoracion == null) ? "Sin valorar"
+				: valoracion.getPrecioTasacion() + "€ - " + valoracion.getEstadoProducto() + " (tasado por: "
+						+ valoracion.getEmpleado().getNickname() + ")";
+		return "[" + id + "] " + getNombre() + " | Propietario: "
+				+ (propietario != null ? propietario.getNickname() : "ninguno") + " | Valor aproximado: "
+				+ valoracionStr + " | Visible: " + visible + " | Bloqueado: " + bloqueado;
+	}
+
 	public Object getEstado() {
 		// TODO Auto-generated method stub
 		return this.valoracion.getEstadoValoracion();

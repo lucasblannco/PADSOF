@@ -379,6 +379,111 @@ public class DemostradorMain {
 		alice.verMiCartera();
 		bob.verMiCartera();
 		carlos.verMiCartera();
+		Producto2Mano pAlice = alice.getCarteraIntercambio().get(0);
+		Producto2Mano pBob1 = bob.getCarteraIntercambio().get(0);
+		Producto2Mano pBob2 = bob.getCarteraIntercambio().get(1);
+		Producto2Mano pCarlos = carlos.getCarteraIntercambio().get(0);
+		boolean tasacionAlice = alice.solicitarTasacion(pAlice, "1111222233334444", 111, Date.valueOf("2029-01-01"));
+		System.out.println("  Alice solicita tasar '" + pAlice.getNombre() + "': "
+				+ (tasacionAlice ? "OK - pendiente de tasacion" : "FALLIDO - pago rechazado"));
+
+		boolean tasacionBob1 = bob.solicitarTasacion(pBob1, "5555666677778888", 222, Date.valueOf("2030-06-01"));
+		System.out.println("  Bob solicita tasar '" + pBob1.getNombre() + "': "
+				+ (tasacionBob1 ? "OK - pendiente de tasacion" : "FALLIDO - pago rechazado"));
+
+		boolean tasacionBob2 = bob.solicitarTasacion(pBob2, "5555666677778888", 222, Date.valueOf("2030-06-01"));
+		System.out.println("  Bob solicita tasar '" + pBob2.getNombre() + "': "
+				+ (tasacionBob2 ? "OK - pendiente de tasacion" : "FALLIDO - pago rechazado"));
+
+		boolean tasacionCarlos = carlos.solicitarTasacion(pCarlos, "9999000011112222", 333, Date.valueOf("2031-12-01"));
+		System.out.println("  Carlos solicita tasar '" + pCarlos.getNombre() + "': "
+				+ (tasacionCarlos ? "OK - pendiente de tasacion" : "FALLIDO - pago rechazado"));
+
+		System.out.println("  Pendientes de tasacion: " + tienda.getPendientesTasacion().size());
+
+		// Casos de error en tasacion
+		System.out.println("\n  Casos de error en la solicius de tasacion:");
+		System.out.println("  Alice intenta tasar producto que no es suyo:");
+		alice.solicitarTasacion(pBob1, "1111222233334444", 111, Date.valueOf("2029-01-01"));
+		System.out.println("  Alice intenta tasar producto ya tasado:");
+		alice.solicitarTasacion(pAlice, "1111222233334444", 111, Date.valueOf("2029-01-01"));
+		alice.subirProducto("Dragon Ball Z Vol.1", "Como nuevo", "dbz.jpg");
+		Producto2Mano pAlice2 = alice.getCarteraIntercambio().get(1);
+		System.out.println("  Alice intenta tasar con tarjeta caducada:");
+		alice.solicitarTasacion(pAlice2, "1111222233334444", 111, Date.valueOf("2020-01-01"));
+
+		alice.solicitarTasacion(pAlice2, "1111222233334444", 111, Date.valueOf("2029-01-01"));
+
+		System.out.println("\n  Empleado tasa los productos pendientes:");
+
+		empTasador.tasarProducto(pAlice.getId(), 20.0, EstadoProducto.MUY_BUENO);
+		empTasador.tasarProducto(pBob1.getId(), 15.0, EstadoProducto.PERFECTO);
+		empTasador.tasarProducto(pBob2.getId(), 10.0, EstadoProducto.USO_LIGERO);
+		empTasador.tasarProducto(pCarlos.getId(), 12.0, EstadoProducto.MUY_BUENO);
+
+		System.out.println("\n  Carteras tras tasar:");
+		alice.verMiCartera();
+		bob.verMiCartera();
+		carlos.verMiCartera();
+
+		empTasador.tasarProducto(pAlice2.getId(), 18.0, EstadoProducto.PERFECTO);
+		System.out.println("\n Funciones de busqueda productos de segunda mano:");
+		System.out.println("\n  Alice busca todos los productos de segunda mano:");
+		alice.buscarProductosSegundaMano();
+
+		System.out.println("\n  Bob busca por nombre 'figura':");
+		bob.buscarProducto2ManoNombre("figura");
+
+		System.out.println("\n  Carlos busca por id '" + pAlice.getId() + "':");
+		carlos.buscarProducto2ManoPorid(pAlice.getId());
+
+		System.out.println("\n  Alice filtra segunda mano entre 10€ y 18€ de valor estimado:");
+		alice.filtrar2ManoPorValor(10.0, 18.0);
+
+		System.out.println("\n  Bob filtra segunda mano con estado minimo MUY_BUENO:");
+		bob.filtrar2ManoPorEstado(EstadoProducto.MUY_BUENO);
+
+		System.out.println("\n  Carlos filtra segunda mano entre 10€ y 20€ con estado minimo PERFECTO:");
+		carlos.filtrar2Mano(10.0, 20.0, EstadoProducto.PERFECTO);
+
+		System.out.println("\n  Alice filtra con estado minimo USO_LIGERO (sin resultados esperados):");
+		alice.filtrar2ManoPorEstado(EstadoProducto.USO_LIGERO);
+
+		System.out.println("\n  Alice ve la cartera de bob:");
+		alice.verCarteraCliente("bob");
+
+		System.out.println("\n  Alice intenta ver su propia cartera con este metodo:");
+		alice.verCarteraCliente("alice");
+
+		System.out.println("INTERCAMBIOS: ");
+
+		boolean ofertaCreada = alice.proponerOferta(bob, alice.crearListaProductos2Mano(pAlice, pAlice2),
+				alice.crearListaProductos2Mano(pBob1, pBob2));
+		System.out.println("  Oferta creada: " + (ofertaCreada ? "OK" : "FALLIDA"));
+
+		Oferta oferta = alice.getOfertasPendientes().get(0);
+		oferta.imprimirResumen();
+
+		System.out.println("\n  Casos de error en ofertas:");
+		System.out.println("  Alice intenta proponerse oferta a si misma:");
+		alice.proponerOferta(alice, alice.crearListaProductos2Mano(pAlice, pAlice2),
+				alice.crearListaProductos2Mano(pBob1, pBob2));
+
+		System.out.println("  Alice intenta ofertar productos ya bloqueados:");
+		alice.proponerOferta(bob, alice.crearListaProductos2Mano(pAlice, pAlice2),
+				alice.crearListaProductos2Mano(pBob1, pBob2));
+		// Bob acepta
+		System.out.println("\n  Bob acepta la oferta:");
+		bob.confirmarIntercambio(oferta);
+		System.out.println("  Estado tras aceptar: " + oferta.getEstado());
+
+		// Intentar aceptar oferta ya aceptada
+		System.out.println("  Bob intenta aceptar la oferta otra vez:(Ya fue aceptada, probamos la excepcion)");
+		bob.confirmarIntercambio(oferta);
+		System.out.println("\n  Empleado ejecuta el intercambio:");
+		boolean intercambiado = empTasador.confirmarIntercambio(oferta);
+		System.out.println(
+				"  Resultado: " + (intercambiado ? "REALIZADO" : "FALLIDO") + " | estado: " + oferta.getEstado());
 
 	}
 

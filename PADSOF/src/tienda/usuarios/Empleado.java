@@ -18,6 +18,7 @@ import java.util.Map;
 import javax.print.DocFlavor.STRING;
 
 import Excepcion.FicheroFormatoInvalidoException;
+import Excepcion.OfertaNoDisponibleException;
 import Excepcion.TipoProductoDesconocidoException;
 import intercambios.*;
 
@@ -252,6 +253,7 @@ public class Empleado extends UsuarioRegistrado {
 					"El producto " + p.getNombre() + " ha sido rechazado al no cumplir las expectativas.",
 					TipoNotificacion.VALORACION_COMPLETADA);
 		} else if (aceptado) {
+			Tienda.getInstancia().publicarParaIntercambio(p);
 			p.getPropietario().recibirNotificacionTipo(
 					"El producto " + p.getNombre() + " ha sido tasado con éxito.Ya es visible para los demas clientes",
 					TipoNotificacion.VALORACION_COMPLETADA);
@@ -261,17 +263,22 @@ public class Empleado extends UsuarioRegistrado {
 	public boolean confirmarIntercambio(Oferta o) {
 		if (!puedeRealizarTarea(TipoPermisos.CONFIRMACION_INTERCAMBIO)) {
 			System.out.println(
-					"El empleado " + this.getNickname() + "no tiene permisos paara hacer confirmacion de intercambios");
+					"El empleado " + this.getNickname() + " no tiene permisos para hacer confirmacion de intercambios");
 			return false;
 		}
 		if (o.getEstado() != EstadoOferta.ACEPTADA) {
 			this.recibirNotificacion("La oferta no ha sido aceptada por ambos usuarios por lo que no se puede aceptar");
+			return false;
 		}
-		o.aceptarYEjecutar();
+		try {
+			o.aceptarYEjecutar();
+		} catch (OfertaNoDisponibleException e) {
+			System.out.println(e.getMessage());
+			return false;
+		}
 		return true;
 	}
-	
-	
+
 //Hay que ver la cantidad supongio que habra una funcion de que si contine sacarlo rapido y ahi modificas la cantidad
 
 	/// Funcion para añadir un nuevo producto a la tienda
@@ -281,8 +288,7 @@ public class Empleado extends UsuarioRegistrado {
 			int minNumjugadores, int maxNumjugadores, int minEdad, int maxEdad, String Estilo) {
 
 		if (!puedeRealizarTarea(TipoPermisos.GESTION_STOCK)) {
-			
-			
+
 			return false;
 		}
 		Tienda tienda = Tienda.getInstancia();
@@ -490,8 +496,9 @@ public class Empleado extends UsuarioRegistrado {
 
 			this.recibirNotificacion("Has añadido productos al sistema desde un fichero de texto. Creados: "
 					+ productosNuevos + ", Actualizados: " + stockActualizado);
-			System.out.println("El empleado "+ this.getId() +" ha  añadido productos al sistema desde un fichero de texto. Creados: "
-					+ productosNuevos + ", Actualizados: " + stockActualizado);
+			System.out.println("El empleado " + this.getId()
+					+ " ha  añadido productos al sistema desde un fichero de texto. Creados: " + productosNuevos
+					+ ", Actualizados: " + stockActualizado);
 			return true;
 
 		} catch (IOException e) {
@@ -518,7 +525,8 @@ public class Empleado extends UsuarioRegistrado {
 			ped.getCliente().recibirNotificacionTipo("Tu pedido con codigo de recogida " + ped.getCodigoRecogida()
 					+ " está preparado. Puedes recogerlo.", TipoNotificacion.PEDIDO_LISTO);
 		}
-		System.out.println("Pedido preparado correctamente por el empleado "+this.getId()+". Está listo para recoger.");
+		System.out.println(
+				"Pedido preparado correctamente por el empleado " + this.getId() + ". Está listo para recoger.");
 		return ok;
 	}
 
@@ -569,7 +577,7 @@ public class Empleado extends UsuarioRegistrado {
 
 		boolean añadido = c.addProducto(p);
 		if (añadido) {
-			System.out.println("Se ha añadido el producto con id "+idProducto+" a la categoria "+nombreCat+".");
+			System.out.println("Se ha añadido el producto con id " + idProducto + " a la categoria " + nombreCat + ".");
 			for (Cliente cliente : Tienda.getInstancia().obtenerClientesTienda()) {
 
 				cliente.notificarProductoNuevoCategoria(
@@ -604,7 +612,8 @@ public class Empleado extends UsuarioRegistrado {
 
 		boolean eliminado = c.deleteProducto(p);
 		if (eliminado) {
-			System.out.println("Se ha eliminado el producto con id "+idProducto+" de la categoria "+nombreCat+".");
+			System.out.println(
+					"Se ha eliminado el producto con id " + idProducto + " de la categoria " + nombreCat + ".");
 			for (Cliente cliente : Tienda.getInstancia().obtenerClientesTienda()) {
 
 				cliente.notificarProductoNuevoCategoria(
@@ -635,7 +644,7 @@ public class Empleado extends UsuarioRegistrado {
 		}
 		Pack p = new Pack(nombre, descripcion, imagen, precioOficial, stock, lineas);
 		Tienda.getInstancia().añadirProducto(p);
-		System.out.println("El empleado "+ id+" ha creado correctamente el pack con id "+p.getId()+".");
+		System.out.println("El empleado " + id + " ha creado correctamente el pack con id " + p.getId() + ".");
 		this.recibirNotificacion("Has creado el pack " + nombre + " correctamente.");
 		return true;
 	}
@@ -672,34 +681,35 @@ public class Empleado extends UsuarioRegistrado {
 	}
 
 	public boolean modificarUnidadesProductoEnPack(String idProducto, String idPack, int nuevasUnidades) {
-	    if (!puedeRealizarTarea(TipoPermisos.GESTION_PACKS)) {
-	        System.out.println("El empleado " + this.getNickname() + " no tiene permiso para trabajar con packs.");
-	        return false;
-	    }
-	    if (idPack == null || idPack.isBlank()) {
-	        System.out.println("El id del pack no puede estar vacio.");
-	        return false;
-	    }
-	    if (idProducto == null || idProducto.isBlank()) {
-	        System.out.println("El id del producto no puede estar vacio.");
-	        return false;
-	    }
-	    if (nuevasUnidades <= 0) {
-	        System.out.println("Las unidades deben ser mayor que 0.");
-	        return false;
-	    }
-	    ProductoVenta pack = Tienda.getInstancia().buscarProductoVentaPorId(idPack);
-	    if (pack == null || !(pack instanceof Pack)) {
-	        System.out.println("No existe ningun pack con id: " + idPack);
-	        return false;
-	    }
-	    ProductoVenta producto = Tienda.getInstancia().buscarProductoVentaPorId(idProducto);
-	    if (producto == null) {
-	        System.out.println("No existe ningun producto con id: " + idProducto);
-	        return false;
-	    }
-	    return ((Pack) pack).modificarUnidades(producto, nuevasUnidades);
+		if (!puedeRealizarTarea(TipoPermisos.GESTION_PACKS)) {
+			System.out.println("El empleado " + this.getNickname() + " no tiene permiso para trabajar con packs.");
+			return false;
+		}
+		if (idPack == null || idPack.isBlank()) {
+			System.out.println("El id del pack no puede estar vacio.");
+			return false;
+		}
+		if (idProducto == null || idProducto.isBlank()) {
+			System.out.println("El id del producto no puede estar vacio.");
+			return false;
+		}
+		if (nuevasUnidades <= 0) {
+			System.out.println("Las unidades deben ser mayor que 0.");
+			return false;
+		}
+		ProductoVenta pack = Tienda.getInstancia().buscarProductoVentaPorId(idPack);
+		if (pack == null || !(pack instanceof Pack)) {
+			System.out.println("No existe ningun pack con id: " + idPack);
+			return false;
+		}
+		ProductoVenta producto = Tienda.getInstancia().buscarProductoVentaPorId(idProducto);
+		if (producto == null) {
+			System.out.println("No existe ningun producto con id: " + idProducto);
+			return false;
+		}
+		return ((Pack) pack).modificarUnidades(producto, nuevasUnidades);
 	}
+
 	public boolean eliminarProductoDePack(String idPack, String idProducto) {
 		if (!puedeRealizarTarea(TipoPermisos.GESTION_PACKS))
 			return false;
