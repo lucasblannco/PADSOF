@@ -270,6 +270,8 @@ public class Empleado extends UsuarioRegistrado {
 		o.aceptarYEjecutar();
 		return true;
 	}
+	
+	
 //Hay que ver la cantidad supongio que habra una funcion de que si contine sacarlo rapido y ahi modificas la cantidad
 
 	/// Funcion para añadir un nuevo producto a la tienda

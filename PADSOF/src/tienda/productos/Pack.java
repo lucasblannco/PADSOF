@@ -37,10 +37,7 @@ public class Pack extends ProductoVenta {
 
 		this.lineas.add(lp);
 
-		if (this.precioOficial >= calcularSumaProductos() - 1) {
-			this.lineas.remove(lp);
-			return false;
-		}
+		
 
 		lp.getProducto()
 				.setStockDisponible(lp.getProducto().getStockDisponible() - lp.getUnidades() * this.stockDisponible);
