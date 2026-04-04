@@ -3,6 +3,7 @@ package productos;
 import java.time.LocalDateTime;
 import java.util.Date;
 
+import tienda.Tienda;
 import usuarios.Empleado;
 import ventas.Pago;
 
@@ -13,12 +14,13 @@ public class Valoracion {
 	private Empleado empleado;
 	private Pago pago;
 	private double precioTasacion;
-
+	private double precioPagado; 
 	public Valoracion(double precioTasacion, EstadoProducto estadoProducto, Empleado empleado) {
 		this.fecha = LocalDateTime.now();
 		this.estadoProducto = estadoProducto;
 		this.empleado = empleado;
 		this.precioTasacion=precioTasacion;
+		this.precioPagado=Tienda.getInstancia().getPrecioTasacion();
 	}
 
 	public Valoracion(LocalDateTime fecha, double precioTasacion, EstadoProducto estadoProducto,
@@ -79,6 +81,14 @@ public class Valoracion {
 
 	public void setPrecioTasacion(double precioTasacion) {
 		this.precioTasacion = precioTasacion;
+	}
+
+	public double getPrecioPagado() {
+		return precioPagado;
+	}
+
+	public void setPrecioPagado(double precioPagado) {
+		this.precioPagado = precioPagado;
 	}
 
 }

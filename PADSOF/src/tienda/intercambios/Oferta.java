@@ -104,11 +104,14 @@ public class Oferta {
 	}
 
 	public boolean haCaducado() {
-		int tiempoMaxOferta = Tienda.getInstancia().getTiempoMaxOferta();
-		return LocalDateTime.now().isAfter(fechaOferta.plusMinutes(tiempoMaxOferta));// Comprobamos si el tiempo en el
-																						// que finaliza la oferta es
-																						// anterior al tiempo real de
-																						// ahora
+		int tiempoMax = Tienda.getInstancia().getTiempoMaxOferta();
+		if (tiempoMax == 0)
+			return false;
+		boolean caducada = LocalDateTime.now().isAfter(fechaOferta.plusMinutes(tiempoMax));
+		if (caducada && this.estado == EstadoOferta.PENDIENTE) {
+			this.estado = EstadoOferta.CADUCADA;
+		}
+		return caducada;
 	}
 
 	public void imprimirResumen() {

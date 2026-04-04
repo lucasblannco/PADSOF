@@ -32,7 +32,7 @@ public class Tienda {
 	private double precioValoracion;
 	private List<UsuarioRegistrado> usuariosConSesionActiva = new ArrayList<>();
 	private List<Notificacion> historialNotificaciones = new ArrayList<>();
-
+	private List<Producto2Mano> historialProductos2Mano=new ArrayList<Producto2Mano>();
 	// esta variable estatica, el constructor privado y el segundo metodo
 	// sirven para asegurar la existencia de una tienda unica y comun.
 	private static Tienda instancia;
@@ -59,6 +59,7 @@ public class Tienda {
 		this.usuariosConSesionActiva = new ArrayList<>();
 		this.usuariosConSesionActiva.add(gestor);
 		this.historialNotificaciones = new ArrayList<>();
+		this.historialProductos2Mano=new ArrayList<>();
 	}
 
 	public static Tienda getInstancia() {
@@ -430,6 +431,9 @@ public class Tienda {
 
 	public void solicitarTasacion(Producto2Mano p) {
 		this.pendientes_Tasacion.add(p);
+		if (!historialProductos2Mano.contains(p)) {
+	        historialProductos2Mano.add(p);
+	    }
 		for (Empleado empleado : this.obtenerEmpleadosTienda()) {
 			if (empleado.tienePermiso(TipoPermisos.VALORACION_PRODUCTOS)) {
 				empleado.recibirNotificacion("Hay un nuevo producto para valorar: " + p.getNombre());
@@ -742,6 +746,14 @@ public class Tienda {
 				lista.add(c);
 		}
 		return lista;
+	}
+
+	public List<Producto2Mano> getHistorialProductos2Mano() {
+		return historialProductos2Mano;
+	}
+
+	public void setHistorialProductos2Mano(List<Producto2Mano> historialProductos2Mano) {
+		this.historialProductos2Mano = historialProductos2Mano;
 	}
 
 }

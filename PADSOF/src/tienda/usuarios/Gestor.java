@@ -487,11 +487,21 @@ public class Gestor extends UsuarioRegistrado {
 	// ----------------------------------------------------------------
 
 	public List<Cliente> verClientesTopCompras() {
-		return motorEstadistico.obtenerClientesConMasCompras();
+		List<Cliente> lista = motorEstadistico.obtenerClientesConMasCompras();
+		System.out.println("  Ranking por compras (" + lista.size() + " clientes):");
+		for (Cliente c : lista) {
+			System.out.println("   " + c.getNickname() + " | pedidos completados: " + c.contarPedidosCompletados());
+		}
+		return lista;
 	}
 
 	public List<Cliente> verClientesTopIntercambios() {
-		return motorEstadistico.obtenerClientesConMasIntercambios();
+		List<Cliente> lista = motorEstadistico.obtenerClientesConMasIntercambios();
+		System.out.println("  Ranking por intercambios (" + lista.size() + " clientes):");
+		for (Cliente c : lista) {
+			System.out.println("   " + c.getNickname() + " | intercambios: " + c.contarIntercambios());
+		}
+		return lista;
 	}
 
 	public List<Cliente> verClientesConMasPedidosCancelados() {
@@ -499,22 +509,37 @@ public class Gestor extends UsuarioRegistrado {
 	}
 
 	public double consultarIngresosRango(LocalDate inicio, LocalDate fin) throws RangoFechasInvalidoException {
-		return motorEstadistico.calcularIngresosRangoFechas(inicio, fin);
+		double total = motorEstadistico.calcularIngresosRangoFechas(inicio, fin);
+		System.out.println("  Ingresos desde " + inicio + " hasta " + fin + ": " + String.format("%.2f", total) + "€");
+		return total;
 	}
 
 	public double[] consultarIngresosPorMeses(int año) throws AnioInvalidoException, RangoFechasInvalidoException {
-		return motorEstadistico.calcularIngresosMesesAño(año);
+		double[] porMeses = motorEstadistico.calcularIngresosMesesAño(año);
+		String[] meses = { "Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic" };
+		System.out.println("  Ingresos por mes del año " + año + ":");
+		for (int i = 0; i < 12; i++) {
+			if (porMeses[i] > 0) {
+				System.out.println("   " + meses[i] + ": " + String.format("%.2f", porMeses[i]) + "€");
+			}
+		}
+		return porMeses;
 	}
 
 	public double[] consultarIngresosPorMesesActual() throws AnioInvalidoException, RangoFechasInvalidoException {
-		return motorEstadistico.calcularIngresosMesesAñoActual();
+		return consultarIngresosPorMeses(LocalDate.now().getYear());
 	}
 
 	public double consultarIngresosVenta() {
-		return motorEstadistico.calcularIngresosVenta();
+		double total = motorEstadistico.calcularIngresosVenta();
+		System.out.println("  Ingresos totales ventas: " + String.format("%.2f", total) + "€");
+		return total;
 	}
 
 	public double consultarIngresosTasacion() {
-		return motorEstadistico.calcularIngresosTasacion();
+		double total = motorEstadistico.calcularIngresosTasacion();
+		System.out.println("  Ingresos tasacion: " + String.format("%.2f", total) + "€");
+		return total;
 	}
+
 }

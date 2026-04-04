@@ -51,6 +51,30 @@ public class Cliente extends UsuarioRegistrado {
 		System.out.println("Producto subido correctamente a tu cartera personal de objetos de sgeunda mano.");
 	}
 
+	public int contarPedidosCompletados() {
+		int count = 0;
+		for (Pedido p : historialPedidos) {
+			if (p.getEstado() == EstadoPedido.PAGADO || p.getEstado() == EstadoPedido.LISTO_PARA_RECOGER
+					|| p.getEstado() == EstadoPedido.ENTREGADO) {
+				count++;
+			}
+		}
+		return count;
+	}
+
+	public int contarPedidosCancelados() {
+		int count = 0;
+		for (Pedido p : historialPedidos) {
+			if (p.getEstado() == EstadoPedido.CANCELADO) {
+				count++;
+			}
+		}
+		return count;
+	}
+	public int contarIntercambios() {
+	    return historialIntercambios.size();
+	}
+
 	public boolean tieneProductoenSuCartera(Producto2Mano p) {
 		if (p == null) {
 			return false;
@@ -202,31 +226,31 @@ public class Cliente extends UsuarioRegistrado {
 		}
 		return intercambios;
 	}
+
 	public void verMisOfertasEnviadas() {
-	    List<Oferta> enviadas = getOfertasEnEspera();
-	    if (enviadas.isEmpty()) {
-	        System.out.println("  " + getNickname() + " no tiene ofertas enviadas pendientes.");
-	        return;
-	    }
-	    System.out.println("  Ofertas enviadas de " + getNickname()
-	        + " (" + enviadas.size() + "):");
-	    for (Oferta o : enviadas) {
-	        o.imprimirResumen();
-	    }
+		List<Oferta> enviadas = getOfertasEnEspera();
+		if (enviadas.isEmpty()) {
+			System.out.println("  " + getNickname() + " no tiene ofertas enviadas pendientes.");
+			return;
+		}
+		System.out.println("  Ofertas enviadas de " + getNickname() + " (" + enviadas.size() + "):");
+		for (Oferta o : enviadas) {
+			o.imprimirResumen();
+		}
 	}
 
 	public void verMisOfertasPorResponder() {
-	    List<Oferta> porResponder = getOfertasParaDecidir();
-	    if (porResponder.isEmpty()) {
-	        System.out.println("  " + getNickname() + " no tiene ofertas por responder.");
-	        return;
-	    }
-	    System.out.println("  Ofertas por responder de " + getNickname()
-	        + " (" + porResponder.size() + "):");
-	    for (Oferta o : porResponder) {
-	        o.imprimirResumen();
-	    }
+		List<Oferta> porResponder = getOfertasParaDecidir();
+		if (porResponder.isEmpty()) {
+			System.out.println("  " + getNickname() + " no tiene ofertas por responder.");
+			return;
+		}
+		System.out.println("  Ofertas por responder de " + getNickname() + " (" + porResponder.size() + "):");
+		for (Oferta o : porResponder) {
+			o.imprimirResumen();
+		}
 	}
+
 	public void verMiHistorialIntercambios() {
 		if (historialIntercambios.isEmpty()) {
 			System.out.println("  " + getNickname() + " no tiene intercambios finalizados.");
@@ -445,7 +469,7 @@ public class Cliente extends UsuarioRegistrado {
 			Tienda.getInstancia().registrarVenta(pedido);
 			this.carritoActual = null;
 			System.out.println("El cliente " + this.getNickname()
-					+ "ha reservado correctamente su carrito. Debe pagarlo antes de que se cumplan "
+					+ " ha reservado correctamente su carrito. Debe pagarlo antes de que se cumplan "
 					+ Tienda.getInstancia().getTiempoMaxPago() + " minutos.");
 			this.recibirNotificacionTipo(
 					"Pedido creado correctamente. Tienes " + Tienda.getInstancia().getTiempoMaxPago()
