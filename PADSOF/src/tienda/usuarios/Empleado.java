@@ -71,16 +71,16 @@ public class Empleado extends UsuarioRegistrado {
 
 	}
 
-	private boolean puedeRealizarTarea(TipoPermisos permiso) {
-		if (this.despedido) {
-			System.out.println("El empleado" + this.getNickname() + " dado de baja y no puede realizar acciones.");
+	public boolean puedeRealizarTarea(TipoPermisos permiso) {
+		if (isDespedido()) {
+			System.out.println("El empleado " + this.getNickname() + " ha sido despedido y no puede realizar tareas.");
 			return false;
 		}
-		if (!this.tienePermiso(permiso)) {
-			System.out.println("El empleado " + this.getNickname() + " no tiene el permiso " + permiso);
+		if (!sesionIniciada) {
+			System.out.println("El empleado " + this.getNickname() + " no tiene sesion iniciada.");
 			return false;
 		}
-		return true;
+		return this.permisos.contains(permiso);
 	}
 
 	private Producto2Mano buscarProductoPendientePorId(String idProducto) {

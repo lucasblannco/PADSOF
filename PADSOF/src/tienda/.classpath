@@ -8,6 +8,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/6"/>
-	<classpathentry kind="lib" path="D:/Desktop/colando/PADSOF/TeleChargeAndPaySystem8.jar"/>
+	<classpathentry kind="lib" path="/home/dani/Documentos/Repositorios/PADSOF/PADSOF/src/tienda/TeleChargeAndPaySystem8.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

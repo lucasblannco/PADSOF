@@ -18,7 +18,18 @@ public class Recomendador {
 	private double pesoCompras = 0.33;
 	private double pesoCategorias = 0.33;
 
-	
+	public void imprimirSugerencias(Cliente cliente) throws RecomendadorNoActivoException {
+	    List<ProductoVenta> sugerencias = generarSugerencias(cliente);
+	    if (sugerencias.isEmpty()) {
+	        System.out.println("  No hay sugerencias para " + cliente.getNickname());
+	        return;
+	    }
+	    System.out.println("  Sugerencias para " + cliente.getNickname()
+	        + " (" + sugerencias.size() + "):");
+	    for (ProductoVenta p : sugerencias) {
+	        System.out.println("   - " + p.resumen());
+	    }
+	}
 
 	public List<ProductoVenta> generarSugerencias(Cliente cliente) throws RecomendadorNoActivoException  {
 		if (!activo) {
