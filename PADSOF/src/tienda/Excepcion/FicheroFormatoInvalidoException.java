@@ -1,6 +1,6 @@
 package Excepcion;
 
-public class FicheroFormatoInvalidoException extends Exception { 
+public class FicheroFormatoInvalidoException extends CheckPointException {
     private final int numeroLinea;
     private final String linea;
 
@@ -12,6 +12,6 @@ public class FicheroFormatoInvalidoException extends Exception {
 
     @Override
     public String getMessage() {
-        return "Error en línea " + numeroLinea + ": " + super.getMessage() + " -> " + linea;
+        return "Error en línea " + numeroLinea + ": " + super.getMessage();
     }
 }

@@ -1,0 +1,13 @@
+TIPO;ID;NOMBRE;UNIDADES;DESCRIPCION;IMAGEN;PRECIO;CATEGORIAS;PAGS;ED;AÑO;MIN_J;MAX_J;MIN_E;MAX_E;ESTILO;ALT;ANC;LAR;MAT;MARCA
+C;;Berserk Vol.1;15;Manga de fantasia oscura;img/berserk.jpg;14.99;Anime;350;Dark Horse;1989;;;;;;;;;;
+C;;Vagabond Vol.1;12;Manga historico;img/vagabond.jpg;13.99;Anime;270;Viz Media;1998;;;;;;;;;;
+J;;Carcassonne;20;Juego de estrategia medieval;img/carc.jpg;35.00;Familiar;;;;2;5;8;99;Tablero;;;;;
+F;;Figura Naruto;10;Figura de Naruto Uzumaki;img/naruto.jpg;29.99;Anime;;;;;;;;;22.0;12.0;10.0;PVC;Bandai
+F;;Figura Vegeta;6;Figura de Vegeta SSJ;img/vegeta.jpg;39.99;Anime;;;;;;;;;24.0;14.0;11.0;PVC;Bandai
+C;;One Piece Vol.1;25;Aventuras de Luffy;img/op.jpg;9.99;Anime;200;Shueisha;1997;;;;;;;;;;
+J;;Dixit;15;Juego de cartas creativo;img/dixit.jpg;28.00;Familiar;;;;3;6;8;99;Cartas;;;;;
+C;PV-4;Watchmen;50;;;;;;;;;;;;;;;;;
+J;PV-5;Catan;20;;;;;;;;;;;;;;;;;
+C;PV-7;Akira Vol.1;30;;;;;;;;;;;;;;;;;
+X;;Producto Tipo Invalido;10;Tipo desconocido;img/x.jpg;20.00;Anime;;;;;;;;;;;;;;
+C;PV-9;Error de tipo;10;;;;;;;;;;;;;;;;;

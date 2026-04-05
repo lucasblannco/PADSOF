@@ -583,7 +583,7 @@ public class Empleado extends UsuarioRegistrado {
 			for (Cliente cliente : Tienda.getInstancia().obtenerClientesTienda()) {
 
 				cliente.notificarProductoNuevoCategoria(
-						"Nuevo producto en la categoria" + c.getNombre() + ": " + p.getNombre() + ".", nombreCat);
+						"Nuevo producto en la categoria " + c.getNombre() + ": " + p.getNombre() + ".", nombreCat);
 			}
 		}
 		return añadido;
@@ -792,6 +792,85 @@ public class Empleado extends UsuarioRegistrado {
 		p.setImagenRuta(imagen);
 		System.out.println("Imagen del producto " + idProducto + " modificada correctamente.");
 		return true;
+	}
+
+	public void verMisNotificaciones() {
+		if (notificaciones.isEmpty()) {
+			System.out.println("  " + getNickname() + " no tiene notificaciones.");
+			return;
+		}
+
+		List<Notificacion> noLeidas = new ArrayList<>();
+		List<Notificacion> leidas = new ArrayList<>();
+		for (Notificacion n : notificaciones) {
+			if (!n.isLeida())
+				noLeidas.add(n);
+			else
+				leidas.add(n);
+		}
+
+		System.out.println("  Notificaciones de " + getNickname() + " (" + notificaciones.size() + " total | "
+				+ noLeidas.size() + " no leidas):");
+
+		System.out.println("   No leidas ");
+		if (noLeidas.isEmpty()) {
+			System.out.println("  ninguna");
+		} else {
+			for (Notificacion n : noLeidas) {
+				System.out.println("  " + n);
+				n.marcarComoLeida();
+			}
+		}
+
+		System.out.println("   Leidas ");
+		if (leidas.isEmpty()) {
+			System.out.println("  ninguna");
+		} else {
+			for (Notificacion n : leidas) {
+				System.out.println("  " + n);
+			}
+		}
+	}
+
+	public void verMisNotificacionesPorTipo(TipoNotificacion tipo) {
+		List<Notificacion> noLeidas = new ArrayList<>();
+		List<Notificacion> leidas = new ArrayList<>();
+
+		for (Notificacion n : notificaciones) {
+			if (n.getTipo() == tipo) {
+				if (!n.isLeida())
+					noLeidas.add(n);
+				else
+					leidas.add(n);
+			}
+		}
+
+		if (noLeidas.isEmpty() && leidas.isEmpty()) {
+			System.out.println("  " + getNickname() + " no tiene notificaciones de tipo " + tipo);
+			return;
+		}
+
+		System.out.println("  Notificaciones de tipo " + tipo + " de " + getNickname() + " ("
+				+ (noLeidas.size() + leidas.size()) + " total | " + noLeidas.size() + " no leidas):");
+
+		System.out.println("   No leidas ");
+		if (noLeidas.isEmpty()) {
+			System.out.println("  ninguna");
+		} else {
+			for (Notificacion n : noLeidas) {
+				System.out.println("  " + n);
+				n.marcarComoLeida();
+			}
+		}
+
+		System.out.println("   Leidas ");
+		if (leidas.isEmpty()) {
+			System.out.println("  ninguna");
+		} else {
+			for (Notificacion n : leidas) {
+				System.out.println("  " + n);
+			}
+		}
 	}
 
 	public void asignarPermiso(TipoPermisos p) {

@@ -32,25 +32,41 @@ public class Notificacion {
 
 	// --- GETTERS Y SETTERS ---
 
-	public String getId() { return id; }
+	public String getId() {
+		return id;
+	}
 
-	public String getMensaje() { return mensaje; }
-	public void   setMensaje(String mensaje) { this.mensaje = mensaje; }
+	public String getMensaje() {
+		return mensaje;
+	}
 
-	public LocalDateTime getFechaEnvio() { return fechaEnvio; }
+	public void setMensaje(String mensaje) {
+		this.mensaje = mensaje;
+	}
 
-	public boolean isLeida() { return leida; }
-	public void    setLeida(boolean leida) { this.leida = leida; }
+	public LocalDateTime getFechaEnvio() {
+		return fechaEnvio;
+	}
 
-	public TipoNotificacion getTipo() { return tipo; }
-	public void             setTipo(TipoNotificacion tipo) { this.tipo = tipo; }
+	public boolean isLeida() {
+		return leida;
+	}
+
+	public void setLeida(boolean leida) {
+		this.leida = leida;
+	}
+
+	public TipoNotificacion getTipo() {
+		return tipo;
+	}
+
+	public void setTipo(TipoNotificacion tipo) {
+		this.tipo = tipo;
+	}
 
 	@Override
 	public String toString() {
-		return "[" + id + "] "
-			+ "[" + tipo + "] "
-			+ (leida ? "(leida)  " : "(no leida) ")
-			+ mensaje
-			+ "  [" + fechaEnvio.toLocalDate() + " " + fechaEnvio.toLocalTime().withNano(0) + "]";
+		return "[" + id + "] " + "[" + tipo + "] " + (leida ? "(leida)  " : "(no leida) ") + mensaje + "  ["
+				+ fechaEnvio.toLocalDate() + " " + fechaEnvio.toLocalTime().withNano(0) + "]";
 	}
 }

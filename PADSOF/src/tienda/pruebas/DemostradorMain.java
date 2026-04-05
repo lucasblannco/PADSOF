@@ -94,6 +94,10 @@ public class DemostradorMain {
 		imprimirEmpleado(empPedidos);
 		System.out.println(" Total empleados en tienda: " + tienda.obtenerEmpleadosTienda().size());
 
+		
+		
+		
+		
 		System.out.println("\n CARGA DE PRODUCTOS:");
 		System.out.println("Cargando productos desde fichero...");
 		empStock.cargarProductosFicheroTexto("ficheros/productos.txt");
@@ -131,13 +135,32 @@ public class DemostradorMain {
 		empPedidos.añadirProducto_nuevo("C", "Akira Vol.1", "Manga de ciencia ficcion", "akira.jpg", 12.99, 20,
 				tienda.seleccionarCategorias("Anime", "Ciencia-ficcion"), 350, "Kodansha", 1982, 0, 0, 0, null, null, 0,
 				0, 0, 0, null);
-
+		ProductoVenta akira = tienda.buscarproductoPorNombre("Akira Vol.1").get(0);
+		ProductoVenta catan = tienda.buscarproductoPorNombre("Catan").get(0);
+		ProductoVenta pandemic = tienda.buscarproductoPorNombre("Pandemic").get(0);
+		ProductoVenta ttr = tienda.buscarproductoPorNombre("Ticket to Ride").get(0);
+		ProductoVenta figGoku = tienda.buscarproductoPorNombre("Figura Goku SSJ").get(0);
+		ProductoVenta vader = tienda.buscarproductoPorNombre("Figura Darth Vader").get(0);
+		ProductoVenta link = tienda.buscarproductoPorNombre("Figura Link").get(0);
+		ProductoVenta watchmen = tienda.buscarproductoPorNombre("Watchmen").get(0);
+		
+		System.out.println("\n  Cargando productos2 desde fichero:");
+		System.out.println("  Stock watchmen antes: " + watchmen.getStockDisponible());
+		System.out.println("  Stock catan antes: " + catan.getStockDisponible());
+		System.out.println("  Stock akira antes: " + akira.getStockDisponible());
+		empStock.cargarProductosFicheroTexto("ficheros/productos2.txt");
+		System.out.println("  Productos tras fichero2: " + tienda.getStockVentas().size());
+		System.out.println("  Stock watchmen despues: " + watchmen.getStockDisponible());
+		System.out.println("  Stock catan despues: " + catan.getStockDisponible());
+		System.out.println("  Stock akira despues: " + akira.getStockDisponible());
+		
+		
 		System.out.println("  Total productos en tienda: " + tienda.getStockVentas().size());
 		for (ProductoVenta p : tienda.getStockVentas()) {
 			System.out.println("  " + p.resumen());
 		}
 		System.out.println("REPONER STOCK:");
-		ProductoVenta watchmen = tienda.buscarproductoPorNombre("Watchmen").get(0);
+		
 		empStock.reponerStockProducto(watchmen.getId(), 5);
 		System.out.println("MODIFICAR LA DESCRIPCION DE UN PRODUCTO:");
 		empStock.modificarDescripcionProducto(watchmen.getId(), "La obra maestra del noveno arte");
@@ -154,14 +177,7 @@ public class DemostradorMain {
 
 		System.out.println("\n CREAR PACKS");
 
-		ProductoVenta akira = tienda.buscarproductoPorNombre("Akira Vol.1").get(0);
-		ProductoVenta catan = tienda.buscarproductoPorNombre("Catan").get(0);
-		ProductoVenta pandemic = tienda.buscarproductoPorNombre("Pandemic").get(0);
-		ProductoVenta ttr = tienda.buscarproductoPorNombre("Ticket to Ride").get(0);
-		ProductoVenta figGoku = tienda.buscarproductoPorNombre("Figura Goku SSJ").get(0);
-		ProductoVenta vader = tienda.buscarproductoPorNombre("Figura Darth Vader").get(0);
-		ProductoVenta link = tienda.buscarproductoPorNombre("Figura Link").get(0);
-
+	
 		ArrayList<LineaPack> lineasGamer = construirLineasPack(new LineaPack(catan, 1), new LineaPack(figGoku, 1),
 				new LineaPack(akira, 1));
 		empStock.crearPack("Pack Gamer", "Pack con juego y figura", "pack.jpg", 70.00, 3, lineasGamer);
@@ -253,6 +269,11 @@ public class DemostradorMain {
 
 		tienda.imprimirCatalogo();
 
+		
+		
+		
+		
+		
 		// Alice busca por nombre y compra
 		System.out.println("\n  Alice busca 'watch':");
 		alice.buscarProductosPorNombre("watch");
@@ -430,6 +451,8 @@ public class DemostradorMain {
 		carlos.verMiCartera();
 
 		empTasador.tasarProducto(pAlice2.getId(), 18.0, EstadoProducto.PERFECTO);
+		System.out.println("\n Alice ve sus notificaciones ");
+		alice.verMisNotificaciones();
 		System.out.println("\n Funciones de busqueda productos de segunda mano:");
 		System.out.println("\n  Alice busca todos los productos de segunda mano:");
 		alice.buscarProductosSegundaMano();
@@ -865,13 +888,80 @@ public class DemostradorMain {
 		} catch (PesosInvalidosException | RecomendadorNoActivoException e) {
 			System.out.println("  Error recomendador: " + e.getMessage());
 		}
-		System.out.println("DESPIDO DE EMPELADOS Y LOGOUT");
 
+		
+		
+		System.out.println("  Total productos en tienda: " + tienda.getStockVentas().size());
+		for (ProductoVenta p : tienda.getStockVentas()) {
+			System.out.println("  " + p.resumen());
+		}
+		System.out.println("\nNOTIFICACIONES");
+		// Alice tiene categorias de interes configuradas (Anime)
+		// Vamos a añadir un producto a Anime para que alice reciba notificacion
+		System.out.println("\n  Añadiendo producto a categoria Anime (alice tiene Anime en sus intereses):");
+		empStock.añadirProductoACategoria(vader.getId(), "Anime");
+
+		System.out.println("\n  Todas las notificaciones de alice:");
+		alice.verMisNotificaciones();
+
+		System.out.println("Volvemos a ver todas las notificaciones de alice para ver que todas han cambiado a leido:");
+		alice.verMisNotificaciones();
+		// Ver por tipo
+		System.out.println("\n  Alice ve sus notificaciones de PAGO_EXITOSO:");
+		alice.verMisNotificacionesPorTipo(TipoNotificacion.PAGO_EXITOSO);
+
+		System.out.println("\n  Alice ve sus notificaciones de CATEGORIA_INTERES:");
+		alice.verMisNotificacionesPorTipo(TipoNotificacion.CATEGORIA_INTERES);
+
+		System.out.println("\n  Alice ve sus notificaciones de INTERCAMBIO_REALIZADO:");
+		alice.verMisNotificacionesPorTipo(TipoNotificacion.INTERCAMBIO_REALIZADO);
+
+		System.out.println("\n  Alice ve sus notificaciones de tipo que no tiene (DESCUENTO - lo desactivo):");
+		alice.verMisNotificacionesPorTipo(TipoNotificacion.DESCUENTO);
+		System.out.println("\n  Todas las notificaciones de bob:");
+		bob.verMisNotificaciones();
+		// Ver notificaciones de bob
+		System.out.println("\n  Todas las notificaciones de bob:");
+		bob.verMisNotificaciones();
+
+		System.out.println("\n  Bob ve sus notificaciones de INTERCAMBIO_REALIZADO:");
+		bob.verMisNotificacionesPorTipo(TipoNotificacion.INTERCAMBIO_REALIZADO);
+
+		// Ver notificaciones de carlos
+		System.out.println("\n  Todas las notificaciones de carlos:");
+		carlos.verMisNotificaciones();
+
+		// Ver notificaciones de empleados
+		System.out.println("\n  Todas las notificaciones de empTasador:");
+		empTasador.verMisNotificaciones();
+
+		System.out.println("\n  empTasador ve sus notificaciones de tipo EMPLEADOS:");
+		empTasador.verMisNotificacionesPorTipo(TipoNotificacion.EMPLEADOS);
+
+		System.out.println("\n  empPedidos ve sus notificaciones:");
+		empPedidos.verMisNotificaciones();
+
+		// Añadir otro producto a categoria para ver que solo alice recibe la
+		// notificacion
+		System.out.println("\n  Bob añade Accion a sus categorias de interes:");
+		bob.añadirCategoriaInteresParaRecibirInfo("Accion");
+
+		System.out.println("\n  Añadiendo Ticket to Ride a categoria Accion:");
+		System.out.println("  (bob tiene Accion en sus intereses -> bob deberia recibir notificacion)");
+		empStock.añadirProductoACategoria(ttr.getId(), "Accion");
+
+		System.out.println("\n  Notificaciones de CATEGORIA_INTERES de bob:");
+		bob.verMisNotificacionesPorTipo(TipoNotificacion.CATEGORIA_INTERES);
+
+		System.out.println("\n  Notificaciones de CATEGORIA_INTERES de alice (no deberia tener nueva):");
+		alice.verMisNotificacionesPorTipo(TipoNotificacion.CATEGORIA_INTERES);
+
+		System.out.println("\nLOGOUT Y DAR DE BAJA A EMPLEADOS");
 		// Estado inicial
 		System.out.println("\n  Usuarios con sesion activa:");
 		tienda.imprimirUsuariosConSesionActiva();
 
-		// ── Logout de alice ────────────────────────────────────────────────────────
+		// Logout de alice
 		System.out.println("\n  Alice hace logout:");
 		System.out.println("  Historial de pedidos de alice ANTES del logout:");
 		alice.verHistorialPedidos();
@@ -896,7 +986,6 @@ public class DemostradorMain {
 		System.out.println("  Preferencias de alice TRAS el login (deben ser las mismas):");
 		alice.verMisPreferencias();
 
-		
 		System.out.println("\n  Bob hace logout:");
 		System.out.println("  Historial de intercambios de bob ANTES del logout:");
 		bob.verMiHistorialIntercambios();
@@ -912,7 +1001,7 @@ public class DemostradorMain {
 		System.out.println("  Historial de intercambios de bob TRAS el login (debe ser el mismo):");
 		bob.verMiHistorialIntercambios();
 
-		// ── Logout de carlos ──────────────────────────────────────────────────────
+		// Logout de carlos
 		System.out.println("\n  Carlos hace logout:");
 		carlos.logout();
 		System.out.println("  Sesion activa carlos: " + carlos.isSesionIniciada());
@@ -923,7 +1012,6 @@ public class DemostradorMain {
 		Cliente carlosLoginFallido = tienda.loginCliente("carlos", "wrongpass");
 		System.out.println("  Resultado: " + (carlosLoginFallido == null ? "BLOQUEADO correctamente" : "ERROR"));
 
-		// Carlos hace login correcto
 		System.out.println("\n  Carlos hace login correcto:");
 		carlos = tienda.loginCliente("carlos", "Carlos@123");
 		System.out.println("  Sesion activa carlos: " + carlos.isSesionIniciada());
@@ -932,29 +1020,26 @@ public class DemostradorMain {
 
 		tienda.imprimirUsuariosConSesionActiva();
 
-		// ── Despido de empleado ───────────────────────────────────────────────────
 		System.out.println("\n  Estado de emp_stock antes del despido:");
-		System.out.println("  Nickname: " + empStock.getNickname()
-		    + " | despedido: " + empStock.isDespedido()
-		    + " | sesion: " + empStock.isSesionIniciada());
+		System.out.println("  Nickname: " + empStock.getNickname() + " | despedido: " + empStock.isDespedido()
+				+ " | sesion: " + empStock.isSesionIniciada());
 
 		gestor.darDeBajaAEmpleado(empStock.getId());
 		System.out.println("  Estado tras despido:");
-		System.out.println("  Nickname: " + empStock.getNickname()
-		    + " | despedido: " + empStock.isDespedido()
-		    + " | sesion: " + empStock.isSesionIniciada());
+		System.out.println("  Nickname: " + empStock.getNickname() + " | despedido: " + empStock.isDespedido()
+				+ " | sesion: " + empStock.isSesionIniciada());
 
-		
 		System.out.println("\n  Intentar login de empleado despedido:");
 		Empleado empDespedido = tienda.loginEmpleado("emp_stock", "Stock@1234");
-		System.out.println("  Resultado: " + (empDespedido == null ? "BLOQUEADO correctamente" : "ERROR - no deberia entrar"));
+		System.out.println(
+				"  Resultado: " + (empDespedido == null ? "BLOQUEADO correctamente" : "ERROR - no deberia entrar"));
 
 		// Intentar usar funciones con empleado despedido
 		System.out.println("\n  Intentar usar funciones con empleado despedido:");
 		empStock.reponerStockProducto(watchmen.getId(), 5);
 		empStock.añadirProductoACategoria(watchmen.getId(), "Anime");
 		empStock.crearPack("Pack Ilegal", "No deberia crearse", "img.jpg", 10.0, 1,
-		    construirLineasPack(new LineaPack(watchmen, 1), new LineaPack(akira, 1)));
+				construirLineasPack(new LineaPack(watchmen, 1), new LineaPack(akira, 1)));
 
 		// Logout de empleados activos
 		System.out.println("\n  Logout de empleados activos:");
@@ -964,6 +1049,6 @@ public class DemostradorMain {
 		System.out.println("  Sesion empPedidos: " + empPedidos.isSesionIniciada());
 		tienda.imprimirUsuariosConSesionActiva();
 
-		}
+	}
 
 }
